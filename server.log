@@ -352,3 +352,60 @@
 10.64.252.176 - - [11/Dec/2025 12:24:56] "GET /api/user/discount HTTP/1.1" 200 -
 10.64.252.176 - - [11/Dec/2025 12:24:56] "GET /api/user/discount HTTP/1.1" 200 -
 10.64.252.176 - - [11/Dec/2025 12:24:56] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:24:56] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:24:56] "GET /api/user/discount HTTP/1.1" 200 -
+ * Detected change in '/home/user/webapp/app.py', reloading
+ * Restarting with stat
+✅ 데이터베이스 테이블 생성 완료!
+✅ 관리자 계정 이미 존재: eager1014@gmail.com
+==================================================
+🚀 찐부부 AI 프롬프트 마켓 서버 시작!
+==================================================
+👑 관리자 이메일: eager1014@gmail.com
+==================================================
+ * Debugger is active!
+ * Debugger PIN: 122-972-965
+/home/user/webapp/app.py:217: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  current_user = User.query.get(data['user_id'])
+/home/user/webapp/app.py:67: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  time_since_signup = datetime.utcnow() - self.created_at
+/home/user/webapp/app.py:600: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  time_since_signup = datetime.utcnow() - current_user.created_at
+10.64.252.176 - - [11/Dec/2025 12:24:57] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:24:58] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:24:58] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:24:58] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:24:58] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:24:58] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:24:59] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:24:59] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:24:59] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:24:59] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:24:59] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:00] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:00] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:00] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:00] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:00] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:01] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:01] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:01] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:01] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:02] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:02] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:02] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:02] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:02] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:03] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:03] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:03] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:03] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:03] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:04] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:04] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:04] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:04] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:05] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:10] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:10] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 12:25:11] "GET /api/user/discount HTTP/1.1" 200 -
