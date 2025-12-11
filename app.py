@@ -32,6 +32,8 @@ class User(db.Model):
     birthdate = db.Column(db.Date, nullable=True)  # 생년월일
     is_member = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)  # 관리자 여부
+    referral_source = db.Column(db.String(50), nullable=True)  # 유입 경로 (somoim, direct 등)
+    somoim_id = db.Column(db.String(100), nullable=True)  # 소모임 고유 ID
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     purchases = db.relationship('Purchase', backref='user', lazy=True)
 
@@ -182,6 +184,69 @@ def admin_required(f):
 def index():
     return app.send_static_file('index.html')
 
+# 소모임 자동 가입
+@app.route('/api/somoim-auto-register', methods=['POST'])
+def somoim_auto_register():
+    data = request.get_json()
+    
+    somoim_id = data.get('somoim_id', '8cafe332-cbff-11ef-b613-0a50aa12fbb11')
+    
+    # 이미 소모임으로 가입한 사용자인지 확인
+    existing_user = User.query.filter_by(somoim_id=somoim_id).first()
+    if existing_user:
+        # 이미 가입된 사용자는 로그인 처리
+        token = existing_user.generate_token()
+        return jsonify({
+            'message': '소모임 회원으로 자동 로그인되었습니다!',
+            'token': token,
+            'user': {
+                'id': existing_user.id,
+                'email': existing_user.email,
+                'username': existing_user.username,
+                'is_member': existing_user.is_member,
+                'referral_source': 'somoim'
+            }
+        }), 200
+    
+    # 새로운 소모임 사용자 자동 생성
+    import uuid
+    temp_email = f"somoim_{uuid.uuid4().hex[:8]}@jjinbubu.temp"
+    temp_password = uuid.uuid4().hex[:16]
+    
+    new_user = User(
+        email=temp_email,
+        username="소모임 회원",
+        phone=None,
+        birthdate=None,
+        is_member=True,  # 소모임 회원은 자동으로 회원 혜택
+        referral_source='somoim',
+        somoim_id=somoim_id
+    )
+    new_user.set_password(temp_password)
+    
+    db.session.add(new_user)
+    db.session.commit()
+    
+    # 토큰 생성
+    token = new_user.generate_token()
+    
+    return jsonify({
+        'message': '🎉 소모임 회원으로 자동 가입되었습니다! 회원 할인이 적용됩니다.',
+        'token': token,
+        'user': {
+            'id': new_user.id,
+            'email': new_user.email,
+            'username': new_user.username,
+            'is_member': new_user.is_member,
+            'referral_source': 'somoim'
+        },
+        'temp_credentials': {
+            'email': temp_email,
+            'password': temp_password,
+            'note': '나중에 회원정보에서 이메일과 비밀번호를 변경하세요.'
+        }
+    }), 201
+
 # 회원가입
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -217,7 +282,9 @@ def register():
         username=data['username'],
         phone=data['phone'],
         birthdate=birthdate,
-        is_member=data.get('is_member', False)
+        is_member=data.get('is_member', False),
+        referral_source=data.get('referral_source', 'direct'),
+        somoim_id=data.get('somoim_id', None)
     )
     new_user.set_password(data['password'])
     
