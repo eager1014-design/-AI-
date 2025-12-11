@@ -2103,4 +2103,9 @@ if __name__ == '__main__':
     print("=" * 50)
     print("👑 관리자 이메일: eager1014@gmail.com")
     print("=" * 50)
-    app.run(host='0.0.0.0', port=8003, debug=True)
+    
+    # 배포 환경에서는 PORT 환경 변수 사용
+    port = int(os.environ.get('PORT', 8003))
+    debug = os.environ.get('FLASK_ENV', 'development') == 'development'
+    
+    app.run(host='0.0.0.0', port=port, debug=debug)
