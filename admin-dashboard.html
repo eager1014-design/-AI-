@@ -615,7 +615,7 @@
         // 초기화
         async function init() {
             try {
-                const user = await apiRequest('/api/user/info');
+                const user = await apiRequest('/api/user/me');
                 document.getElementById('admin-info').textContent = `${user.user.username} (${user.user.email})`;
                 
                 // 대시보드 로드

@@ -299,7 +299,7 @@
             const token = localStorage.getItem('auth_token');
             if (token) {
                 try {
-                    const response = await fetch('/api/user/info', {
+                    const response = await fetch('/api/user/me', {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
