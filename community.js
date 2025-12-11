@@ -10,31 +10,14 @@ document.addEventListener('DOMContentLoaded', function() {
     checkAdminStatus();
 });
 
-// 로그인 상태 확인
+// 로그인 상태 확인 (필요없음 - 심플 버전)
 function checkAdminStatus() {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const token = localStorage.getItem('token');
-    const writeButtonWrapper = document.getElementById('writeButtonWrapper');
-    const loginNotice = document.getElementById('loginNotice');
-    
-    if (token && currentUser.id) {
-        // 로그인 상태 - 모든 사용자가 글쓰기 가능
-        writeButtonWrapper.style.display = 'block';
-        if (loginNotice) loginNotice.style.display = 'none';
-    } else {
-        // 비로그인 상태
-        writeButtonWrapper.style.display = 'none';
-        if (loginNotice) loginNotice.style.display = 'block';
-    }
+    // 심플 버전: 아무 것도 하지 않음
 }
 
 // 이벤트 초기화
 function initCommunityEvents() {
-    // 글쓰기 버튼
-    const writePostBtn = document.getElementById('writePostBtn');
-    if (writePostBtn) {
-        writePostBtn.addEventListener('click', () => openModal());
-    }
+    // 심플 버전: 글쓰기 버튼 없음
     
     // 모달 닫기
     const modalClose = document.getElementById('modalClose');
@@ -106,13 +89,8 @@ async function loadPosts() {
     }
 }
 
-// 게시글 렌더링
+// 게시글 렌더링 (심플 버전 - 버튼 없음)
 function renderPost(post) {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const isOwner = currentUser.id === post.author_id;
-    const isAdmin = currentUser.is_admin;
-    const canEdit = isOwner || isAdmin;
-    
     const date = new Date(post.created_at);
     const formattedDate = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
     
@@ -126,20 +104,14 @@ function renderPost(post) {
     return `
         <div class="post-card" data-post-id="${post.id}">
             <div class="post-header">
-                <span class="post-badge">📝 게시글</span>
-                ${canEdit ? `
-                <div class="post-actions">
-                    <button class="post-edit-btn" data-post-id="${post.id}" title="수정">✏️</button>
-                    <button class="post-delete-btn" data-post-id="${post.id}" title="삭제">🗑️</button>
-                </div>
-                ` : ''}
+                <span class="post-badge">📢 공지</span>
             </div>
             <h3 class="post-title">${escapeHtml(post.title)}</h3>
             ${imageHtml}
             <p class="post-content">${escapeHtml(post.content).replace(/\n/g, '<br>')}</p>
             <div class="post-meta">
                 <span class="post-author">
-                    👤 ${escapeHtml(post.author_name || '찐부부')}
+                    👤 찐부부
                 </span>
                 <span class="post-date">
                     📅 ${formattedDate}
