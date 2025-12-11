@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 프롬프트 마켓플레이스 - SNS 성장 전문</title>
+    <title>찐부부 AI 프롬프트 마켓 - SNS 성장 전문</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="mobile-enhanced.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -477,6 +478,71 @@
     <script src="somoim-integration.js"></script>
     <script src="photo-gallery.js"></script>
     <script src="payment.js"></script>
+    
+    <!-- 🎯 모바일 하단 네비게이션 -->
+    <nav class="mobile-bottom-nav" style="display: none;" id="mobileBottomNav">
+        <a href="/" class="nav-item active">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">홈</span>
+        </a>
+        <a href="/community-mobile.html" class="nav-item">
+            <span class="nav-icon">💬</span>
+            <span class="nav-label">커뮤니티</span>
+        </a>
+        <a href="/mypage.html" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">마이</span>
+        </a>
+        <a href="/dashboard.html" class="nav-item" id="dashboardNavItem" style="display: none;">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">통계</span>
+        </a>
+    </nav>
+
+    <!-- 모바일 네비게이션 스크립트 -->
+    <script>
+        // 모바일 하단 네비게이션 표시
+        function initMobileNav() {
+            const mobileNav = document.getElementById('mobileBottomNav');
+            const dashboardNav = document.getElementById('dashboardNavItem');
+            
+            // 모바일 화면이면 하단 네비게이션 표시
+            if (window.innerWidth <= 768) {
+                mobileNav.style.display = 'flex';
+                
+                // 관리자면 대시보드 네비게이션도 표시
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                if (currentUser.is_admin) {
+                    dashboardNav.style.display = 'flex';
+                }
+            } else {
+                mobileNav.style.display = 'none';
+            }
+        }
+        
+        // 현재 페이지에 active 클래스 추가
+        function updateActiveNav() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const currentPath = window.location.pathname;
+            
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                const href = item.getAttribute('href');
+                if (href === currentPath || 
+                    (currentPath === '/' && href === '/') ||
+                    (currentPath === '/index.html' && href === '/')) {
+                    item.classList.add('active');
+                }
+            });
+        }
+        
+        // 초기화
+        initMobileNav();
+        updateActiveNav();
+        
+        // 화면 크기 변경 시 재조정
+        window.addEventListener('resize', initMobileNav);
+    </script>
 </body>
 </html>
 l>
