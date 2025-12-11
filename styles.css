@@ -1042,6 +1042,18 @@ body {
     background: var(--primary-hover);
 }
 
+/* 복사 버튼 비활성화 상태 */
+.copy-btn:disabled {
+    background: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.copy-btn:disabled:hover {
+    background: var(--text-muted);
+    transform: none;
+}
+
 .prompt-code {
     background: var(--white);
     border: 1px solid var(--border);
@@ -1054,6 +1066,34 @@ body {
     word-wrap: break-word;
     max-height: 400px;
     overflow-y: auto;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* 구매 전 프롬프트 블러 처리 */
+.prompt-code.blurred {
+    filter: blur(5px);
+    user-select: none;
+    pointer-events: none;
+}
+
+.prompt-code.blurred::after {
+    content: '🔒 프롬프트를 확인하려면 구매해주세요';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(217, 119, 6, 0.95);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    filter: none;
+    pointer-events: auto;
+    box-shadow: var(--shadow-xl);
+    white-space: nowrap;
 }
 
 /* 구매 버튼 */

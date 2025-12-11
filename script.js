@@ -685,18 +685,50 @@ function openModal(prompt) {
     modalTitle.textContent = prompt.title;
     modalPrice.innerHTML = priceHtml;
     modalDescription.textContent = prompt.description;
-    promptCode.textContent = prompt.fullPrompt;
     
-    // 무료 프롬프트는 구매 버튼 숨기기
-    if (prompt.isFree) {
-        purchaseBtn.style.display = 'none';
+    // 구매 여부 확인 (무료 프롬프트 또는 구매한 프롬프트)
+    const hasPurchased = prompt.isFree || checkIfPurchased(prompt.id);
+    
+    if (hasPurchased) {
+        // 구매했거나 무료: 전체 프롬프트 표시
+        promptCode.textContent = prompt.fullPrompt;
+        promptCode.classList.remove('blurred');
+        copyBtn.disabled = false;
+        copyBtn.style.display = 'flex';
+        
+        if (prompt.isFree) {
+            purchaseBtn.style.display = 'none';
+        } else {
+            purchaseBtn.style.display = 'none';
+        }
     } else {
+        // 미구매: 일부만 미리보기 + 흐림 효과
+        const previewLength = 150; // 150자만 미리보기
+        const preview = prompt.fullPrompt.substring(0, previewLength) + '\n\n[... 이하 생략 ...]\n\n━━━━━━━━━━━━━━━━━━━━\n\n💡 이 프롬프트는 실제로 ' + prompt.fullPrompt.length + '자의 상세한 내용을 포함하고 있습니다.\n\n✨ 구매하시면 전체 프롬프트를 즉시 확인하고 복사할 수 있습니다!';
+        promptCode.textContent = preview;
+        promptCode.classList.add('blurred');
+        copyBtn.disabled = true;
+        copyBtn.style.display = 'flex';
+        copyBtn.textContent = '🔒 구매 후 복사 가능';
+        
         purchaseBtn.style.display = 'block';
         purchaseBtn.textContent = prompt.isSubscription ? '구독 시작하기' : '구매하기';
     }
     
     promptModal.classList.add('active');
     document.body.style.overflow = 'hidden';
+}
+
+// 구매 여부 확인 함수
+function checkIfPurchased(promptId) {
+    // 로그인하지 않았으면 구매 불가
+    if (!AuthManager || typeof AuthManager.isLoggedIn !== 'function' || !AuthManager.isLoggedIn()) {
+        return false;
+    }
+    
+    // 로컬 스토리지에서 구매 목록 확인
+    const purchases = JSON.parse(localStorage.getItem('user_purchases') || '[]');
+    return purchases.some(p => p.prompt_id === promptId);
 }
 
 // 모달 닫기
@@ -707,6 +739,12 @@ function closeModal() {
 
 // 프롬프트 복사
 function copyPrompt() {
+    // 비활성화 상태면 복사 불가
+    if (copyBtn.disabled) {
+        alert('🔒 프롬프트를 복사하려면 먼저 구매해주세요!');
+        return;
+    }
+    
     const text = promptCode.textContent;
     
     navigator.clipboard.writeText(text).then(() => {
@@ -714,7 +752,7 @@ function copyPrompt() {
         copyBtn.innerHTML = '<span class="copy-icon">✅</span><span class="copy-text">복사 완료!</span>';
         
         setTimeout(() => {
-            copyBtn.innerHTML = originalText;
+            copyBtn.innerHTML = '<span class="copy-icon">📋</span><span class="copy-text">복사하기</span>';
         }, 2000);
     }).catch(err => {
         alert('복사에 실패했습니다. 다시 시도해주세요.');

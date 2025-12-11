@@ -344,13 +344,28 @@ async function purchasePrompt(promptId, promptTitle, price) {
             price: price
         });
         
-        alert('✅ ' + response.message);
+        // 구매 목록을 로컬스토리지에 저장
+        const purchases = JSON.parse(localStorage.getItem('user_purchases') || '[]');
+        purchases.push({
+            prompt_id: promptId,
+            prompt_title: promptTitle,
+            price: price,
+            purchased_at: new Date().toISOString()
+        });
+        localStorage.setItem('user_purchases', JSON.stringify(purchases));
+        
+        alert('✅ ' + response.message + '\n\n이제 전체 프롬프트를 확인하실 수 있습니다!');
         
         // 모달 닫기
         document.getElementById('modalClose').click();
         
-        // 대시보드 표시
-        showUserDashboard();
+        // 프롬프트 다시 열기 (이제 전체가 보임)
+        setTimeout(() => {
+            const prompt = promptsDatabase.find(p => p.id === promptId);
+            if (prompt && typeof openModal === 'function') {
+                openModal(prompt);
+            }
+        }, 500);
     } catch (error) {
         alert('❌ ' + error.message);
     }
