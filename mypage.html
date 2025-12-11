@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지 - 찐부부 AI 프롬프트</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .mypage-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .mypage-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .user-details h2 {
+            margin: 0 0 0.5rem 0;
+        }
+
+        .user-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .section-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .purchase-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .purchase-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .purchase-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .purchase-info h3 {
+            margin: 0 0 0.5rem 0;
+            color: #333;
+        }
+
+        .purchase-meta {
+            display: flex;
+            gap: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .purchase-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 0.5rem;
+        }
+
+        .purchase-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9ff;
+        }
+
+        .payment-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .payment-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.5rem;
+        }
+
+        .payment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .payment-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .status-done {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-failed {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .payment-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .prompt-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .prompt-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .prompt-display {
+            margin-top: 2rem;
+        }
+
+        .prompt-code {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 10px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .copy-btn {
+            margin-top: 1rem;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .mypage-container {
+                padding: 1rem;
+            }
+
+            .purchase-card {
+                grid-template-columns: 1fr;
+            }
+
+            .section-tabs {
+                overflow-x: auto;
+            }
+
+            .tab-btn {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-character" style="font-size: 2rem;">💑</span>
+                <span class="logo-text">찐부부 AI 프롬프트</span>
+            </div>
+            <nav class="nav">
+                <a href="/" class="nav-link">홈</a>
+                <a href="/community.html" class="nav-link">커뮤니티</a>
+                <a href="/mypage.html" class="nav-link active">마이페이지</a>
+                <button class="community-btn" onclick="location.href='/admin-login.html'">관리자</button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="mypage-container">
+        <div class="mypage-header">
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <div class="user-details">
+                    <h2 id="userName">로딩 중...</h2>
+                    <span class="user-badge" id="userBadge">일반 회원</span>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="statPurchases">0</div>
+                    <div class="stat-label">구매한 프롬프트</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="statSpent">₩0</div>
+                    <div class="stat-label">총 사용 금액</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="statSaved">₩0</div>
+                    <div class="stat-label">할인 받은 금액</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-tabs">
+            <button class="tab-btn active" onclick="switchTab('purchases')">구매 내역</button>
+            <button class="tab-btn" onclick="switchTab('payments')">결제 내역</button>
+        </div>
+
+        <div id="purchasesTab" class="tab-content active">
+            <div class="purchase-list" id="purchaseList">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📦</div>
+                    <h3>구매 내역이 없습니다</h3>
+                    <p>프롬프트를 구매하고 AI를 활용해보세요!</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="paymentsTab" class="tab-content">
+            <div class="payment-list" id="paymentList">
+                <div class="empty-state">
+                    <div class="empty-state-icon">💳</div>
+                    <h3>결제 내역이 없습니다</h3>
+                    <p>첫 구매를 시작해보세요!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 프롬프트 상세 모달 -->
+    <div class="prompt-modal" id="promptModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePromptModal()">&times;</button>
+            <h2 id="modalTitle">프롬프트</h2>
+            <div class="prompt-display">
+                <pre class="prompt-code" id="promptCode"></pre>
+                <button class="copy-btn" onclick="copyPrompt()">
+                    <span>📋</span>
+                    <span>프롬프트 복사하기</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // 현재 활성 탭
+        let currentTab = 'purchases';
+
+        // 탭 전환
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // 탭 버튼 스타일
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 탭 콘텐츠 표시
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tab + 'Tab').classList.add('active');
+        }
+
+        // 페이지 로드 시 데이터 가져오기
+        window.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                alert('로그인이 필요합니다.');
+                window.location.href = '/login.html';
+                return;
+            }
+
+            try {
+                // 사용자 정보 가져오기
+                const userResponse = await fetch('/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (userResponse.ok) {
+                    const userData = await userResponse.json();
+                    displayUserInfo(userData);
+                }
+
+                // 구매 내역 가져오기
+                loadPurchases();
+                
+                // 결제 내역 가져오기
+                loadPayments();
+
+            } catch (error) {
+                console.error('데이터 로드 실패:', error);
+            }
+        });
+
+        // 사용자 정보 표시
+        function displayUserInfo(user) {
+            document.getElementById('userName').textContent = user.username || user.email;
+            
+            const badge = document.getElementById('userBadge');
+            if (user.is_admin) {
+                badge.textContent = '👑 관리자';
+            } else if (user.is_member) {
+                badge.textContent = '💎 정회원';
+            } else {
+                badge.textContent = '일반 회원';
+            }
+        }
+
+        // 구매 내역 로드
+        async function loadPurchases() {
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/user/purchases', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayPurchases(data.purchases);
+                    updateStats(data.purchases);
+                }
+            } catch (error) {
+                console.error('구매 내역 로드 실패:', error);
+            }
+        }
+
+        // 구매 내역 표시
+        function displayPurchases(purchases) {
+            const container = document.getElementById('purchaseList');
+            
+            if (!purchases || purchases.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <h3>구매 내역이 없습니다</h3>
+                        <p>프롬프트를 구매하고 AI를 활용해보세요!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = purchases.map(purchase => `
+                <div class="purchase-card">
+                    <div class="purchase-info">
+                        <h3>${purchase.prompt_title}</h3>
+                        <div class="purchase-meta">
+                            <span>📅 ${new Date(purchase.purchased_at).toLocaleDateString('ko-KR')}</span>
+                            <span>⏰ ${new Date(purchase.purchased_at).toLocaleTimeString('ko-KR')}</span>
+                        </div>
+                        <div class="purchase-price">₩${purchase.price.toLocaleString()}</div>
+                    </div>
+                    <div class="purchase-actions">
+                        <button class="action-btn btn-primary" onclick="viewPrompt('${purchase.prompt_id}', '${purchase.prompt_title}')">
+                            📋 프롬프트 보기
+                        </button>
+                        <button class="action-btn btn-secondary" onclick="downloadPrompt('${purchase.prompt_id}', '${purchase.prompt_title}')">
+                            💾 다운로드
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 통계 업데이트
+        function updateStats(purchases) {
+            const totalPurchases = purchases.length;
+            const totalSpent = purchases.reduce((sum, p) => sum + p.price, 0);
+            
+            // 원가 계산 (할인 전)
+            const originalTotal = purchases.reduce((sum, p) => {
+                // 회원 할인이 적용되었다고 가정 (30% or 50%)
+                const originalPrice = p.price / 0.7; // 30% 할인 가정
+                return sum + originalPrice;
+            }, 0);
+            const totalSaved = originalTotal - totalSpent;
+
+            document.getElementById('statPurchases').textContent = totalPurchases;
+            document.getElementById('statSpent').textContent = `₩${totalSpent.toLocaleString()}`;
+            document.getElementById('statSaved').textContent = `₩${Math.floor(totalSaved).toLocaleString()}`;
+        }
+
+        // 결제 내역 로드
+        async function loadPayments() {
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/user/payments', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayPayments(data.payments);
+                }
+            } catch (error) {
+                console.error('결제 내역 로드 실패:', error);
+            }
+        }
+
+        // 결제 내역 표시
+        function displayPayments(payments) {
+            const container = document.getElementById('paymentList');
+            
+            if (!payments || payments.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💳</div>
+                        <h3>결제 내역이 없습니다</h3>
+                        <p>첫 구매를 시작해보세요!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = payments.map(payment => {
+                const statusClass = payment.status === 'DONE' ? 'done' : 
+                                   payment.status === 'pending' ? 'pending' : 'failed';
+                const statusText = payment.status === 'DONE' ? '완료' : 
+                                  payment.status === 'pending' ? '대기 중' : '실패';
+                
+                return `
+                    <div class="payment-card">
+                        <div class="payment-header">
+                            <h3>${payment.item_name || '프롬프트 구매'}</h3>
+                            <span class="payment-status status-${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="payment-details">
+                            <div class="detail-item">
+                                <span class="detail-label">주문번호</span>
+                                <span>${payment.order_id}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">결제 금액</span>
+                                <span>₩${payment.amount.toLocaleString()}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">결제 방법</span>
+                                <span>${payment.payment_method || '카드'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">결제 시간</span>
+                                <span>${new Date(payment.approved_at || payment.created_at).toLocaleString('ko-KR')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 프롬프트 보기
+        async function viewPrompt(promptId, promptTitle) {
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`/api/prompts/${promptId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showPromptModal(data.prompt);
+                } else {
+                    alert('프롬프트를 불러올 수 없습니다.');
+                }
+            } catch (error) {
+                console.error('프롬프트 로드 실패:', error);
+                alert('프롬프트를 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 프롬프트 모달 표시
+        function showPromptModal(prompt) {
+            document.getElementById('modalTitle').textContent = prompt.title || '프롬프트';
+            document.getElementById('promptCode').textContent = prompt.fullPrompt || prompt.content;
+            document.getElementById('promptModal').classList.add('active');
+        }
+
+        // 프롬프트 모달 닫기
+        function closePromptModal() {
+            document.getElementById('promptModal').classList.remove('active');
+        }
+
+        // 프롬프트 복사
+        function copyPrompt() {
+            const text = document.getElementById('promptCode').textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target.closest('.copy-btn');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<span>✅</span><span>복사 완료!</span>';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                }, 2000);
+            }).catch(err => {
+                alert('복사에 실패했습니다.');
+            });
+        }
+
+        // 프롬프트 다운로드
+        function downloadPrompt(promptId, promptTitle) {
+            viewPrompt(promptId, promptTitle);
+        }
+    </script>
+</body>
+</html>

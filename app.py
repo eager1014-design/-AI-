@@ -161,6 +161,44 @@ class SomoimPhoto(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class Coupon(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(50), unique=True, nullable=False)  # 쿠폰 코드
+    discount_type = db.Column(db.String(20), nullable=False)  # 'percentage' or 'fixed'
+    discount_value = db.Column(db.Integer, nullable=False)  # 할인율(%) or 할인금액(원)
+    max_uses = db.Column(db.Integer, default=0)  # 최대 사용 횟수 (0=무제한)
+    used_count = db.Column(db.Integer, default=0)  # 사용된 횟수
+    expires_at = db.Column(db.DateTime, nullable=True)  # 만료일
+    is_active = db.Column(db.Boolean, default=True)  # 활성화 여부
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'))  # 생성한 관리자
+
+class CouponUsage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    coupon_id = db.Column(db.Integer, db.ForeignKey('coupon.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    order_id = db.Column(db.String(100), nullable=False)  # 사용한 주문 ID
+    discount_amount = db.Column(db.Integer, nullable=False)  # 실제 할인 금액
+    used_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Review(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    prompt_id = db.Column(db.String(100), nullable=False)  # 프롬프트 ID
+    rating = db.Column(db.Integer, nullable=False)  # 1-5 별점
+    content = db.Column(db.Text, nullable=False)  # 리뷰 내용
+    helpful_count = db.Column(db.Integer, default=0)  # 도움됨 수
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+class EmailLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    email_type = db.Column(db.String(50), nullable=False)  # 'welcome', 'payment', 'marketing'
+    recipient = db.Column(db.String(200), nullable=False)
+    subject = db.Column(db.String(200), nullable=False)
+    sent_at = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='sent')  # 'sent', 'failed'
+
 # ==================== 헬퍼 함수 ====================
 
 def token_required(f):
@@ -1224,6 +1262,146 @@ def get_all_users(current_user):
         'total_count': len(users_data)
     }), 200
 
+# 대시보드 통계
+@app.route('/api/admin/dashboard', methods=['GET'])
+@admin_required
+def get_dashboard_stats(current_user):
+    """대시보드 통계 (관리자 전용)"""
+    from datetime import date, timedelta
+    
+    today = date.today()
+    week_ago = today - timedelta(days=7)
+    month_start = date(today.year, today.month, 1)
+    
+    # 오늘 매출
+    today_payments = Payment.query.filter(
+        Payment.status == 'DONE',
+        db.func.date(Payment.approved_at) == today
+    ).all()
+    today_sales = sum(p.amount for p in today_payments)
+    
+    # 이번 달 매출
+    month_payments = Payment.query.filter(
+        Payment.status == 'DONE',
+        db.func.date(Payment.approved_at) >= month_start
+    ).all()
+    month_sales = sum(p.amount for p in month_payments)
+    
+    # 전체 회원 수
+    total_members = User.query.count()
+    
+    # 총 주문 수
+    total_orders = Purchase.query.count()
+    
+    # 오늘 신규 회원
+    new_members_today = User.query.filter(
+        db.func.date(User.created_at) == today
+    ).count()
+    
+    # 오늘 신규 주문
+    new_orders_today = len(today_payments)
+    
+    # 최근 7일 매출 차트
+    sales_chart_data = {
+        'labels': [],
+        'values': []
+    }
+    
+    for i in range(6, -1, -1):
+        day = today - timedelta(days=i)
+        day_payments = Payment.query.filter(
+            Payment.status == 'DONE',
+            db.func.date(Payment.approved_at) == day
+        ).all()
+        day_sales = sum(p.amount for p in day_payments)
+        
+        sales_chart_data['labels'].append(day.strftime('%m/%d'))
+        sales_chart_data['values'].append(day_sales)
+    
+    # 회원 유형별 분포
+    total_users = User.query.count()
+    admin_count = User.query.filter_by(is_admin=True).count()
+    member_count = User.query.filter_by(is_member=True, is_admin=False).count()
+    non_member_count = total_users - admin_count - member_count
+    
+    members_chart_data = {
+        'labels': ['관리자', '정회원', '일반회원'],
+        'values': [admin_count, member_count, non_member_count]
+    }
+    
+    # 인기 프롬프트 TOP 5
+    from sqlalchemy import func
+    top_prompts = db.session.query(
+        Purchase.prompt_id,
+        Purchase.prompt_title,
+        func.count(Purchase.id).label('order_count'),
+        func.sum(Purchase.price).label('total_sales')
+    ).group_by(Purchase.prompt_id, Purchase.prompt_title).order_by(
+        func.sum(Purchase.price).desc()
+    ).limit(5).all()
+    
+    top_prompts_data = [{
+        'id': p.prompt_id,
+        'title': p.prompt_title,
+        'order_count': p.order_count,
+        'total_sales': p.total_sales or 0
+    } for p in top_prompts]
+    
+    # 최근 활동
+    recent_purchases = Purchase.query.order_by(Purchase.purchased_at.desc()).limit(5).all()
+    recent_users = User.query.order_by(User.created_at.desc()).limit(5).all()
+    
+    recent_activity = []
+    
+    for purchase in recent_purchases:
+        user = User.query.get(purchase.user_id)
+        time_diff = datetime.utcnow() - purchase.purchased_at
+        if time_diff.seconds < 3600:
+            time_str = f"{time_diff.seconds // 60}분 전"
+        elif time_diff.seconds < 86400:
+            time_str = f"{time_diff.seconds // 3600}시간 전"
+        else:
+            time_str = f"{time_diff.days}일 전"
+        
+        recent_activity.append({
+            'type': 'purchase',
+            'text': f"{user.username if user else '사용자'}님이 '{purchase.prompt_title}' 구매",
+            'time': time_str
+        })
+    
+    for user in recent_users[:3]:
+        time_diff = datetime.utcnow() - user.created_at
+        if time_diff.seconds < 3600:
+            time_str = f"{time_diff.seconds // 60}분 전"
+        elif time_diff.seconds < 86400:
+            time_str = f"{time_diff.seconds // 3600}시간 전"
+        else:
+            time_str = f"{time_diff.days}일 전"
+        
+        recent_activity.append({
+            'type': 'signup',
+            'text': f"{user.username}님이 회원가입",
+            'time': time_str
+        })
+    
+    # 시간순 정렬
+    recent_activity.sort(key=lambda x: x['time'])
+    
+    return jsonify({
+        'today_sales': today_sales,
+        'month_sales': month_sales,
+        'total_members': total_members,
+        'total_orders': total_orders,
+        'today_sales_change': 0,  # 전날 대비 변화율 (나중에 구현)
+        'month_sales_change': 0,  # 전월 대비 변화율 (나중에 구현)
+        'new_members_today': new_members_today,
+        'new_orders_today': new_orders_today,
+        'sales_chart': sales_chart_data,
+        'members_chart': members_chart_data,
+        'top_prompts': top_prompts_data,
+        'recent_activity': recent_activity[:8]
+    }), 200
+
 # 특정 사용자 상세 정보
 @app.route('/api/admin/users/<int:user_id>', methods=['GET'])
 @admin_required
@@ -1423,6 +1601,201 @@ def init_db():
                 print(f"👑 기존 계정을 관리자로 승격: {admin_email}")
             else:
                 print(f"✅ 관리자 계정 이미 존재: {admin_email}")
+
+# ==================== 사용자 API ====================
+
+@app.route('/api/user/profile', methods=['GET'])
+@token_required
+def get_user_profile(current_user):
+    """현재 사용자 프로필"""
+    return jsonify({
+        'id': current_user.id,
+        'username': current_user.username,
+        'email': current_user.email,
+        'is_member': current_user.is_member,
+        'is_admin': current_user.is_admin,
+        'created_at': current_user.created_at.strftime('%Y-%m-%d %H:%M:%S')
+    }), 200
+
+@app.route('/api/user/purchases', methods=['GET'])
+@token_required
+def get_user_purchases(current_user):
+    """사용자 구매 내역"""
+    purchases = Purchase.query.filter_by(user_id=current_user.id).order_by(Purchase.purchased_at.desc()).all()
+    
+    purchases_data = [{
+        'id': p.id,
+        'prompt_id': p.prompt_id,
+        'prompt_title': p.prompt_title,
+        'price': p.price,
+        'purchased_at': p.purchased_at.strftime('%Y-%m-%d %H:%M:%S')
+    } for p in purchases]
+    
+    return jsonify({
+        'purchases': purchases_data,
+        'total_count': len(purchases_data)
+    }), 200
+
+@app.route('/api/user/payments', methods=['GET'])
+@token_required
+def get_user_payments(current_user):
+    """사용자 결제 내역"""
+    payments = Payment.query.filter_by(user_id=current_user.id).order_by(Payment.created_at.desc()).all()
+    
+    payments_data = [{
+        'id': p.id,
+        'order_id': p.order_id,
+        'payment_method': p.payment_method,
+        'amount': p.amount,
+        'status': p.status,
+        'item_name': p.item_name,
+        'approved_at': p.approved_at.strftime('%Y-%m-%d %H:%M:%S') if p.approved_at else None,
+        'created_at': p.created_at.strftime('%Y-%m-%d %H:%M:%S')
+    } for p in payments]
+    
+    return jsonify({
+        'payments': payments_data,
+        'total_count': len(payments_data)
+    }), 200
+
+@app.route('/api/prompts/<prompt_id>', methods=['GET'])
+@token_required
+def get_prompt_detail(current_user, prompt_id):
+    """프롬프트 상세 정보 (구매한 사용자만)"""
+    # 구매 확인
+    purchase = Purchase.query.filter_by(user_id=current_user.id, prompt_id=prompt_id).first()
+    
+    if not purchase:
+        return jsonify({'message': '구매하지 않은 프롬프트입니다.'}), 403
+    
+    # 프롬프트 데이터 (실제로는 DB에서 가져와야 함)
+    # 여기서는 script.js의 프롬프트 데이터 구조 사용
+    from script import prompts  # 실제로는 DB에서 가져오기
+    
+    # 임시로 하드코딩된 프롬프트 반환
+    prompt_data = {
+        'id': prompt_id,
+        'title': purchase.prompt_title,
+        'fullPrompt': f'''이것은 {purchase.prompt_title}의 전체 내용입니다.
+
+실제 운영에서는 데이터베이스에 저장된 프롬프트 전체 내용이 표시됩니다.
+
+구매해주셔서 감사합니다!
+
+사용 방법:
+1. 이 프롬프트를 복사하세요
+2. ChatGPT나 Claude에 붙여넣으세요
+3. 원하는 정보를 입력하세요
+4. AI가 자동으로 최적화된 답변을 생성합니다
+
+더 궁금한 점이 있으시면 언제든지 문의해주세요!
+'''
+    }
+    
+    return jsonify({'prompt': prompt_data}), 200
+
+# ==================== 쿠폰 API ====================
+
+@app.route('/api/coupons/validate', methods=['POST'])
+@token_required
+def validate_coupon(current_user):
+    """쿠폰 유효성 검사"""
+    data = request.get_json()
+    code = data.get('code', '').upper()
+    
+    if not code:
+        return jsonify({'message': '쿠폰 코드를 입력하세요.'}), 400
+    
+    coupon = Coupon.query.filter_by(code=code).first()
+    
+    if not coupon:
+        return jsonify({'message': '존재하지 않는 쿠폰입니다.'}), 404
+    
+    if not coupon.is_active:
+        return jsonify({'message': '사용 중지된 쿠폰입니다.'}), 400
+    
+    if coupon.expires_at and coupon.expires_at < datetime.utcnow():
+        return jsonify({'message': '만료된 쿠폰입니다.'}), 400
+    
+    if coupon.max_uses > 0 and coupon.used_count >= coupon.max_uses:
+        return jsonify({'message': '사용 한도가 초과된 쿠폰입니다.'}), 400
+    
+    # 사용자가 이미 사용했는지 확인
+    already_used = CouponUsage.query.filter_by(
+        coupon_id=coupon.id,
+        user_id=current_user.id
+    ).first()
+    
+    if already_used:
+        return jsonify({'message': '이미 사용한 쿠폰입니다.'}), 400
+    
+    return jsonify({
+        'valid': True,
+        'discount_type': coupon.discount_type,
+        'discount_value': coupon.discount_value,
+        'message': f'쿠폰이 적용되었습니다! ({coupon.discount_value}{"%" if coupon.discount_type == "percentage" else "원"} 할인)'
+    }), 200
+
+@app.route('/api/admin/coupons', methods=['GET'])
+@admin_required
+def get_all_coupons(current_user):
+    """전체 쿠폰 목록 (관리자)"""
+    coupons = Coupon.query.order_by(Coupon.created_at.desc()).all()
+    
+    coupons_data = [{
+        'id': c.id,
+        'code': c.code,
+        'discount_type': c.discount_type,
+        'discount_value': c.discount_value,
+        'max_uses': c.max_uses,
+        'used_count': c.used_count,
+        'is_active': c.is_active,
+        'expires_at': c.expires_at.strftime('%Y-%m-%d %H:%M:%S') if c.expires_at else None,
+        'created_at': c.created_at.strftime('%Y-%m-%d %H:%M:%S')
+    } for c in coupons]
+    
+    return jsonify({'coupons': coupons_data}), 200
+
+@app.route('/api/admin/coupons', methods=['POST'])
+@admin_required
+def create_coupon(current_user):
+    """쿠폰 생성 (관리자)"""
+    data = request.get_json()
+    
+    code = data.get('code', '').upper()
+    discount_type = data.get('discount_type', 'percentage')
+    discount_value = data.get('discount_value', 10)
+    max_uses = data.get('max_uses', 0)
+    expires_at = data.get('expires_at')
+    
+    if not code:
+        return jsonify({'message': '쿠폰 코드를 입력하세요.'}), 400
+    
+    existing = Coupon.query.filter_by(code=code).first()
+    if existing:
+        return jsonify({'message': '이미 존재하는 쿠폰 코드입니다.'}), 400
+    
+    new_coupon = Coupon(
+        code=code,
+        discount_type=discount_type,
+        discount_value=discount_value,
+        max_uses=max_uses,
+        expires_at=datetime.strptime(expires_at, '%Y-%m-%d') if expires_at else None,
+        created_by=current_user.id
+    )
+    
+    db.session.add(new_coupon)
+    db.session.commit()
+    
+    return jsonify({
+        'message': '쿠폰이 생성되었습니다!',
+        'coupon': {
+            'id': new_coupon.id,
+            'code': new_coupon.code,
+            'discount_type': new_coupon.discount_type,
+            'discount_value': new_coupon.discount_value
+        }
+    }), 201
 
 # ==================== Toss Payments 결제 API ====================
 
