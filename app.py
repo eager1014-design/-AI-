@@ -50,6 +50,23 @@ class User(db.Model):
             'exp': datetime.utcnow() + timedelta(days=7)
         }
         return jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+    
+    def is_in_welcome_discount_period(self):
+        """가입 후 3시간 이내인지 확인 (50% 추가 할인)"""
+        if not self.created_at:
+            return False
+        time_since_signup = datetime.utcnow() - self.created_at
+        return time_since_signup < timedelta(hours=3)
+    
+    def get_discount_rate(self):
+        """사용자의 할인율 계산"""
+        if self.is_member:
+            # 회원이면서 가입 3시간 이내인 경우 50% 할인
+            if self.is_in_welcome_discount_period():
+                return 0.50  # 50% 할인
+            else:
+                return 0.30  # 기본 회원 할인 (예: 30%)
+        return 0  # 비회원은 할인 없음
 
 class Purchase(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -273,6 +290,108 @@ def get_user_info(current_user):
             'price': p.price,
             'purchased_at': p.purchased_at.isoformat()
         } for p in purchases]
+    }), 200
+
+# 회원정보 수정
+@app.route('/api/user/update', methods=['PUT'])
+@token_required
+def update_user(current_user):
+    data = request.get_json()
+    
+    if not data:
+        return jsonify({'message': '수정할 정보를 입력해주세요.'}), 400
+    
+    # 이름 수정
+    if 'username' in data and data['username']:
+        current_user.username = data['username']
+    
+    # 전화번호 수정
+    if 'phone' in data and data['phone']:
+        # 다른 사용자가 이미 사용 중인지 확인
+        existing_user = User.query.filter_by(phone=data['phone']).first()
+        if existing_user and existing_user.id != current_user.id:
+            return jsonify({'message': '이미 등록된 전화번호입니다.'}), 400
+        current_user.phone = data['phone']
+    
+    # 생년월일 수정
+    if 'birthdate' in data and data['birthdate']:
+        try:
+            birthdate = datetime.strptime(data['birthdate'], '%Y-%m-%d').date()
+            current_user.birthdate = birthdate
+        except ValueError:
+            return jsonify({'message': '생년월일 형식이 올바르지 않습니다. (YYYY-MM-DD)'}), 400
+    
+    # 비밀번호 변경
+    if 'current_password' in data and 'new_password' in data:
+        if not current_user.check_password(data['current_password']):
+            return jsonify({'message': '현재 비밀번호가 일치하지 않습니다.'}), 400
+        
+        if len(data['new_password']) < 8:
+            return jsonify({'message': '새 비밀번호는 8자 이상이어야 합니다.'}), 400
+        
+        current_user.set_password(data['new_password'])
+    
+    db.session.commit()
+    
+    return jsonify({
+        'message': '회원정보가 수정되었습니다.',
+        'user': {
+            'id': current_user.id,
+            'email': current_user.email,
+            'username': current_user.username,
+            'phone': current_user.phone,
+            'birthdate': current_user.birthdate.isoformat() if current_user.birthdate else None,
+            'is_member': current_user.is_member,
+            'created_at': current_user.created_at.isoformat()
+        }
+    }), 200
+
+# 회원 탈퇴
+@app.route('/api/user/delete', methods=['DELETE'])
+@token_required
+def delete_user(current_user):
+    data = request.get_json()
+    
+    # 비밀번호 확인
+    if not data or not data.get('password'):
+        return jsonify({'message': '비밀번호를 입력해주세요.'}), 400
+    
+    if not current_user.check_password(data['password']):
+        return jsonify({'message': '비밀번호가 일치하지 않습니다.'}), 400
+    
+    # 관리자는 탈퇴 불가
+    if current_user.is_admin:
+        return jsonify({'message': '관리자 계정은 탈퇴할 수 없습니다.'}), 403
+    
+    # 사용자 이메일 저장 (로그용)
+    user_email = current_user.email
+    
+    # 사용자 삭제 (관련 구매 내역, 게시글, 댓글도 함께 삭제됨)
+    db.session.delete(current_user)
+    db.session.commit()
+    
+    return jsonify({
+        'message': '회원 탈퇴가 완료되었습니다. 그동안 이용해주셔서 감사합니다.',
+        'deleted_email': user_email
+    }), 200
+
+# 사용자 할인 정보 조회
+@app.route('/api/user/discount', methods=['GET'])
+@token_required
+def get_user_discount(current_user):
+    is_welcome = current_user.is_in_welcome_discount_period()
+    discount_rate = current_user.get_discount_rate()
+    
+    time_since_signup = datetime.utcnow() - current_user.created_at
+    remaining_time = timedelta(hours=3) - time_since_signup
+    
+    return jsonify({
+        'is_member': current_user.is_member,
+        'is_welcome_period': is_welcome,
+        'discount_rate': discount_rate,
+        'discount_percentage': int(discount_rate * 100),
+        'created_at': current_user.created_at.isoformat(),
+        'remaining_minutes': int(remaining_time.total_seconds() / 60) if is_welcome else 0
     }), 200
 
 # 프롬프트 구매

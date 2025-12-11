@@ -333,6 +333,12 @@ async function showUserDashboard() {
                             <div class="stat-label">총 결제 금액</div>
                         </div>
                     </div>
+                    
+                    <div style="margin-top: 1.5rem; text-align: center;">
+                        <button onclick="showEditProfileModal()" class="auth-submit-btn" style="width: 100%; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);">
+                            ✏️ 회원정보 수정
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -414,3 +420,208 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// ==================== 회원정보 수정 ====================
+
+function showEditProfileModal() {
+    const user = AuthManager.getUser();
+    if (!user) {
+        alert('로그인이 필요합니다.');
+        return;
+    }
+    
+    // 먼저 최신 사용자 정보를 가져옴
+    apiRequest('/api/user/me', 'GET').then(data => {
+        const modalHTML = `
+            <div class="auth-modal" id="editProfileModal">
+                <div class="auth-modal-overlay" onclick="closeAuthModal()"></div>
+                <div class="auth-modal-content" style="max-width: 500px;">
+                    <button class="auth-modal-close" onclick="closeAuthModal()">&times;</button>
+                    <h2 class="auth-modal-title">✏️ 회원정보 수정</h2>
+                    
+                    <form id="editProfileForm" onsubmit="handleEditProfile(event)">
+                        <div class="form-group">
+                            <label>이메일 (변경 불가)</label>
+                            <input type="email" value="${data.user.email}" disabled style="background: #f3f4f6; cursor: not-allowed;">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>이름</label>
+                            <input type="text" name="username" value="${data.user.username}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>전화번호</label>
+                            <input type="tel" name="phone" value="${data.user.phone || ''}" pattern="[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}" required>
+                            <small style="color: #6b7280; font-size: 0.875rem;">형식: 010-1234-5678</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>생년월일</label>
+                            <input type="date" name="birthdate" value="${data.user.birthdate ? data.user.birthdate : ''}" required>
+                        </div>
+                        
+                        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #e5e7eb;">
+                        
+                        <div class="form-group">
+                            <label>비밀번호 변경 (선택사항)</label>
+                            <input type="password" name="current_password" placeholder="현재 비밀번호">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>새 비밀번호</label>
+                            <input type="password" name="new_password" placeholder="새 비밀번호 (8자 이상)" minlength="8">
+                        </div>
+                        
+                        <button type="submit" class="auth-submit-btn">수정 완료</button>
+                    </form>
+                    
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; text-align: center;">
+                        <button onclick="showDeleteAccountModal()" style="color: #dc2626; background: none; border: none; cursor: pointer; text-decoration: underline;">
+                            회원 탈퇴
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }).catch(error => {
+        alert('사용자 정보를 불러오는데 실패했습니다: ' + error.message);
+    });
+}
+
+async function handleEditProfile(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    const data = {
+        username: formData.get('username'),
+        phone: formData.get('phone'),
+        birthdate: formData.get('birthdate')
+    };
+    
+    // 비밀번호 변경이 있을 경우에만 추가
+    const currentPassword = formData.get('current_password');
+    const newPassword = formData.get('new_password');
+    
+    if (currentPassword && newPassword) {
+        if (newPassword.length < 8) {
+            alert('새 비밀번호는 8자 이상이어야 합니다.');
+            return;
+        }
+        data.current_password = currentPassword;
+        data.new_password = newPassword;
+    } else if (currentPassword || newPassword) {
+        alert('비밀번호를 변경하려면 현재 비밀번호와 새 비밀번호를 모두 입력해주세요.');
+        return;
+    }
+    
+    try {
+        const response = await apiRequest('/api/user/update', 'PUT', data);
+        
+        // 로컬 스토리지의 사용자 정보 업데이트
+        AuthManager.setUser(response.user);
+        
+        alert('✅ ' + response.message);
+        closeAuthModal();
+        
+        // UI 업데이트
+        updateUIForLoggedInUser(response.user);
+        
+    } catch (error) {
+        alert('❌ ' + error.message);
+    }
+}
+
+// ==================== 회원 탈퇴 ====================
+
+function showDeleteAccountModal() {
+    closeAuthModal(); // 기존 모달 닫기
+    
+    const modalHTML = `
+        <div class="auth-modal" id="deleteAccountModal">
+            <div class="auth-modal-overlay" onclick="closeAuthModal()"></div>
+            <div class="auth-modal-content" style="max-width: 450px;">
+                <button class="auth-modal-close" onclick="closeAuthModal()">&times;</button>
+                <h2 class="auth-modal-title" style="color: #dc2626;">⚠️ 회원 탈퇴</h2>
+                <p class="auth-modal-subtitle">정말로 탈퇴하시겠습니까?</p>
+                
+                <div style="background: #fef2f2; padding: 1rem; border-radius: 8px; margin: 1rem 0; border-left: 4px solid #ef4444;">
+                    <p style="color: #991b1b; font-size: 0.9375rem; margin-bottom: 0.5rem;"><strong>⚠️ 주의사항</strong></p>
+                    <ul style="color: #991b1b; font-size: 0.875rem; padding-left: 1.25rem; margin: 0;">
+                        <li>구매한 프롬프트는 더 이상 사용할 수 없습니다</li>
+                        <li>작성한 게시글과 댓글이 모두 삭제됩니다</li>
+                        <li>탈퇴 후 동일 이메일로 재가입할 수 있습니다</li>
+                        <li>결제 내역은 법적 보관 기간 동안 보관됩니다</li>
+                    </ul>
+                </div>
+                
+                <form id="deleteAccountForm" onsubmit="handleDeleteAccount(event)">
+                    <div class="form-group">
+                        <label>비밀번호 확인</label>
+                        <input type="password" name="password" placeholder="비밀번호를 입력하세요" required>
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" name="confirm" required>
+                            <span>위 내용을 확인했으며 회원 탈퇴에 동의합니다</span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="auth-submit-btn" style="background: #dc2626;">
+                        탈퇴하기
+                    </button>
+                </form>
+                
+                <div style="text-align: center; margin-top: 1rem;">
+                    <button onclick="closeAuthModal()" style="color: #6b7280; background: none; border: none; cursor: pointer;">
+                        취소
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+async function handleDeleteAccount(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    const password = formData.get('password');
+    const confirm = formData.get('confirm');
+    
+    if (!confirm) {
+        alert('탈퇴 동의에 체크해주세요.');
+        return;
+    }
+    
+    if (!window.confirm('정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+        return;
+    }
+    
+    try {
+        const response = await apiRequest('/api/user/delete', 'DELETE', {
+            password: password
+        });
+        
+        alert('✅ ' + response.message);
+        
+        // 로그아웃 처리
+        AuthManager.logout();
+        closeAuthModal();
+        
+        // 페이지 새로고침
+        window.location.reload();
+        
+    } catch (error) {
+        alert('❌ ' + error.message);
+    }
+}

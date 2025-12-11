@@ -952,9 +952,54 @@ function animateUserCount() {
     }, Math.random() * 20000 + 10000);
 }
 
+// 3시간 할인 배너 체크 및 표시
+async function checkWelcomeDiscount() {
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+    
+    try {
+        const response = await fetch('/api/user/discount', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            // 회원이면서 3시간 이내인 경우 배너 표시
+            if (data.is_member && data.is_welcome_period && data.remaining_minutes > 0) {
+                const banner = document.getElementById('welcomeBanner');
+                const timeSpan = document.getElementById('remainingTime');
+                
+                if (banner && timeSpan) {
+                    const hours = Math.floor(data.remaining_minutes / 60);
+                    const minutes = data.remaining_minutes % 60;
+                    
+                    if (hours > 0) {
+                        timeSpan.textContent = `${hours}시간 ${minutes}분`;
+                    } else {
+                        timeSpan.textContent = `${minutes}분`;
+                    }
+                    
+                    banner.style.display = 'block';
+                    
+                    // 1분마다 업데이트
+                    setInterval(() => {
+                        checkWelcomeDiscount();
+                    }, 60000);
+                }
+            }
+        }
+    } catch (error) {
+        console.log('할인 정보 조회 실패:', error);
+    }
+}
+
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', () => {
     init();
     startCountdown();
     animateUserCount();
+    checkWelcomeDiscount(); // 3시간 할인 체크
 });
