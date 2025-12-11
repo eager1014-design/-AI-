@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소모임 테스트 페이지</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        .test-box {
+            background: #f3f4f6;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+        .test-link {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            margin: 0.5rem;
+        }
+        .test-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>🎉 소모임 자동 가입 테스트</h1>
+    <p>아래 링크를 클릭하면 소모임 회원으로 자동 가입됩니다!</p>
+    
+    <div class="test-box">
+        <h3>테스트 링크 (3가지 방법)</h3>
+        
+        <h4>방법 1: ref 파라미터</h4>
+        <a href="/?ref=somoim" class="test-link">소모임에서 접속 (ref=somoim)</a>
+        
+        <h4>방법 2: source 파라미터</h4>
+        <a href="/?source=somoim" class="test-link">소모임에서 접속 (source=somoim)</a>
+        
+        <h4>방법 3: 실제 소모임 링크 시뮬레이션</h4>
+        <p>실제 소모임 사이트에서 링크를 걸면 자동으로 감지됩니다</p>
+    </div>
+    
+    <div class="test-box">
+        <h3>✨ 자동으로 제공되는 혜택</h3>
+        <ul>
+            <li>🎁 즉시 회원 할인 적용 (30% OFF)</li>
+            <li>⚡ 가입 후 3시간 추가 50% 할인</li>
+            <li>🚀 모든 프롬프트 특별가</li>
+            <li>💎 커뮤니티 우선 접근</li>
+        </ul>
+    </div>
+    
+    <div class="test-box">
+        <h3>🔄 작동 방식</h3>
+        <ol>
+            <li>소모임에서 링크 클릭</li>
+            <li>자동으로 임시 계정 생성</li>
+            <li>환영 모달 표시</li>
+            <li>회원 혜택 자동 적용</li>
+            <li>나중에 이메일/비밀번호 변경 가능</li>
+        </ol>
+    </div>
+    
+    <div class="test-box" style="background: #fef2f2; border: 2px solid #ef4444;">
+        <h3 style="color: #991b1b;">⚠️ 테스트 전 확인</h3>
+        <p style="color: #991b1b;">
+            테스트하기 전에 로그아웃하거나 시크릿 모드를 사용하세요!<br>
+            이미 로그인되어 있으면 자동 가입이 실행되지 않습니다.
+        </p>
+    </div>
+    
+    <div style="margin-top: 2rem;">
+        <a href="/" style="color: #d97706; text-decoration: underline;">← 메인 페이지로 돌아가기</a>
+    </div>
+</body>
+</html>
