@@ -1076,6 +1076,284 @@ body {
     box-shadow: var(--shadow-lg);
 }
 
+/* 강연/교육 섹션 */
+.lecture-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #fff7ed 0%, #fffbeb 100%);
+}
+
+.lecture-hero {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.lecture-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), #f59e0b);
+    color: white;
+    padding: 8px 24px;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.lecture-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.lecture-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* 강연 주제 */
+.lecture-topics {
+    margin-bottom: 60px;
+}
+
+.topics-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--text-dark);
+}
+
+.topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.topic-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.topic-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+}
+
+.topic-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+.topic-card h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+}
+
+.topic-list {
+    list-style: none;
+    padding: 0;
+}
+
+.topic-list li {
+    padding: 8px 0 8px 24px;
+    position: relative;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.topic-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+    font-weight: bold;
+}
+
+/* 타겟 청중 */
+.lecture-target {
+    margin-bottom: 60px;
+}
+
+.target-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--text-dark);
+}
+
+.target-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.target-item {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.target-item:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+.target-emoji {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+}
+
+.target-item p {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+/* 강연 형식 */
+.lecture-format {
+    margin-bottom: 60px;
+}
+
+.format-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--text-dark);
+}
+
+.format-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+.format-card {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.format-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.format-card h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.format-desc {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.format-detail {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* 강연 CTA */
+.lecture-cta {
+    background: white;
+    border-radius: 20px;
+    padding: 48px;
+    box-shadow: var(--shadow-xl);
+    text-align: center;
+}
+
+.cta-content {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.cta-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+}
+
+.cta-desc {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+}
+
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.lecture-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-size: 1.125rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.lecture-btn.primary {
+    background: linear-gradient(135deg, var(--primary), #f59e0b);
+    color: white;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.lecture-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4);
+}
+
+.lecture-btn.secondary {
+    background: linear-gradient(135deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(220, 39, 67, 0.3);
+}
+
+.lecture-btn.secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(220, 39, 67, 0.4);
+}
+
+.cta-note {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
 /* 푸터 */
 .footer {
     background: var(--text-dark);
@@ -1514,5 +1792,41 @@ body {
 
     .pricing-amount {
         font-size: 1.5rem;
+    }
+
+    .lecture-title {
+        font-size: 1.75rem;
+    }
+
+    .lecture-subtitle {
+        font-size: 1rem;
+    }
+
+    .topics-title,
+    .target-title,
+    .format-title {
+        font-size: 1.5rem;
+    }
+
+    .topics-grid,
+    .format-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .target-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .lecture-cta {
+        padding: 32px 20px;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+    }
+
+    .lecture-btn {
+        width: 100%;
+        font-size: 1rem;
     }
 }
