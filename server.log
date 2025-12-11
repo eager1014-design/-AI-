@@ -23,3 +23,55 @@
  * Debugger is active!
  * Debugger PIN: 122-972-965
 127.0.0.1 - - [11/Dec/2025 11:29:44] "GET /api/somoim/posts HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:32:37] "GET / HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:35:15] "GET /community-mobile.html HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:35:16] "GET /api/posts?per_page=50 HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:35:16] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.64.166.34 - - [11/Dec/2025 11:35:16] "GET /api/somoim/posts?per_page=50 HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:35:56] "GET / HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:35:56] "GET /styles.css HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:35:57] "GET /script.js HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:35:57] "GET /auth.js HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:35:57] "GET /somoim-integration.js HTTP/1.1" 200 -
+/home/user/webapp/app.py:52: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  'exp': datetime.utcnow() + timedelta(days=7)
+10.64.166.34 - - [11/Dec/2025 11:36:11] "POST /api/login HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:36:29] "GET /?showDashboard=true HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:36:30] "[36mGET /styles.css HTTP/1.1[0m" 304 -
+10.64.166.34 - - [11/Dec/2025 11:36:30] "[36mGET /script.js HTTP/1.1[0m" 304 -
+10.64.166.34 - - [11/Dec/2025 11:36:30] "[36mGET /somoim-integration.js HTTP/1.1[0m" 304 -
+10.64.166.34 - - [11/Dec/2025 11:36:30] "[36mGET /auth.js HTTP/1.1[0m" 304 -
+/home/user/webapp/app.py:155: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  current_user = User.query.get(data['user_id'])
+/home/user/webapp/app.py:60: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  time_since_signup = datetime.utcnow() - self.created_at
+/home/user/webapp/app.py:538: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  time_since_signup = datetime.utcnow() - current_user.created_at
+10.64.166.34 - - [11/Dec/2025 11:36:30] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:37:03] "GET /community-mobile.html HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:37:04] "GET /api/posts?per_page=50 HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:37:04] "GET /api/somoim/posts?per_page=50 HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:37:07] "GET / HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:37:08] "GET /styles.css HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:37:08] "GET /script.js HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:37:08] "GET /somoim-integration.js HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:37:08] "GET /auth.js HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:37:08] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:37:08] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.64.166.34 - - [11/Dec/2025 11:38:21] "GET /admin-login.html HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:38:21] "GET /api/user/me HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:38:21] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.64.166.34 - - [11/Dec/2025 11:38:22] "GET /admin-dashboard.html HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:38:22] "GET /styles.css HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:38:22] "GET /api/user/me HTTP/1.1" 200 -
+/home/user/webapp/app.py:181: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  current_user = User.query.get(data['user_id'])
+/home/user/webapp/app.py:1167: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  week_ago = datetime.utcnow() - timedelta(days=7)
+10.64.166.34 - - [11/Dec/2025 11:38:23] "GET /api/admin/dashboard HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:39:05] "GET / HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:39:05] "[36mGET /styles.css HTTP/1.1[0m" 304 -
+10.64.166.34 - - [11/Dec/2025 11:39:05] "GET /script.js HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:39:05] "GET /somoim-integration.js HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:39:05] "GET /auth.js HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:39:06] "GET /api/user/discount HTTP/1.1" 200 -
