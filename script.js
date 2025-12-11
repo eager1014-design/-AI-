@@ -725,11 +725,23 @@ function copyPrompt() {
 // 구매 처리
 function handlePurchase() {
     const promptTitle = modalTitle.textContent;
-    const price = modalPrice.textContent;
+    const priceText = modalPrice.textContent;
     
-    alert(`🎉 구매 완료!\n\n프롬프트: ${promptTitle}\n가격: ${price}\n\n프롬프트를 복사하여 바로 사용하실 수 있습니다.`);
+    // 현재 열린 프롬프트 ID 찾기
+    const currentPrompt = promptsDatabase.find(p => p.title === promptTitle);
+    if (!currentPrompt) {
+        alert('❌ 프롬프트 정보를 찾을 수 없습니다.');
+        return;
+    }
     
-    // 실제 서비스에서는 여기서 결제 API 호출
+    const price = isMember ? currentPrompt.memberPrice : currentPrompt.nonMemberPrice;
+    
+    // auth.js의 purchasePrompt 함수 호출
+    if (typeof purchasePrompt === 'function') {
+        purchasePrompt(currentPrompt.id, promptTitle, price);
+    } else {
+        alert('⚠️ 구매 시스템을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+    }
 }
 
 // 이벤트 리스너 설정

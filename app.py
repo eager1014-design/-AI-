@@ -1,0 +1,272 @@
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
+import jwt
+import os
+import json
+
+app = Flask(__name__, static_folder='.', static_url_path='')
+app.config['SECRET_KEY'] = 'jjinbubu-secret-key-2024-ai-prompt-market'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///jjinbubu_market.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+
+db = SQLAlchemy(app)
+CORS(app, supports_credentials=True)
+
+# ==================== 데이터베이스 모델 ====================
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    username = db.Column(db.String(80), nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+    is_member = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    purchases = db.relationship('Purchase', backref='user', lazy=True)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def generate_token(self):
+        payload = {
+            'user_id': self.id,
+            'email': self.email,
+            'is_member': self.is_member,
+            'exp': datetime.utcnow() + timedelta(days=7)
+        }
+        return jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+
+class Purchase(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    prompt_id = db.Column(db.Integer, nullable=False)
+    prompt_title = db.Column(db.String(200), nullable=False)
+    price = db.Column(db.Integer, nullable=False)
+    purchased_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+# ==================== 헬퍼 함수 ====================
+
+def token_required(f):
+    from functools import wraps
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        
+        if not token:
+            return jsonify({'message': '토큰이 없습니다.'}), 401
+        
+        try:
+            if token.startswith('Bearer '):
+                token = token[7:]
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            current_user = User.query.get(data['user_id'])
+            if not current_user:
+                return jsonify({'message': '유효하지 않은 사용자입니다.'}), 401
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': '토큰이 만료되었습니다.'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': '유효하지 않은 토큰입니다.'}), 401
+        
+        return f(current_user, *args, **kwargs)
+    
+    return decorated
+
+# ==================== API 엔드포인트 ====================
+
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
+
+# 회원가입
+@app.route('/api/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    
+    # 입력 검증
+    if not data or not data.get('email') or not data.get('password') or not data.get('username'):
+        return jsonify({'message': '이메일, 이름, 비밀번호를 모두 입력해주세요.'}), 400
+    
+    # 이메일 중복 확인
+    if User.query.filter_by(email=data['email']).first():
+        return jsonify({'message': '이미 가입된 이메일입니다.'}), 400
+    
+    # 새 사용자 생성
+    new_user = User(
+        email=data['email'],
+        username=data['username'],
+        is_member=data.get('is_member', False)
+    )
+    new_user.set_password(data['password'])
+    
+    db.session.add(new_user)
+    db.session.commit()
+    
+    # 토큰 생성
+    token = new_user.generate_token()
+    
+    return jsonify({
+        'message': '회원가입이 완료되었습니다!',
+        'token': token,
+        'user': {
+            'id': new_user.id,
+            'email': new_user.email,
+            'username': new_user.username,
+            'is_member': new_user.is_member
+        }
+    }), 201
+
+# 로그인
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    
+    if not data or not data.get('email') or not data.get('password'):
+        return jsonify({'message': '이메일과 비밀번호를 입력해주세요.'}), 400
+    
+    user = User.query.filter_by(email=data['email']).first()
+    
+    if not user or not user.check_password(data['password']):
+        return jsonify({'message': '이메일 또는 비밀번호가 일치하지 않습니다.'}), 401
+    
+    token = user.generate_token()
+    
+    return jsonify({
+        'message': '로그인 성공!',
+        'token': token,
+        'user': {
+            'id': user.id,
+            'email': user.email,
+            'username': user.username,
+            'is_member': user.is_member
+        }
+    }), 200
+
+# 사용자 정보 조회
+@app.route('/api/user/me', methods=['GET'])
+@token_required
+def get_user_info(current_user):
+    purchases = Purchase.query.filter_by(user_id=current_user.id).all()
+    
+    return jsonify({
+        'user': {
+            'id': current_user.id,
+            'email': current_user.email,
+            'username': current_user.username,
+            'is_member': current_user.is_member,
+            'created_at': current_user.created_at.isoformat()
+        },
+        'purchases': [{
+            'id': p.id,
+            'prompt_id': p.prompt_id,
+            'prompt_title': p.prompt_title,
+            'price': p.price,
+            'purchased_at': p.purchased_at.isoformat()
+        } for p in purchases]
+    }), 200
+
+# 프롬프트 구매
+@app.route('/api/purchase', methods=['POST'])
+@token_required
+def purchase_prompt(current_user):
+    data = request.get_json()
+    
+    if not data or not data.get('prompt_id'):
+        return jsonify({'message': '프롬프트 ID가 필요합니다.'}), 400
+    
+    # 이미 구매했는지 확인
+    existing_purchase = Purchase.query.filter_by(
+        user_id=current_user.id,
+        prompt_id=data['prompt_id']
+    ).first()
+    
+    if existing_purchase:
+        return jsonify({'message': '이미 구매한 프롬프트입니다.'}), 400
+    
+    # 구매 기록 생성
+    new_purchase = Purchase(
+        user_id=current_user.id,
+        prompt_id=data['prompt_id'],
+        prompt_title=data.get('prompt_title', '프롬프트'),
+        price=data.get('price', 0)
+    )
+    
+    db.session.add(new_purchase)
+    db.session.commit()
+    
+    return jsonify({
+        'message': '구매가 완료되었습니다!',
+        'purchase': {
+            'id': new_purchase.id,
+            'prompt_id': new_purchase.prompt_id,
+            'prompt_title': new_purchase.prompt_title,
+            'price': new_purchase.price,
+            'purchased_at': new_purchase.purchased_at.isoformat()
+        }
+    }), 201
+
+# 구매 내역 확인
+@app.route('/api/purchases', methods=['GET'])
+@token_required
+def get_purchases(current_user):
+    purchases = Purchase.query.filter_by(user_id=current_user.id).order_by(Purchase.purchased_at.desc()).all()
+    
+    return jsonify({
+        'purchases': [{
+            'id': p.id,
+            'prompt_id': p.prompt_id,
+            'prompt_title': p.prompt_title,
+            'price': p.price,
+            'purchased_at': p.purchased_at.isoformat()
+        } for p in purchases]
+    }), 200
+
+# 프롬프트 접근 권한 확인
+@app.route('/api/check-access/<int:prompt_id>', methods=['GET'])
+@token_required
+def check_prompt_access(current_user, prompt_id):
+    # 무료 프롬프트(ID 0)는 항상 접근 가능
+    if prompt_id == 0:
+        return jsonify({'has_access': True}), 200
+    
+    # 구매 확인
+    purchase = Purchase.query.filter_by(
+        user_id=current_user.id,
+        prompt_id=prompt_id
+    ).first()
+    
+    return jsonify({'has_access': purchase is not None}), 200
+
+# 통계 (관리자용)
+@app.route('/api/stats', methods=['GET'])
+def get_stats():
+    total_users = User.query.count()
+    total_members = User.query.filter_by(is_member=True).count()
+    total_purchases = Purchase.query.count()
+    total_revenue = db.session.query(db.func.sum(Purchase.price)).scalar() or 0
+    
+    return jsonify({
+        'total_users': total_users,
+        'total_members': total_members,
+        'total_purchases': total_purchases,
+        'total_revenue': total_revenue
+    }), 200
+
+# ==================== 초기화 ====================
+
+def init_db():
+    with app.app_context():
+        db.create_all()
+        print("✅ 데이터베이스 테이블 생성 완료!")
+
+if __name__ == '__main__':
+    init_db()
+    print("=" * 50)
+    print("🚀 찐부부 AI 프롬프트 마켓 서버 시작!")
+    print("=" * 50)
+    app.run(host='0.0.0.0', port=8001, debug=True)
