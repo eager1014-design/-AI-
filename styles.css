@@ -133,6 +133,84 @@ body {
     background: linear-gradient(135deg, var(--primary-light) 0%, var(--white) 100%);
     padding: 4rem 0;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '💕';
+    position: absolute;
+    font-size: 10rem;
+    opacity: 0.05;
+    top: 20px;
+    right: 10%;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--white);
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+    animation: slide-down 0.8s ease-out;
+}
+
+@keyframes slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.couple-badge {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+}
+
+.badge-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.hero-cta {
+    margin-top: 2rem;
+}
+
+.youtube-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+    color: var(--white);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.125rem;
+    box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.youtube-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(255, 0, 0, 0.4);
 }
 
 .hero-title {
@@ -291,6 +369,87 @@ body {
 .free-diagnosis-btn:hover {
     transform: scale(1.05);
     box-shadow: 0 15px 40px rgba(245, 158, 11, 0.6);
+}
+
+/* 찐부부 스토리 섹션 */
+.couple-story {
+    background: linear-gradient(135deg, #fef3c7 0%, var(--white) 100%);
+    padding: 4rem 0;
+}
+
+.story-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 3rem;
+    color: var(--text-dark);
+}
+
+.story-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.story-card {
+    background: var(--white);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.story-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+}
+
+.story-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: center;
+}
+
+.story-content {
+    padding: 1.5rem;
+}
+
+.story-content h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--text-dark);
+}
+
+.story-content p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.story-cta {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+}
+
+.story-quote {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.story-author {
+    font-size: 1.125rem;
+    color: var(--primary);
+    font-weight: 600;
 }
 
 /* 사회적 증거 섹션 */
@@ -775,18 +934,67 @@ body {
 .footer {
     background: var(--text-dark);
     color: var(--white);
-    padding: 2rem 0;
+    padding: 3rem 0;
     text-align: center;
     margin-top: 4rem;
 }
 
+.footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.footer-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid var(--primary);
+}
+
+.footer-brand h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.footer-link {
+    color: var(--white);
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: var(--primary);
+}
+
 .footer-text {
     margin-bottom: 0.5rem;
+    font-size: 0.875rem;
 }
 
 .footer-note {
     font-size: 0.875rem;
     color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1rem;
+}
+
+.footer-love {
+    font-size: 1rem;
+    color: var(--primary);
+    font-weight: 600;
+    margin-top: 1rem;
 }
 
 /* 반응형 디자인 */
@@ -812,6 +1020,42 @@ body {
     }
 
     .importance-subtitle {
+        font-size: 1rem;
+    }
+
+    .hero-badge {
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .badge-text {
+        font-size: 0.75rem;
+        text-align: center;
+    }
+
+    .youtube-btn {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .story-title {
+        font-size: 1.75rem;
+    }
+
+    .story-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .story-img {
+        height: 250px;
+    }
+
+    .story-quote {
+        font-size: 1.125rem;
+    }
+
+    .story-author {
         font-size: 1rem;
     }
 
