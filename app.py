@@ -23,6 +23,8 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     username = db.Column(db.String(80), nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
+    phone = db.Column(db.String(20), nullable=True)  # 전화번호
+    birthdate = db.Column(db.Date, nullable=True)  # 생년월일
     is_member = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     purchases = db.relationship('Purchase', backref='user', lazy=True)
@@ -115,14 +117,32 @@ def register():
     if not data or not data.get('email') or not data.get('password') or not data.get('username'):
         return jsonify({'message': '이메일, 이름, 비밀번호를 모두 입력해주세요.'}), 400
     
+    if not data.get('phone'):
+        return jsonify({'message': '전화번호를 입력해주세요.'}), 400
+    
+    if not data.get('birthdate'):
+        return jsonify({'message': '생년월일을 입력해주세요.'}), 400
+    
     # 이메일 중복 확인
     if User.query.filter_by(email=data['email']).first():
         return jsonify({'message': '이미 가입된 이메일입니다.'}), 400
+    
+    # 전화번호 중복 확인
+    if User.query.filter_by(phone=data['phone']).first():
+        return jsonify({'message': '이미 등록된 전화번호입니다.'}), 400
+    
+    # 생년월일 파싱
+    try:
+        birthdate = datetime.strptime(data['birthdate'], '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'message': '생년월일 형식이 올바르지 않습니다. (YYYY-MM-DD)'}), 400
     
     # 새 사용자 생성
     new_user = User(
         email=data['email'],
         username=data['username'],
+        phone=data['phone'],
+        birthdate=birthdate,
         is_member=data.get('is_member', False)
     )
     new_user.set_password(data['password'])
@@ -140,6 +160,8 @@ def register():
             'id': new_user.id,
             'email': new_user.email,
             'username': new_user.username,
+            'phone': new_user.phone,
+            'birthdate': new_user.birthdate.isoformat(),
             'is_member': new_user.is_member
         }
     }), 201
@@ -181,6 +203,8 @@ def get_user_info(current_user):
             'id': current_user.id,
             'email': current_user.email,
             'username': current_user.username,
+            'phone': current_user.phone,
+            'birthdate': current_user.birthdate.isoformat() if current_user.birthdate else None,
             'is_member': current_user.is_member,
             'created_at': current_user.created_at.isoformat()
         },
@@ -485,4 +509,4 @@ if __name__ == '__main__':
     print("=" * 50)
     print("🚀 찐부부 AI 프롬프트 마켓 서버 시작!")
     print("=" * 50)
-    app.run(host='0.0.0.0', port=8002, debug=True)
+    app.run(host='0.0.0.0', port=8003, debug=True)

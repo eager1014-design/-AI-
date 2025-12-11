@@ -82,22 +82,32 @@ function showRegisterModal() {
     const modalHTML = `
         <div class="auth-modal" id="registerModal">
             <div class="auth-modal-overlay" onclick="closeAuthModal()"></div>
-            <div class="auth-modal-content">
+            <div class="auth-modal-content" style="max-width: 500px;">
                 <button class="auth-modal-close" onclick="closeAuthModal()">&times;</button>
                 <h2 class="auth-modal-title">🎉 회원가입</h2>
                 <p class="auth-modal-subtitle">회원가입하고 50% 할인받으세요!</p>
                 
                 <form id="registerForm" onsubmit="handleRegister(event)">
                     <div class="form-group">
-                        <label>이름</label>
+                        <label>이름 *</label>
                         <input type="text" name="username" placeholder="홍길동" required>
                     </div>
                     <div class="form-group">
-                        <label>이메일</label>
+                        <label>이메일 *</label>
                         <input type="email" name="email" placeholder="example@email.com" required>
                     </div>
                     <div class="form-group">
-                        <label>비밀번호</label>
+                        <label>전화번호 *</label>
+                        <input type="tel" name="phone" placeholder="010-1234-5678" pattern="[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}" required>
+                        <small style="color: #6b7280; font-size: 0.875rem;">형식: 010-1234-5678</small>
+                    </div>
+                    <div class="form-group">
+                        <label>생년월일 *</label>
+                        <input type="date" name="birthdate" required max="${new Date().toISOString().split('T')[0]}">
+                        <small style="color: #6b7280; font-size: 0.875rem;">만 14세 이상만 가입 가능합니다</small>
+                    </div>
+                    <div class="form-group">
+                        <label>비밀번호 *</label>
                         <input type="password" name="password" placeholder="8자 이상" minlength="8" required>
                     </div>
                     <div class="form-group checkbox-group">
@@ -126,9 +136,22 @@ async function handleRegister(event) {
     const form = event.target;
     const formData = new FormData(form);
     
+    // 생년월일로 만 14세 이상 체크
+    const birthdate = new Date(formData.get('birthdate'));
+    const today = new Date();
+    const age = today.getFullYear() - birthdate.getFullYear();
+    const monthDiff = today.getMonth() - birthdate.getMonth();
+    
+    if (age < 14 || (age === 14 && monthDiff < 0)) {
+        alert('⚠️ 만 14세 이상만 가입 가능합니다.');
+        return;
+    }
+    
     const data = {
         username: formData.get('username'),
         email: formData.get('email'),
+        phone: formData.get('phone'),
+        birthdate: formData.get('birthdate'),
         password: formData.get('password'),
         is_member: formData.get('is_member') === 'on'
     };
@@ -258,6 +281,8 @@ async function showUserDashboard() {
                         <h3>👤 사용자 정보</h3>
                         <p><strong>이름:</strong> ${data.user.username}</p>
                         <p><strong>이메일:</strong> ${data.user.email}</p>
+                        <p><strong>전화번호:</strong> ${data.user.phone || '-'}</p>
+                        <p><strong>생년월일:</strong> ${data.user.birthdate ? new Date(data.user.birthdate).toLocaleDateString('ko-KR') : '-'}</p>
                         <p><strong>멤버십:</strong> ${data.user.is_member ? '✅ 회원 (50% 할인)' : '❌ 비회원'}</p>
                         <p><strong>가입일:</strong> ${new Date(data.user.created_at).toLocaleDateString('ko-KR')}</p>
                     </div>
