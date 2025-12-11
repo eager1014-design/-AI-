@@ -436,10 +436,18 @@
                 <p class="section-subtitle">함께 성장하는 크리에이터 커뮤니티</p>
             </div>
             
-            <!-- 글쓰기 버튼 (관리자 전용) -->
+            <!-- 글쓰기 버튼 (모든 로그인 사용자) -->
             <div class="community-write-btn-wrapper" id="writeButtonWrapper" style="display: none;">
                 <button class="community-write-btn" id="writePostBtn">
                     ✍️ 새 글 쓰기
+                </button>
+            </div>
+            
+            <!-- 로그인 안내 (비로그인 시) -->
+            <div class="login-notice" id="loginNotice" style="display: none; text-align: center; padding: 2rem; background: #f9fafb; border-radius: 12px; margin-bottom: 2rem;">
+                <p style="color: #6b7280; margin-bottom: 1rem;">💬 로그인하고 여러분의 이야기를 공유해보세요!</p>
+                <button onclick="window.location.href='/admin-login.html'" style="background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    로그인하기
                 </button>
             </div>
             
@@ -511,7 +519,7 @@
                 <button class="modal-close" id="modalClose">×</button>
             </div>
             <div class="modal-body">
-                <form id="postForm">
+                <form id="postForm" enctype="multipart/form-data">
                     <input type="hidden" id="postId">
                     <div class="form-group">
                         <label class="form-label" for="postTitle">제목</label>
@@ -519,7 +527,15 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="postContent">내용</label>
-                        <textarea class="form-textarea" id="postContent" placeholder="내용을 입력하세요" required></textarea>
+                        <textarea class="form-textarea" id="postContent" placeholder="느낀 점, 생각, 경험 등을 자유롭게 작성해주세요 😊" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="postImage">📸 사진 첨부 (선택)</label>
+                        <input type="file" class="form-input" id="postImage" accept="image/*" style="padding: 0.5rem;">
+                        <div id="imagePreview" style="margin-top: 1rem; display: none;">
+                            <img id="previewImg" style="max-width: 100%; border-radius: 8px; border: 2px solid #e5e7eb;">
+                            <button type="button" id="removeImage" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer;">❌ 사진 제거</button>
+                        </div>
                     </div>
                 </form>
             </div>

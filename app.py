@@ -168,7 +168,9 @@ class CommunityPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
+    image_url = db.Column(db.String(500), nullable=True)  # 사진 URL
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    author_name = db.Column(db.String(100), nullable=True)  # 작성자 이름
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -2124,7 +2126,9 @@ def get_community_posts():
                 'id': post.id,
                 'title': post.title,
                 'content': post.content,
+                'image_url': post.image_url,
                 'author_id': post.author_id,
+                'author_name': post.author_name,
                 'created_at': post.created_at.isoformat(),
                 'updated_at': post.updated_at.isoformat()
             })
@@ -2149,7 +2153,9 @@ def get_community_post(current_user, post_id):
                 'id': post.id,
                 'title': post.title,
                 'content': post.content,
+                'image_url': post.image_url,
                 'author_id': post.author_id,
+                'author_name': post.author_name,
                 'created_at': post.created_at.isoformat(),
                 'updated_at': post.updated_at.isoformat()
             }
@@ -2157,17 +2163,39 @@ def get_community_post(current_user, post_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# 게시글 작성 (관리자만)
+# 게시글 작성 (모든 로그인 사용자)
 @app.route('/api/community/posts', methods=['POST'])
 @token_required
 def create_community_post(current_user):
-    if not current_user.is_admin:
-        return jsonify({'error': '관리자만 게시글을 작성할 수 있습니다.'}), 403
-    
     try:
-        data = request.get_json()
-        title = data.get('title', '').strip()
-        content = data.get('content', '').strip()
+        # FormData로 전송된 경우
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            title = request.form.get('title', '').strip()
+            content = request.form.get('content', '').strip()
+            image = request.files.get('image')
+            
+            image_url = None
+            if image:
+                # 이미지 저장 로직 (간단히 static/uploads에 저장)
+                import os
+                from werkzeug.utils import secure_filename
+                
+                upload_folder = os.path.join('static', 'uploads')
+                os.makedirs(upload_folder, exist_ok=True)
+                
+                filename = secure_filename(image.filename)
+                timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+                unique_filename = f"{timestamp}_{filename}"
+                filepath = os.path.join(upload_folder, unique_filename)
+                
+                image.save(filepath)
+                image_url = f"/static/uploads/{unique_filename}"
+        else:
+            # JSON으로 전송된 경우
+            data = request.get_json()
+            title = data.get('title', '').strip()
+            content = data.get('content', '').strip()
+            image_url = None
         
         if not title or not content:
             return jsonify({'error': '제목과 내용을 입력해주세요.'}), 400
@@ -2175,7 +2203,9 @@ def create_community_post(current_user):
         new_post = CommunityPost(
             title=title,
             content=content,
-            author_id=current_user.id
+            image_url=image_url,
+            author_id=current_user.id,
+            author_name=current_user.username or current_user.email.split('@')[0]
         )
         
         db.session.add(new_post)
@@ -2188,6 +2218,7 @@ def create_community_post(current_user):
                 'id': new_post.id,
                 'title': new_post.title,
                 'content': new_post.content,
+                'image_url': new_post.image_url,
                 'created_at': new_post.created_at.isoformat()
             }
         })
@@ -2195,19 +2226,41 @@ def create_community_post(current_user):
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-# 게시글 수정 (관리자만)
+# 게시글 수정 (작성자 본인 또는 관리자만)
 @app.route('/api/community/posts/<int:post_id>', methods=['PUT'])
 @token_required
 def update_community_post(current_user, post_id):
-    if not current_user.is_admin:
-        return jsonify({'error': '관리자만 게시글을 수정할 수 있습니다.'}), 403
-    
     try:
         post = CommunityPost.query.get_or_404(post_id)
         
-        data = request.get_json()
-        title = data.get('title', '').strip()
-        content = data.get('content', '').strip()
+        # 본인 또는 관리자만 수정 가능
+        if post.author_id != current_user.id and not current_user.is_admin:
+            return jsonify({'error': '본인이 작성한 글만 수정할 수 있습니다.'}), 403
+        
+        # FormData로 전송된 경우
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            title = request.form.get('title', '').strip()
+            content = request.form.get('content', '').strip()
+            image = request.files.get('image')
+            
+            if image:
+                import os
+                from werkzeug.utils import secure_filename
+                
+                upload_folder = os.path.join('static', 'uploads')
+                os.makedirs(upload_folder, exist_ok=True)
+                
+                filename = secure_filename(image.filename)
+                timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+                unique_filename = f"{timestamp}_{filename}"
+                filepath = os.path.join(upload_folder, unique_filename)
+                
+                image.save(filepath)
+                post.image_url = f"/static/uploads/{unique_filename}"
+        else:
+            data = request.get_json()
+            title = data.get('title', '').strip()
+            content = data.get('content', '').strip()
         
         if not title or not content:
             return jsonify({'error': '제목과 내용을 입력해주세요.'}), 400
@@ -2225,6 +2278,7 @@ def update_community_post(current_user, post_id):
                 'id': post.id,
                 'title': post.title,
                 'content': post.content,
+                'image_url': post.image_url,
                 'updated_at': post.updated_at.isoformat()
             }
         })
@@ -2232,15 +2286,23 @@ def update_community_post(current_user, post_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-# 게시글 삭제 (관리자만)
+# 게시글 삭제 (작성자 본인 또는 관리자만)
 @app.route('/api/community/posts/<int:post_id>', methods=['DELETE'])
 @token_required
 def delete_community_post(current_user, post_id):
-    if not current_user.is_admin:
-        return jsonify({'error': '관리자만 게시글을 삭제할 수 있습니다.'}), 403
-    
     try:
         post = CommunityPost.query.get_or_404(post_id)
+        
+        # 본인 또는 관리자만 삭제 가능
+        if post.author_id != current_user.id and not current_user.is_admin:
+            return jsonify({'error': '본인이 작성한 글만 삭제할 수 있습니다.'}), 403
+        
+        # 이미지 파일 삭제
+        if post.image_url:
+            import os
+            image_path = post.image_url.lstrip('/')
+            if os.path.exists(image_path):
+                os.remove(image_path)
         
         db.session.delete(post)
         db.session.commit()

@@ -112,6 +112,28 @@
     margin-bottom: 0.75rem;
 }
 
+/* 게시글 이미지 */
+.post-image-wrapper {
+    margin: 1rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f3f4f6;
+}
+
+.post-image {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.post-image:hover {
+    transform: scale(1.02);
+    cursor: pointer;
+}
+
 .post-content {
     font-size: 0.9375rem;
     color: #6b7280;

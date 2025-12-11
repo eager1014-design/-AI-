@@ -10,13 +10,21 @@ document.addEventListener('DOMContentLoaded', function() {
     checkAdminStatus();
 });
 
-// 관리자 확인
+// 로그인 상태 확인
 function checkAdminStatus() {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const token = localStorage.getItem('token');
     const writeButtonWrapper = document.getElementById('writeButtonWrapper');
+    const loginNotice = document.getElementById('loginNotice');
     
-    if (currentUser.is_admin) {
+    if (token && currentUser.id) {
+        // 로그인 상태 - 모든 사용자가 글쓰기 가능
         writeButtonWrapper.style.display = 'block';
+        if (loginNotice) loginNotice.style.display = 'none';
+    } else {
+        // 비로그인 상태
+        writeButtonWrapper.style.display = 'none';
+        if (loginNotice) loginNotice.style.display = 'block';
     }
 }
 
@@ -101,16 +109,25 @@ async function loadPosts() {
 // 게시글 렌더링
 function renderPost(post) {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const isOwner = currentUser.id === post.author_id;
     const isAdmin = currentUser.is_admin;
+    const canEdit = isOwner || isAdmin;
     
     const date = new Date(post.created_at);
     const formattedDate = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
     
+    // 이미지 표시
+    const imageHtml = post.image_url ? `
+        <div class="post-image-wrapper">
+            <img src="${post.image_url}" alt="게시글 이미지" class="post-image" />
+        </div>
+    ` : '';
+    
     return `
         <div class="post-card" data-post-id="${post.id}">
             <div class="post-header">
-                <span class="post-badge">📢 공지</span>
-                ${isAdmin ? `
+                <span class="post-badge">📝 게시글</span>
+                ${canEdit ? `
                 <div class="post-actions">
                     <button class="post-edit-btn" data-post-id="${post.id}" title="수정">✏️</button>
                     <button class="post-delete-btn" data-post-id="${post.id}" title="삭제">🗑️</button>
@@ -118,12 +135,15 @@ function renderPost(post) {
                 ` : ''}
             </div>
             <h3 class="post-title">${escapeHtml(post.title)}</h3>
+            ${imageHtml}
             <p class="post-content">${escapeHtml(post.content).replace(/\n/g, '<br>')}</p>
             <div class="post-meta">
+                <span class="post-author">
+                    👤 ${escapeHtml(post.author_name || '찐부부')}
+                </span>
                 <span class="post-date">
                     📅 ${formattedDate}
                 </span>
-                <span class="post-author">by 찐부부</span>
             </div>
         </div>
     `;
@@ -184,6 +204,7 @@ function closeModal() {
 async function handleSubmit() {
     const title = document.getElementById('postTitle').value.trim();
     const content = document.getElementById('postContent').value.trim();
+    const imageFile = document.getElementById('postImage').files[0];
     const btnSubmit = document.getElementById('btnSubmit');
     
     if (!title || !content) {
@@ -201,6 +222,13 @@ async function handleSubmit() {
     btnSubmit.textContent = '처리 중...';
     
     try {
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content', content);
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
+        
         const url = currentEditingPostId 
             ? `/api/community/posts/${currentEditingPostId}`
             : '/api/community/posts';
@@ -210,16 +238,15 @@ async function handleSubmit() {
         const response = await fetch(url, {
             method: method,
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ title, content })
+            body: formData
         });
         
         const data = await response.json();
         
         if (response.ok) {
-            alert(currentEditingPostId ? '게시글이 수정되었습니다.' : '게시글이 작성되었습니다.');
+            alert(currentEditingPostId ? '게시글이 수정되었습니다.' : '게시글이 작성되었습니다! 💬');
             closeModal();
             loadPosts();
         } else {
