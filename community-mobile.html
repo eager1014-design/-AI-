@@ -301,7 +301,7 @@
     <!-- 상단 헤더 -->
     <div class="mobile-header">
         <div class="mobile-header-title">
-            <img src="https://www.genspark.ai/api/files/s/qxnLPur1?cache_control=3600" class="header-icon" alt="찐부부">
+            <span class="logo-emoji" style="font-size: 2.5rem;">💑</span>
             찐부부 커뮤니티
         </div>
         <button onclick="syncSomoim()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8125rem;         🔄 소모임 동기화
@@ -328,7 +328,7 @@
         <!-- 샘플 게시글 -->
         <div class="post-card" data-category="somoim">
             <div class="post-header">
-                <img src="https://www.genspark.ai/api/files/s/DxjEkbqS?cache_control=3600" class="post-author-img" alt="찐부부">
+                <span style="font-size: 2.5rem;">💑</span>
                 <div class="post-author-info">
                     <div class="post-author-name">찐부부 관리자</div>
                     <div class="post-time">5분 전</div>
@@ -349,7 +349,7 @@
         
         <div class="post-card" data-category="notice">
             <div class="post-header">
-                <img src="https://www.genspark.ai/api/files/s/DxjEkbqS?cache_control=3600" class="post-author-img" alt="찐부부">
+                <span style="font-size: 2.5rem;">💑</span>
                 <div class="post-author-info">
                     <div class="post-author-name">찐부부</div>
                     <div class="post-time">1시간 전</div>
@@ -370,7 +370,7 @@
         
         <div class="post-card" data-category="event">
             <div class="post-header">
-                <img src="https://www.genspark.ai/api/files/s/DxjEkbqS?cache_control=3600" class="post-author-img" alt="찐부부">
+                <span style="font-size: 2.5rem;">💑</span>
                 <div class="post-author-info">
                     <div class="post-author-name">찐부부 소모임</div>
                     <div class="post-time">3시간 전</div>
@@ -497,7 +497,7 @@
             return `
                 <div class="post-card" data-category="${issomoim ? post.post_type : 'general'}">
                     <div class="post-header">
-                        <img src="https://www.genspark.ai/api/files/s/DxjEkbqS?cache_control=3600" class="post-author-img" alt="찐부부">
+                        <span style="font-size: 2.5rem;">💑</span>
                         <div class="post-author-info">
                             <div class="post-author-name">${post.author || post.username || '익명'}</div>
                             <div class="post-time">${timeAgo}</div>

@@ -71,6 +71,33 @@ body {
     transform: scale(1.1) rotate(5deg);
 }
 
+.logo-emoji {
+    font-size: 2.5rem;
+    display: inline-block;
+    transition: transform 0.3s ease;
+    animation: bounce 2s infinite;
+}
+
+.logo-emoji:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.hero-emoji {
+    font-size: 5rem;
+    display: inline-block;
+    animation: pulse 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
 /* 네비게이션 */
 .nav {
     display: flex;
