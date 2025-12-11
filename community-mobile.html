@@ -129,8 +129,7 @@
         .post-author-img {
             width: 40px;
             height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
+            object-fit: contain;
             margin-right: 0.75rem;
         }
         
@@ -305,8 +304,7 @@
             <img src="https://www.genspark.ai/api/files/s/NFFC2kca?cache_control=3600" class="header-icon" alt="찐부부">
             찐부부 커뮤니티
         </div>
-        <button onclick="syncSomoim()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8125rem;">
-            🔄 소모임 동기화
+        <button onclick="syncSomoim()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8125rem;         🔄 소모임 동기화
         </button>
     </div>
     
@@ -330,7 +328,7 @@
         <!-- 샘플 게시글 -->
         <div class="post-card" data-category="somoim">
             <div class="post-header">
-                <img src="https://www.genspark.ai/api/files/s/UWqoE9dO" class="post-author-img" alt="찐부부">
+                <img src="https://www.genspark.ai/api/files/s/ooFJbyxW?cache_control=3600" class="post-author-img" alt="찐부부">
                 <div class="post-author-info">
                     <div class="post-author-name">찐부부 관리자</div>
                     <div class="post-time">5분 전</div>
@@ -351,7 +349,7 @@
         
         <div class="post-card" data-category="notice">
             <div class="post-header">
-                <img src="https://www.genspark.ai/api/files/s/UWqoE9dO" class="post-author-img" alt="찐부부">
+                <img src="https://www.genspark.ai/api/files/s/ooFJbyxW?cache_control=3600" class="post-author-img" alt="찐부부">
                 <div class="post-author-info">
                     <div class="post-author-name">찐부부</div>
                     <div class="post-time">1시간 전</div>
@@ -372,7 +370,7 @@
         
         <div class="post-card" data-category="event">
             <div class="post-header">
-                <img src="https://www.genspark.ai/api/files/s/UWqoE9dO" class="post-author-img" alt="찐부부">
+                <img src="https://www.genspark.ai/api/files/s/ooFJbyxW?cache_control=3600" class="post-author-img" alt="찐부부">
                 <div class="post-author-info">
                     <div class="post-author-name">찐부부 소모임</div>
                     <div class="post-time">3시간 전</div>
@@ -499,7 +497,7 @@
             return `
                 <div class="post-card" data-category="${issomoim ? post.post_type : 'general'}">
                     <div class="post-header">
-                        <img src="https://www.genspark.ai/api/files/s/UWqoE9dO" class="post-author-img" alt="찐부부">
+                        <img src="https://www.genspark.ai/api/files/s/ooFJbyxW?cache_control=3600" class="post-author-img" alt="찐부부">
                         <div class="post-author-info">
                             <div class="post-author-name">${post.author || post.username || '익명'}</div>
                             <div class="post-time">${timeAgo}</div>
@@ -661,3 +659,4 @@
     </script>
 </body>
 </html>
+html>
