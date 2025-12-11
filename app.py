@@ -1291,15 +1291,15 @@ def get_dashboard_stats(current_user):
     
     # 오늘 매출
     today_payments = Payment.query.filter(
-        Payment.status == 'DONE',
-        db.func.date(Payment.approved_at) == today
+        Payment.status == 'completed',
+        db.func.date(Payment.completed_at) == today
     ).all()
     today_sales = sum(p.amount for p in today_payments)
     
     # 이번 달 매출
     month_payments = Payment.query.filter(
-        Payment.status == 'DONE',
-        db.func.date(Payment.approved_at) >= month_start
+        Payment.status == 'completed',
+        db.func.date(Payment.completed_at) >= month_start
     ).all()
     month_sales = sum(p.amount for p in month_payments)
     
@@ -1326,8 +1326,8 @@ def get_dashboard_stats(current_user):
     for i in range(6, -1, -1):
         day = today - timedelta(days=i)
         day_payments = Payment.query.filter(
-            Payment.status == 'DONE',
-            db.func.date(Payment.approved_at) == day
+            Payment.status == 'completed',
+            db.func.date(Payment.completed_at) == day
         ).all()
         day_sales = sum(p.amount for p in day_payments)
         
@@ -1665,7 +1665,7 @@ def get_user_payments(current_user):
         'amount': p.amount,
         'status': p.status,
         'item_name': p.item_name,
-        'approved_at': p.approved_at.strftime('%Y-%m-%d %H:%M:%S') if p.approved_at else None,
+        'approved_at': p.completed_at.strftime('%Y-%m-%d %H:%M:%S') if p.completed_at else None,
         'created_at': p.created_at.strftime('%Y-%m-%d %H:%M:%S')
     } for p in payments]
     
@@ -1894,11 +1894,13 @@ def confirm_payment(current_user):
             new_payment = Payment(
                 user_id=current_user.id,
                 order_id=order_id,
-                payment_key=payment_key,
-                payment_method=payment_data.get('method', 'UNKNOWN'),
+                payment_method=payment_data.get('method', 'card'),
                 amount=amount,
-                status='DONE',
-                approved_at=datetime.utcnow()
+                status='completed',
+                completed_at=datetime.utcnow(),
+                pg_transaction_id=payment_key,
+                pg_provider='toss',
+                item_name=payment_data.get('orderName', '프롬프트')
             )
             db.session.add(new_payment)
             
