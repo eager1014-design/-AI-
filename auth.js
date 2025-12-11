@@ -193,6 +193,12 @@ function showLoginModal() {
                     <button type="submit" class="auth-submit-btn">로그인</button>
                 </form>
                 
+                <div style="text-align: center; margin-top: 1rem;">
+                    <a href="#" onclick="showPasswordResetModal(); return false;" style="color: #6b7280; font-size: 0.875rem; text-decoration: underline;">
+                        비밀번호를 잊으셨나요?
+                    </a>
+                </div>
+                
                 <p class="auth-switch">
                     아직 계정이 없으신가요? 
                     <a href="#" onclick="showRegisterModal(); return false;">회원가입</a>
@@ -620,6 +626,141 @@ async function handleDeleteAccount(event) {
         
         // 페이지 새로고침
         window.location.reload();
+        
+    } catch (error) {
+        alert('❌ ' + error.message);
+    }
+}
+
+// ==================== 비밀번호 찾기 ====================
+
+function showPasswordResetModal() {
+    closeAuthModal(); // 기존 모달 닫기
+    
+    const modalHTML = `
+        <div class="auth-modal" id="passwordResetModal">
+            <div class="auth-modal-overlay" onclick="closeAuthModal()"></div>
+            <div class="auth-modal-content" style="max-width: 450px;">
+                <button class="auth-modal-close" onclick="closeAuthModal()">&times;</button>
+                <h2 class="auth-modal-title">🔑 비밀번호 찾기</h2>
+                <p class="auth-modal-subtitle">가입 시 등록한 정보로 본인 인증을 해주세요</p>
+                
+                <form id="passwordResetRequestForm" onsubmit="handlePasswordResetRequest(event)">
+                    <div class="form-group">
+                        <label>이메일</label>
+                        <input type="email" name="email" placeholder="example@email.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>전화번호</label>
+                        <input type="tel" name="phone" placeholder="010-1234-5678" pattern="[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}" required>
+                        <small style="color: #6b7280; font-size: 0.875rem;">가입 시 등록한 전화번호를 입력해주세요</small>
+                    </div>
+                    
+                    <button type="submit" class="auth-submit-btn">본인 인증</button>
+                </form>
+                
+                <div style="text-align: center; margin-top: 1rem;">
+                    <a href="#" onclick="showLoginModal(); return false;" style="color: #6b7280; font-size: 0.875rem;">
+                        ← 로그인으로 돌아가기
+                    </a>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+async function handlePasswordResetRequest(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    const data = {
+        email: formData.get('email'),
+        phone: formData.get('phone')
+    };
+    
+    try {
+        const response = await apiRequest('/api/password/reset-request', 'POST', data);
+        
+        alert('✅ ' + response.message);
+        closeAuthModal();
+        
+        // 새 비밀번호 설정 모달 표시
+        showPasswordResetFormModal(response.reset_token, response.email);
+        
+    } catch (error) {
+        alert('❌ ' + error.message);
+    }
+}
+
+function showPasswordResetFormModal(resetToken, email) {
+    const modalHTML = `
+        <div class="auth-modal" id="passwordResetFormModal">
+            <div class="auth-modal-overlay" onclick="closeAuthModal()"></div>
+            <div class="auth-modal-content" style="max-width: 450px;">
+                <button class="auth-modal-close" onclick="closeAuthModal()">&times;</button>
+                <h2 class="auth-modal-title">🔐 새 비밀번호 설정</h2>
+                <p class="auth-modal-subtitle">${email}</p>
+                
+                <div style="background: #dbeafe; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #3b82f6;">
+                    <p style="color: #1e40af; font-size: 0.875rem; margin: 0;">
+                        ⏰ 이 링크는 <strong>15분</strong> 동안만 유효합니다.
+                    </p>
+                </div>
+                
+                <form id="passwordResetForm" onsubmit="handlePasswordReset(event, '${resetToken}')">
+                    <div class="form-group">
+                        <label>새 비밀번호</label>
+                        <input type="password" name="new_password" placeholder="8자 이상" minlength="8" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>새 비밀번호 확인</label>
+                        <input type="password" name="confirm_password" placeholder="비밀번호 재입력" minlength="8" required>
+                    </div>
+                    
+                    <button type="submit" class="auth-submit-btn">비밀번호 변경</button>
+                </form>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+async function handlePasswordReset(event, resetToken) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    const newPassword = formData.get('new_password');
+    const confirmPassword = formData.get('confirm_password');
+    
+    // 비밀번호 확인
+    if (newPassword !== confirmPassword) {
+        alert('❌ 비밀번호가 일치하지 않습니다.');
+        return;
+    }
+    
+    if (newPassword.length < 8) {
+        alert('❌ 비밀번호는 8자 이상이어야 합니다.');
+        return;
+    }
+    
+    try {
+        const response = await apiRequest('/api/password/reset', 'POST', {
+            reset_token: resetToken,
+            new_password: newPassword
+        });
+        
+        alert('✅ ' + response.message + '\n로그인 페이지로 이동합니다.');
+        closeAuthModal();
+        showLoginModal();
         
     } catch (error) {
         alert('❌ ' + error.message);

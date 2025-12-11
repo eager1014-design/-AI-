@@ -292,6 +292,75 @@ def get_user_info(current_user):
         } for p in purchases]
     }), 200
 
+# 비밀번호 찾기 (이메일 + 전화번호 확인)
+@app.route('/api/password/reset-request', methods=['POST'])
+def password_reset_request():
+    data = request.get_json()
+    
+    if not data or not data.get('email') or not data.get('phone'):
+        return jsonify({'message': '이메일과 전화번호를 입력해주세요.'}), 400
+    
+    user = User.query.filter_by(email=data['email']).first()
+    
+    if not user:
+        return jsonify({'message': '등록되지 않은 이메일입니다.'}), 404
+    
+    # 전화번호 확인
+    if user.phone != data['phone']:
+        return jsonify({'message': '전화번호가 일치하지 않습니다.'}), 400
+    
+    # 임시 토큰 생성 (비밀번호 재설정용, 15분 유효)
+    reset_token_payload = {
+        'user_id': user.id,
+        'email': user.email,
+        'type': 'password_reset',
+        'exp': datetime.utcnow() + timedelta(minutes=15)
+    }
+    reset_token = jwt.encode(reset_token_payload, app.config['SECRET_KEY'], algorithm='HS256')
+    
+    return jsonify({
+        'message': '본인 인증이 완료되었습니다. 새 비밀번호를 설정해주세요.',
+        'reset_token': reset_token,
+        'email': user.email
+    }), 200
+
+# 비밀번호 재설정
+@app.route('/api/password/reset', methods=['POST'])
+def password_reset():
+    data = request.get_json()
+    
+    if not data or not data.get('reset_token') or not data.get('new_password'):
+        return jsonify({'message': '토큰과 새 비밀번호를 입력해주세요.'}), 400
+    
+    try:
+        # 토큰 검증
+        payload = jwt.decode(data['reset_token'], app.config['SECRET_KEY'], algorithms=['HS256'])
+        
+        if payload.get('type') != 'password_reset':
+            return jsonify({'message': '유효하지 않은 토큰입니다.'}), 400
+        
+        user = User.query.get(payload['user_id'])
+        if not user:
+            return jsonify({'message': '사용자를 찾을 수 없습니다.'}), 404
+        
+        # 비밀번호 길이 확인
+        if len(data['new_password']) < 8:
+            return jsonify({'message': '비밀번호는 8자 이상이어야 합니다.'}), 400
+        
+        # 비밀번호 변경
+        user.set_password(data['new_password'])
+        db.session.commit()
+        
+        return jsonify({
+            'message': '비밀번호가 성공적으로 변경되었습니다.',
+            'email': user.email
+        }), 200
+        
+    except jwt.ExpiredSignatureError:
+        return jsonify({'message': '토큰이 만료되었습니다. 다시 시도해주세요.'}), 400
+    except jwt.InvalidTokenError:
+        return jsonify({'message': '유효하지 않은 토큰입니다.'}), 400
+
 # 회원정보 수정
 @app.route('/api/user/update', methods=['PUT'])
 @token_required
