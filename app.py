@@ -50,6 +50,29 @@ class Purchase(db.Model):
     price = db.Column(db.Integer, nullable=False)
     purchased_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    username = db.Column(db.String(80), nullable=False)
+    category = db.Column(db.String(50), nullable=False)  # '질문', '정보공유', '성공사례', '자유'
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    likes = db.Column(db.Integer, default=0)
+    views = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    comments = db.relationship('Comment', backref='post', lazy=True, cascade='all, delete-orphan')
+    user = db.relationship('User', backref='posts')
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    username = db.Column(db.String(80), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref='comments')
+
 # ==================== 헬퍼 함수 ====================
 
 def token_required(f):
@@ -249,13 +272,206 @@ def get_stats():
     total_members = User.query.filter_by(is_member=True).count()
     total_purchases = Purchase.query.count()
     total_revenue = db.session.query(db.func.sum(Purchase.price)).scalar() or 0
+    total_posts = Post.query.count()
+    total_comments = Comment.query.count()
     
     return jsonify({
         'total_users': total_users,
         'total_members': total_members,
         'total_purchases': total_purchases,
-        'total_revenue': total_revenue
+        'total_revenue': total_revenue,
+        'total_posts': total_posts,
+        'total_comments': total_comments
     }), 200
+
+# ==================== 커뮤니티 API ====================
+
+# 게시글 목록 조회
+@app.route('/api/posts', methods=['GET'])
+def get_posts():
+    category = request.args.get('category', None)
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 10))
+    
+    query = Post.query
+    
+    if category:
+        query = query.filter_by(category=category)
+    
+    posts = query.order_by(Post.created_at.desc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+    
+    return jsonify({
+        'posts': [{
+            'id': p.id,
+            'user_id': p.user_id,
+            'username': p.username,
+            'category': p.category,
+            'title': p.title,
+            'content': p.content[:100] + '...' if len(p.content) > 100 else p.content,
+            'likes': p.likes,
+            'views': p.views,
+            'comment_count': len(p.comments),
+            'created_at': p.created_at.isoformat(),
+            'updated_at': p.updated_at.isoformat()
+        } for p in posts.items],
+        'total': posts.total,
+        'pages': posts.pages,
+        'current_page': posts.page
+    }), 200
+
+# 게시글 상세 조회
+@app.route('/api/posts/<int:post_id>', methods=['GET'])
+def get_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    
+    # 조회수 증가
+    post.views += 1
+    db.session.commit()
+    
+    return jsonify({
+        'post': {
+            'id': post.id,
+            'user_id': post.user_id,
+            'username': post.username,
+            'category': post.category,
+            'title': post.title,
+            'content': post.content,
+            'likes': post.likes,
+            'views': post.views,
+            'created_at': post.created_at.isoformat(),
+            'updated_at': post.updated_at.isoformat()
+        },
+        'comments': [{
+            'id': c.id,
+            'user_id': c.user_id,
+            'username': c.username,
+            'content': c.content,
+            'created_at': c.created_at.isoformat()
+        } for c in post.comments]
+    }), 200
+
+# 게시글 작성
+@app.route('/api/posts', methods=['POST'])
+@token_required
+def create_post(current_user):
+    data = request.get_json()
+    
+    if not data or not data.get('title') or not data.get('content'):
+        return jsonify({'message': '제목과 내용을 입력해주세요.'}), 400
+    
+    new_post = Post(
+        user_id=current_user.id,
+        username=current_user.username,
+        category=data.get('category', '자유'),
+        title=data['title'],
+        content=data['content']
+    )
+    
+    db.session.add(new_post)
+    db.session.commit()
+    
+    return jsonify({
+        'message': '게시글이 등록되었습니다!',
+        'post': {
+            'id': new_post.id,
+            'title': new_post.title,
+            'category': new_post.category,
+            'created_at': new_post.created_at.isoformat()
+        }
+    }), 201
+
+# 게시글 수정
+@app.route('/api/posts/<int:post_id>', methods=['PUT'])
+@token_required
+def update_post(current_user, post_id):
+    post = Post.query.get_or_404(post_id)
+    
+    if post.user_id != current_user.id:
+        return jsonify({'message': '권한이 없습니다.'}), 403
+    
+    data = request.get_json()
+    
+    if data.get('title'):
+        post.title = data['title']
+    if data.get('content'):
+        post.content = data['content']
+    if data.get('category'):
+        post.category = data['category']
+    
+    post.updated_at = datetime.utcnow()
+    db.session.commit()
+    
+    return jsonify({'message': '게시글이 수정되었습니다.'}), 200
+
+# 게시글 삭제
+@app.route('/api/posts/<int:post_id>', methods=['DELETE'])
+@token_required
+def delete_post(current_user, post_id):
+    post = Post.query.get_or_404(post_id)
+    
+    if post.user_id != current_user.id:
+        return jsonify({'message': '권한이 없습니다.'}), 403
+    
+    db.session.delete(post)
+    db.session.commit()
+    
+    return jsonify({'message': '게시글이 삭제되었습니다.'}), 200
+
+# 댓글 작성
+@app.route('/api/posts/<int:post_id>/comments', methods=['POST'])
+@token_required
+def create_comment(current_user, post_id):
+    post = Post.query.get_or_404(post_id)
+    data = request.get_json()
+    
+    if not data or not data.get('content'):
+        return jsonify({'message': '댓글 내용을 입력해주세요.'}), 400
+    
+    new_comment = Comment(
+        post_id=post_id,
+        user_id=current_user.id,
+        username=current_user.username,
+        content=data['content']
+    )
+    
+    db.session.add(new_comment)
+    db.session.commit()
+    
+    return jsonify({
+        'message': '댓글이 등록되었습니다!',
+        'comment': {
+            'id': new_comment.id,
+            'username': new_comment.username,
+            'content': new_comment.content,
+            'created_at': new_comment.created_at.isoformat()
+        }
+    }), 201
+
+# 댓글 삭제
+@app.route('/api/comments/<int:comment_id>', methods=['DELETE'])
+@token_required
+def delete_comment(current_user, comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    
+    if comment.user_id != current_user.id:
+        return jsonify({'message': '권한이 없습니다.'}), 403
+    
+    db.session.delete(comment)
+    db.session.commit()
+    
+    return jsonify({'message': '댓글이 삭제되었습니다.'}), 200
+
+# 게시글 좋아요
+@app.route('/api/posts/<int:post_id>/like', methods=['POST'])
+@token_required
+def like_post(current_user, post_id):
+    post = Post.query.get_or_404(post_id)
+    post.likes += 1
+    db.session.commit()
+    
+    return jsonify({'message': '좋아요!', 'likes': post.likes}), 200
 
 # ==================== 초기화 ====================
 
@@ -269,4 +485,4 @@ if __name__ == '__main__':
     print("=" * 50)
     print("🚀 찐부부 AI 프롬프트 마켓 서버 시작!")
     print("=" * 50)
-    app.run(host='0.0.0.0', port=8001, debug=True)
+    app.run(host='0.0.0.0', port=8002, debug=True)
