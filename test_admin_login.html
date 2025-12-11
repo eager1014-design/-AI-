@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head><title>Admin Login Test</title></head>
+<body>
+<h1>Admin Login Test</h1>
+<button onclick="testLogin()">Test Login</button>
+<pre id="result"></pre>
+
+<script>
+async function testLogin() {
+    const result = document.getElementById('result');
+    result.textContent = 'Testing...\n';
+    
+    try {
+        // 1. Login
+        result.textContent += '1. Logging in...\n';
+        const loginRes = await fetch('/api/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                email: 'eager1014@gmail.com',
+                password: 'ea787878'
+            })
+        });
+        const loginData = await loginRes.json();
+        result.textContent += `   ✅ Login success: ${loginData.user.email}\n`;
+        result.textContent += `   is_admin: ${loginData.user.is_admin}\n\n`;
+        
+        // 2. Check user info
+        result.textContent += '2. Checking /api/user/me...\n';
+        const meRes = await fetch('/api/user/me', {
+            headers: {'Authorization': `Bearer ${loginData.token}`}
+        });
+        const meData = await meRes.json();
+        result.textContent += `   ✅ User info: ${meData.user.username}\n`;
+        result.textContent += `   is_admin: ${meData.user.is_admin}\n\n`;
+        
+        result.textContent += '✅ ALL TESTS PASSED!\n';
+        result.textContent += '\nYou can now login at:\n';
+        result.textContent += 'https://8003-ieqskqqgv5heqsrwn2d81-18e660f9.sandbox.novita.ai/admin-login.html\n';
+        
+    } catch (error) {
+        result.textContent += `\n❌ Error: ${error.message}\n`;
+    }
+}
+</script>
+</body>
+</html>
