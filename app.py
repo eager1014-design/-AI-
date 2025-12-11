@@ -26,6 +26,7 @@ class User(db.Model):
     phone = db.Column(db.String(20), nullable=True)  # 전화번호
     birthdate = db.Column(db.Date, nullable=True)  # 생년월일
     is_member = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)  # 관리자 여부
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     purchases = db.relationship('Purchase', backref='user', lazy=True)
 
@@ -40,6 +41,7 @@ class User(db.Model):
             'user_id': self.id,
             'email': self.email,
             'is_member': self.is_member,
+            'is_admin': self.is_admin,
             'exp': datetime.utcnow() + timedelta(days=7)
         }
         return jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
@@ -51,6 +53,25 @@ class Purchase(db.Model):
     prompt_title = db.Column(db.String(200), nullable=False)
     price = db.Column(db.Integer, nullable=False)
     purchased_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Payment(db.Model):
+    """실제 결제 내역 테이블 (PG사 연동)"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    order_id = db.Column(db.String(100), unique=True, nullable=False)  # 주문번호
+    payment_method = db.Column(db.String(50), nullable=False)  # 'card', 'kakao', 'toss' etc.
+    amount = db.Column(db.Integer, nullable=False)  # 결제 금액
+    status = db.Column(db.String(20), default='pending')  # pending, completed, failed, refunded
+    pg_transaction_id = db.Column(db.String(200))  # PG사 거래 ID
+    pg_provider = db.Column(db.String(50))  # 'toss', 'kakao', 'portone' etc.
+    buyer_name = db.Column(db.String(100))
+    buyer_email = db.Column(db.String(120))
+    buyer_phone = db.Column(db.String(20))
+    item_name = db.Column(db.String(200))  # 상품명
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    completed_at = db.Column(db.DateTime)  # 결제 완료 시간
+    refunded_at = db.Column(db.DateTime)  # 환불 시간
+    user = db.relationship('User', backref='payments')
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -93,6 +114,37 @@ def token_required(f):
             current_user = User.query.get(data['user_id'])
             if not current_user:
                 return jsonify({'message': '유효하지 않은 사용자입니다.'}), 401
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': '토큰이 만료되었습니다.'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': '유효하지 않은 토큰입니다.'}), 401
+        
+        return f(current_user, *args, **kwargs)
+    
+    return decorated
+
+def admin_required(f):
+    """관리자 전용 decorator"""
+    from functools import wraps
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        
+        if not token:
+            return jsonify({'message': '토큰이 없습니다.'}), 401
+        
+        try:
+            if token.startswith('Bearer '):
+                token = token[7:]
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            current_user = User.query.get(data['user_id'])
+            
+            if not current_user:
+                return jsonify({'message': '유효하지 않은 사용자입니다.'}), 401
+            
+            if not current_user.is_admin:
+                return jsonify({'message': '⛔ 관리자 권한이 필요합니다.'}), 403
+                
         except jwt.ExpiredSignatureError:
             return jsonify({'message': '토큰이 만료되었습니다.'}), 401
         except jwt.InvalidTokenError:
@@ -206,6 +258,7 @@ def get_user_info(current_user):
             'phone': current_user.phone,
             'birthdate': current_user.birthdate.isoformat() if current_user.birthdate else None,
             'is_member': current_user.is_member,
+            'is_admin': current_user.is_admin,
             'created_at': current_user.created_at.isoformat()
         },
         'purchases': [{
@@ -497,16 +550,395 @@ def like_post(current_user, post_id):
     
     return jsonify({'message': '좋아요!', 'likes': post.likes}), 200
 
+# ==================== 관리자 API ====================
+
+# 관리자 로그인 시 관리자 정보 반환
+@app.route('/api/admin/check', methods=['GET'])
+@admin_required
+def admin_check(current_user):
+    """관리자 권한 확인"""
+    return jsonify({
+        'is_admin': True,
+        'username': current_user.username,
+        'email': current_user.email
+    }), 200
+
+# 전체 사용자 목록
+@app.route('/api/admin/users', methods=['GET'])
+@admin_required
+def get_all_users(current_user):
+    """전체 사용자 목록 조회 (관리자 전용)"""
+    users = User.query.order_by(User.created_at.desc()).all()
+    
+    users_data = []
+    for user in users:
+        users_data.append({
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'phone': user.phone,
+            'birthdate': user.birthdate.strftime('%Y-%m-%d') if user.birthdate else None,
+            'is_member': user.is_member,
+            'is_admin': user.is_admin,
+            'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'purchase_count': len(user.purchases),
+            'total_spent': sum(p.price for p in user.purchases)
+        })
+    
+    return jsonify({
+        'users': users_data,
+        'total_count': len(users_data)
+    }), 200
+
+# 특정 사용자 상세 정보
+@app.route('/api/admin/users/<int:user_id>', methods=['GET'])
+@admin_required
+def get_user_detail(current_user, user_id):
+    """특정 사용자 상세 정보 (관리자 전용)"""
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': '사용자를 찾을 수 없습니다.'}), 404
+    
+    purchases = Purchase.query.filter_by(user_id=user_id).order_by(Purchase.purchased_at.desc()).all()
+    purchases_data = [{
+        'id': p.id,
+        'prompt_title': p.prompt_title,
+        'price': p.price,
+        'purchased_at': p.purchased_at.strftime('%Y-%m-%d %H:%M:%S')
+    } for p in purchases]
+    
+    return jsonify({
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'phone': user.phone,
+        'birthdate': user.birthdate.strftime('%Y-%m-%d') if user.birthdate else None,
+        'is_member': user.is_member,
+        'is_admin': user.is_admin,
+        'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        'purchases': purchases_data,
+        'total_spent': sum(p.price for p in purchases)
+    }), 200
+
+# 사용자 권한 변경 (일반 회원 ↔ 관리자)
+@app.route('/api/admin/users/<int:user_id>/role', methods=['PUT'])
+@admin_required
+def update_user_role(current_user, user_id):
+    """사용자 권한 변경 (관리자 전용)"""
+    if current_user.id == user_id:
+        return jsonify({'message': '⛔ 자기 자신의 권한은 변경할 수 없습니다.'}), 400
+    
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': '사용자를 찾을 수 없습니다.'}), 404
+    
+    data = request.get_json()
+    
+    if 'is_admin' in data:
+        user.is_admin = data['is_admin']
+    if 'is_member' in data:
+        user.is_member = data['is_member']
+    
+    db.session.commit()
+    
+    return jsonify({
+        'message': '권한이 변경되었습니다.',
+        'user': {
+            'id': user.id,
+            'username': user.username,
+            'is_member': user.is_member,
+            'is_admin': user.is_admin
+        }
+    }), 200
+
+# 전체 구매 내역
+@app.route('/api/admin/purchases', methods=['GET'])
+@admin_required
+def get_all_purchases(current_user):
+    """전체 구매 내역 조회 (관리자 전용)"""
+    purchases = Purchase.query.order_by(Purchase.purchased_at.desc()).limit(100).all()
+    
+    purchases_data = []
+    for p in purchases:
+        user = User.query.get(p.user_id)
+        purchases_data.append({
+            'id': p.id,
+            'user_id': p.user_id,
+            'username': user.username if user else '알 수 없음',
+            'email': user.email if user else '알 수 없음',
+            'prompt_title': p.prompt_title,
+            'price': p.price,
+            'purchased_at': p.purchased_at.strftime('%Y-%m-%d %H:%M:%S')
+        })
+    
+    return jsonify({
+        'purchases': purchases_data,
+        'total_count': len(purchases_data)
+    }), 200
+
+# 전체 결제 내역
+@app.route('/api/admin/payments', methods=['GET'])
+@admin_required
+def get_all_payments(current_user):
+    """전체 결제 내역 조회 (관리자 전용)"""
+    payments = Payment.query.order_by(Payment.created_at.desc()).limit(100).all()
+    
+    payments_data = []
+    for payment in payments:
+        user = User.query.get(payment.user_id)
+        payments_data.append({
+            'id': payment.id,
+            'order_id': payment.order_id,
+            'user_id': payment.user_id,
+            'username': user.username if user else '알 수 없음',
+            'payment_method': payment.payment_method,
+            'amount': payment.amount,
+            'status': payment.status,
+            'item_name': payment.item_name,
+            'created_at': payment.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        })
+    
+    return jsonify({
+        'payments': payments_data,
+        'total_count': len(payments_data)
+    }), 200
+
+# 통계 대시보드 (관리자용 확장)
+@app.route('/api/admin/dashboard', methods=['GET'])
+@admin_required
+def admin_dashboard(current_user):
+    """관리자 대시보드 통계"""
+    from sqlalchemy import func
+    
+    total_users = User.query.count()
+    total_members = User.query.filter_by(is_member=True).count()
+    total_admins = User.query.filter_by(is_admin=True).count()
+    total_purchases = Purchase.query.count()
+    total_revenue = db.session.query(func.sum(Purchase.price)).scalar() or 0
+    total_posts = Post.query.count()
+    total_comments = Comment.query.count()
+    total_payments = Payment.query.filter_by(status='completed').count()
+    
+    # 최근 가입자 (7일)
+    week_ago = datetime.utcnow() - timedelta(days=7)
+    new_users_week = User.query.filter(User.created_at >= week_ago).count()
+    
+    # 최근 구매 (7일)
+    new_purchases_week = Purchase.query.filter(Purchase.purchased_at >= week_ago).count()
+    
+    # 인기 프롬프트
+    popular_prompts = db.session.query(
+        Purchase.prompt_title,
+        func.count(Purchase.id).label('count'),
+        func.sum(Purchase.price).label('revenue')
+    ).group_by(Purchase.prompt_title).order_by(func.count(Purchase.id).desc()).limit(5).all()
+    
+    popular_prompts_data = [{
+        'title': p[0],
+        'sales_count': p[1],
+        'revenue': p[2]
+    } for p in popular_prompts]
+    
+    return jsonify({
+        'total_users': total_users,
+        'total_members': total_members,
+        'total_admins': total_admins,
+        'total_purchases': total_purchases,
+        'total_revenue': total_revenue,
+        'total_posts': total_posts,
+        'total_comments': total_comments,
+        'total_payments': total_payments,
+        'new_users_week': new_users_week,
+        'new_purchases_week': new_purchases_week,
+        'popular_prompts': popular_prompts_data
+    }), 200
+
+# ==================== 결제 API ====================
+
+# 결제 준비 (주문번호 생성)
+@app.route('/api/payment/prepare', methods=['POST'])
+@token_required
+def prepare_payment(current_user):
+    """결제 준비 - 주문번호 생성"""
+    data = request.get_json()
+    
+    if not data.get('prompt_id') or not data.get('amount') or not data.get('item_name'):
+        return jsonify({'message': '필수 정보가 누락되었습니다.'}), 400
+    
+    # 주문번호 생성 (timestamp + user_id)
+    import time
+    order_id = f"ORDER_{int(time.time())}_{current_user.id}"
+    
+    # Payment 레코드 생성 (pending 상태)
+    payment = Payment(
+        user_id=current_user.id,
+        order_id=order_id,
+        payment_method=data.get('payment_method', 'card'),
+        amount=data['amount'],
+        status='pending',
+        buyer_name=current_user.username,
+        buyer_email=current_user.email,
+        buyer_phone=current_user.phone,
+        item_name=data['item_name']
+    )
+    
+    db.session.add(payment)
+    db.session.commit()
+    
+    return jsonify({
+        'message': '결제 준비가 완료되었습니다.',
+        'order_id': order_id,
+        'amount': data['amount'],
+        'payment': {
+            'id': payment.id,
+            'order_id': order_id,
+            'buyer_name': current_user.username,
+            'buyer_email': current_user.email
+        }
+    }), 200
+
+# 결제 검증 및 완료
+@app.route('/api/payment/complete', methods=['POST'])
+@token_required
+def complete_payment(current_user):
+    """결제 완료 처리 (PG사 결제 확인 후)"""
+    data = request.get_json()
+    
+    order_id = data.get('order_id')
+    pg_transaction_id = data.get('pg_transaction_id')
+    
+    if not order_id:
+        return jsonify({'message': '주문번호가 없습니다.'}), 400
+    
+    # Payment 찾기
+    payment = Payment.query.filter_by(order_id=order_id, user_id=current_user.id).first()
+    if not payment:
+        return jsonify({'message': '결제 정보를 찾을 수 없습니다.'}), 404
+    
+    # 이미 완료된 결제인지 확인
+    if payment.status == 'completed':
+        return jsonify({'message': '이미 처리된 결제입니다.'}), 400
+    
+    # TODO: 여기서 실제 PG사 API로 결제 검증
+    # (Toss Payments, KakaoPay, PortOne 등)
+    # 예시:
+    # response = verify_payment_with_pg(pg_transaction_id, payment.amount)
+    # if not response.success:
+    #     payment.status = 'failed'
+    #     db.session.commit()
+    #     return jsonify({'message': '결제 검증에 실패했습니다.'}), 400
+    
+    # 결제 완료 처리
+    payment.status = 'completed'
+    payment.pg_transaction_id = pg_transaction_id
+    payment.completed_at = datetime.utcnow()
+    
+    # Purchase 레코드 생성 (프롬프트 접근 권한 부여)
+    prompt_id = data.get('prompt_id')
+    prompt_title = data.get('prompt_title', payment.item_name)
+    
+    purchase = Purchase(
+        user_id=current_user.id,
+        prompt_id=prompt_id,
+        prompt_title=prompt_title,
+        price=payment.amount
+    )
+    
+    db.session.add(purchase)
+    db.session.commit()
+    
+    return jsonify({
+        'message': '✅ 결제가 완료되었습니다!',
+        'payment': {
+            'order_id': payment.order_id,
+            'amount': payment.amount,
+            'status': payment.status,
+            'completed_at': payment.completed_at.strftime('%Y-%m-%d %H:%M:%S')
+        },
+        'purchase': {
+            'id': purchase.id,
+            'prompt_title': purchase.prompt_title
+        }
+    }), 200
+
+# 결제 취소/환불
+@app.route('/api/payment/<order_id>/refund', methods=['POST'])
+@token_required
+def refund_payment(current_user, order_id):
+    """결제 환불 처리"""
+    payment = Payment.query.filter_by(order_id=order_id, user_id=current_user.id).first()
+    
+    if not payment:
+        return jsonify({'message': '결제 정보를 찾을 수 없습니다.'}), 404
+    
+    if payment.status != 'completed':
+        return jsonify({'message': '완료된 결제만 환불할 수 있습니다.'}), 400
+    
+    # 7일 환불 보장 확인
+    if payment.completed_at:
+        days_passed = (datetime.utcnow() - payment.completed_at).days
+        if days_passed > 7:
+            return jsonify({'message': '환불 기간이 지났습니다. (7일 이내)'}), 400
+    
+    # TODO: PG사 환불 API 호출
+    # refund_response = request_refund_to_pg(payment.pg_transaction_id, payment.amount)
+    
+    # 환불 처리
+    payment.status = 'refunded'
+    payment.refunded_at = datetime.utcnow()
+    
+    # Purchase 삭제 (프롬프트 접근 권한 제거)
+    Purchase.query.filter_by(user_id=current_user.id, prompt_title=payment.item_name).delete()
+    
+    db.session.commit()
+    
+    return jsonify({
+        'message': '✅ 환불이 완료되었습니다.',
+        'payment': {
+            'order_id': payment.order_id,
+            'amount': payment.amount,
+            'status': payment.status,
+            'refunded_at': payment.refunded_at.strftime('%Y-%m-%d %H:%M:%S')
+        }
+    }), 200
+
 # ==================== 초기화 ====================
 
 def init_db():
     with app.app_context():
         db.create_all()
         print("✅ 데이터베이스 테이블 생성 완료!")
+        
+        # 관리자 계정 초기화 (eager1014@gmail.com)
+        admin_email = 'eager1014@gmail.com'
+        admin = User.query.filter_by(email=admin_email).first()
+        
+        if not admin:
+            admin = User(
+                email=admin_email,
+                username='찐부부 관리자',
+                is_member=True,
+                is_admin=True
+            )
+            admin.set_password('admin1234')  # 초기 비밀번호 (나중에 변경 필요)
+            db.session.add(admin)
+            db.session.commit()
+            print(f"👑 관리자 계정 생성 완료: {admin_email}")
+            print(f"   초기 비밀번호: admin1234 (로그인 후 변경하세요!)")
+        else:
+            # 기존 계정을 관리자로 승격
+            if not admin.is_admin:
+                admin.is_admin = True
+                db.session.commit()
+                print(f"👑 기존 계정을 관리자로 승격: {admin_email}")
+            else:
+                print(f"✅ 관리자 계정 이미 존재: {admin_email}")
 
 if __name__ == '__main__':
     init_db()
     print("=" * 50)
     print("🚀 찐부부 AI 프롬프트 마켓 서버 시작!")
+    print("=" * 50)
+    print("👑 관리자 이메일: eager1014@gmail.com")
     print("=" * 50)
     app.run(host='0.0.0.0', port=8003, debug=True)

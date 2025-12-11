@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 관리자 대시보드 - 찐부부 AI 프롬프트</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+        }
+        
+        .admin-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-header p {
+            opacity: 0.9;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border: 2px solid white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            float: right;
+        }
+        
+        .logout-btn:hover {
+            background: white;
+            color: #d97706;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            color: #d97706;
+            border-bottom-color: #d97706;
+        }
+        
+        .tab:hover {
+            color: #d97706;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #d97706;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background: #f9fafb;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        th {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        tr:hover {
+            background: #f9fafb;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-admin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-member {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .badge-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-pending {
+            background: #fed7aa;
+            color: #9a3412;
+        }
+        
+        .badge-refunded {
+            background: #fecaca;
+            color: #991b1b;
+        }
+        
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn-primary {
+            background: #d97706;
+            color: white;
+        }
+        
+        .action-btn-primary:hover {
+            background: #b45309;
+        }
+        
+        .action-btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        
+        .action-btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #9ca3af;
+        }
+        
+        .error-message {
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <button class="logout-btn" onclick="logout()">로그아웃</button>
+            <h1>👑 관리자 대시보드</h1>
+            <p id="admin-info">로딩 중...</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('dashboard')">📊 대시보드</button>
+            <button class="tab" onclick="switchTab('users')">👥 사용자 관리</button>
+            <button class="tab" onclick="switchTab('purchases')">💰 구매 내역</button>
+            <button class="tab" onclick="switchTab('payments')">💳 결제 내역</button>
+        </div>
+        
+        <!-- 대시보드 탭 -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid" id="stats-grid">
+                <div class="loading">통계 로딩 중...</div>
+            </div>
+            
+            <h2 style="margin-bottom: 1rem;">인기 프롬프트</h2>
+            <div class="data-table">
+                <table id="popular-prompts-table">
+                    <thead>
+                        <tr>
+                            <th>프롬프트</th>
+                            <th>판매 수</th>
+                            <th>매출</th>
+                        </tr>
+                    </thead>
+                    <tbody id="popular-prompts-body">
+                        <tr><td colspan="3" class="loading">로딩 중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 사용자 관리 탭 -->
+        <div id="users" class="tab-content">
+            <h2 style="margin-bottom: 1rem;">전체 사용자</h2>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>이름</th>
+                            <th>이메일</th>
+                            <th>전화번호</th>
+                            <th>가입일</th>
+                            <th>권한</th>
+                            <th>구매</th>
+                            <th>총 지출</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-body">
+                        <tr><td colspan="9" class="loading">로딩 중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 구매 내역 탭 -->
+        <div id="purchases" class="tab-content">
+            <h2 style="margin-bottom: 1rem;">최근 구매 내역 (100건)</h2>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>사용자</th>
+                            <th>이메일</th>
+                            <th>프롬프트</th>
+                            <th>금액</th>
+                            <th>구매일시</th>
+                        </tr>
+                    </thead>
+                    <tbody id="purchases-body">
+                        <tr><td colspan="6" class="loading">로딩 중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 결제 내역 탭 -->
+        <div id="payments" class="tab-content">
+            <h2 style="margin-bottom: 1rem;">최근 결제 내역 (100건)</h2>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>주문번호</th>
+                            <th>사용자</th>
+                            <th>결제수단</th>
+                            <th>상품명</th>
+                            <th>금액</th>
+                            <th>상태</th>
+                            <th>결제일시</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payments-body">
+                        <tr><td colspan="7" class="loading">로딩 중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = '';
+        
+        // 토큰 가져오기
+        function getToken() {
+            return localStorage.getItem('auth_token');
+        }
+        
+        // API 요청
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            const token = getToken();
+            if (!token) {
+                alert('로그인이 필요합니다.');
+                window.location.href = '/';
+                return;
+            }
+            
+            const options = {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            const response = await fetch(API_BASE + endpoint, options);
+            
+            if (response.status === 403) {
+                alert('⛔ 관리자 권한이 필요합니다.');
+                window.location.href = '/';
+                return;
+            }
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || '요청 실패');
+            }
+            
+            return response.json();
+        }
+        
+        // 탭 전환
+        function switchTab(tabName) {
+            // 모든 탭 비활성화
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // 선택된 탭 활성화
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            
+            // 데이터 로드
+            if (tabName === 'dashboard') loadDashboard();
+            else if (tabName === 'users') loadUsers();
+            else if (tabName === 'purchases') loadPurchases();
+            else if (tabName === 'payments') loadPayments();
+        }
+        
+        // 대시보드 로드
+        async function loadDashboard() {
+            try {
+                const data = await apiRequest('/api/admin/dashboard');
+                
+                // 통계 카드 렌더링
+                const statsHtml = `
+                    <div class="stat-card">
+                        <div class="stat-label">전체 사용자</div>
+                        <div class="stat-value">${data.total_users.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">회원</div>
+                        <div class="stat-value">${data.total_members.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">관리자</div>
+                        <div class="stat-value">${data.total_admins.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">총 구매</div>
+                        <div class="stat-value">${data.total_purchases.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">총 매출</div>
+                        <div class="stat-value">₩${data.total_revenue.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">게시글</div>
+                        <div class="stat-value">${data.total_posts.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">댓글</div>
+                        <div class="stat-value">${data.total_comments.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">완료된 결제</div>
+                        <div class="stat-value">${data.total_payments.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">주간 신규 가입</div>
+                        <div class="stat-value">${data.new_users_week.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">주간 신규 구매</div>
+                        <div class="stat-value">${data.new_purchases_week.toLocaleString()}</div>
+                    </div>
+                `;
+                
+                document.getElementById('stats-grid').innerHTML = statsHtml;
+                
+                // 인기 프롬프트
+                const tbody = document.getElementById('popular-prompts-body');
+                if (data.popular_prompts.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="empty-state">구매 내역이 없습니다.</td></tr>';
+                } else {
+                    tbody.innerHTML = data.popular_prompts.map(p => `
+                        <tr>
+                            <td>${p.title}</td>
+                            <td>${p.sales_count}건</td>
+                            <td>₩${p.revenue.toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('대시보드 로드 실패:', error);
+                document.getElementById('stats-grid').innerHTML = `<div class="error-message">${error.message}</div>`;
+            }
+        }
+        
+        // 사용자 목록 로드
+        async function loadUsers() {
+            try {
+                const data = await apiRequest('/api/admin/users');
+                const tbody = document.getElementById('users-body');
+                
+                if (data.users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" class="empty-state">사용자가 없습니다.</td></tr>';
+                } else {
+                    tbody.innerHTML = data.users.map(user => `
+                        <tr>
+                            <td>${user.id}</td>
+                            <td>${user.username}</td>
+                            <td>${user.email}</td>
+                            <td>${user.phone || '-'}</td>
+                            <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                            <td>
+                                ${user.is_admin ? '<span class="badge badge-admin">관리자</span>' : ''}
+                                ${user.is_member ? '<span class="badge badge-member">회원</span>' : ''}
+                            </td>
+                            <td>${user.purchase_count}건</td>
+                            <td>₩${user.total_spent.toLocaleString()}</td>
+                            <td>
+                                <button class="action-btn action-btn-primary" onclick="viewUser(${user.id})">
+                                    상세보기
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('사용자 로드 실패:', error);
+                document.getElementById('users-body').innerHTML = `
+                    <tr><td colspan="9" class="error-message">${error.message}</td></tr>
+                `;
+            }
+        }
+        
+        // 구매 내역 로드
+        async function loadPurchases() {
+            try {
+                const data = await apiRequest('/api/admin/purchases');
+                const tbody = document.getElementById('purchases-body');
+                
+                if (data.purchases.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">구매 내역이 없습니다.</td></tr>';
+                } else {
+                    tbody.innerHTML = data.purchases.map(p => `
+                        <tr>
+                            <td>${p.id}</td>
+                            <td>${p.username}</td>
+                            <td>${p.email}</td>
+                            <td>${p.prompt_title}</td>
+                            <td>₩${p.price.toLocaleString()}</td>
+                            <td>${p.purchased_at}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('구매 내역 로드 실패:', error);
+                document.getElementById('purchases-body').innerHTML = `
+                    <tr><td colspan="6" class="error-message">${error.message}</td></tr>
+                `;
+            }
+        }
+        
+        // 결제 내역 로드
+        async function loadPayments() {
+            try {
+                const data = await apiRequest('/api/admin/payments');
+                const tbody = document.getElementById('payments-body');
+                
+                if (data.payments.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">결제 내역이 없습니다.</td></tr>';
+                } else {
+                    tbody.innerHTML = data.payments.map(p => `
+                        <tr>
+                            <td>${p.order_id}</td>
+                            <td>${p.username}</td>
+                            <td>${p.payment_method}</td>
+                            <td>${p.item_name}</td>
+                            <td>₩${p.amount.toLocaleString()}</td>
+                            <td>
+                                ${p.status === 'completed' ? '<span class="badge badge-completed">완료</span>' : ''}
+                                ${p.status === 'pending' ? '<span class="badge badge-pending">대기중</span>' : ''}
+                                ${p.status === 'refunded' ? '<span class="badge badge-refunded">환불</span>' : ''}
+                            </td>
+                            <td>${p.created_at}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('결제 내역 로드 실패:', error);
+                document.getElementById('payments-body').innerHTML = `
+                    <tr><td colspan="7" class="error-message">${error.message}</td></tr>
+                `;
+            }
+        }
+        
+        // 사용자 상세보기
+        async function viewUser(userId) {
+            try {
+                const user = await apiRequest(`/api/admin/users/${userId}`);
+                alert(`사용자 정보:\n\n이름: ${user.username}\n이메일: ${user.email}\n전화번호: ${user.phone || '-'}\n생년월일: ${user.birthdate || '-'}\n가입일: ${user.created_at}\n총 구매: ${user.purchases.length}건\n총 지출: ₩${user.total_spent.toLocaleString()}`);
+            } catch (error) {
+                alert('사용자 정보 로드 실패: ' + error.message);
+            }
+        }
+        
+        // 로그아웃
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/';
+            }
+        }
+        
+        // 초기화
+        async function init() {
+            try {
+                const user = await apiRequest('/api/user/info');
+                document.getElementById('admin-info').textContent = `${user.user.username} (${user.user.email})`;
+                
+                // 대시보드 로드
+                loadDashboard();
+            } catch (error) {
+                alert('관리자 권한 확인 실패: ' + error.message);
+                window.location.href = '/';
+            }
+        }
+        
+        // 페이지 로드 시 초기화
+        init();
+    </script>
+</body>
+</html>
