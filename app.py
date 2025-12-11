@@ -18,6 +18,13 @@ app.config['SETTLEMENT_BANK'] = '농협'
 app.config['SETTLEMENT_ACCOUNT'] = '3521621346013'
 app.config['SETTLEMENT_HOLDER'] = '천성준'
 
+# Toss Payments 설정
+# 테스트 키 (나중에 실제 키로 교체)
+app.config['TOSS_CLIENT_KEY'] = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq'  # 테스트 클라이언트 키
+app.config['TOSS_SECRET_KEY'] = 'test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R'  # 테스트 시크릿 키
+app.config['TOSS_SUCCESS_URL'] = '/payment/success'
+app.config['TOSS_FAIL_URL'] = '/payment/fail'
+
 db = SQLAlchemy(app)
 CORS(app, supports_credentials=True)
 
@@ -1565,6 +1572,305 @@ def init_db():
                 print(f"👑 기존 계정을 관리자로 승격: {admin_email}")
             else:
                 print(f"✅ 관리자 계정 이미 존재: {admin_email}")
+
+# ==================== Toss Payments 결제 API ====================
+
+@app.route('/api/payment/prepare', methods=['POST'])
+@token_required
+def prepare_payment(current_user):
+    """결제 준비 (Toss Payments)"""
+    data = request.get_json()
+    
+    prompt_id = data.get('prompt_id')
+    prompt_title = data.get('prompt_title')
+    original_price = data.get('original_price', 0)
+    
+    if not prompt_id or not prompt_title:
+        return jsonify({'message': '상품 정보가 필요합니다.'}), 400
+    
+    # 할인율 계산
+    discount_rate = current_user.get_discount_rate()
+    final_price = int(original_price * (1 - discount_rate))
+    
+    # 주문 ID 생성 (고유값)
+    order_id = f"ORDER_{current_user.id}_{prompt_id}_{int(datetime.utcnow().timestamp())}"
+    
+    # 결제 정보 반환
+    return jsonify({
+        'order_id': order_id,
+        'order_name': prompt_title,
+        'customer_name': current_user.username,
+        'customer_email': current_user.email,
+        'amount': final_price,
+        'discount_rate': int(discount_rate * 100),  # 퍼센트로 변환
+        'toss_client_key': app.config['TOSS_CLIENT_KEY'],
+        'success_url': f"{request.host_url}payment/success",
+        'fail_url': f"{request.host_url}payment/fail"
+    }), 200
+
+@app.route('/api/payment/confirm', methods=['POST'])
+@token_required
+def confirm_payment(current_user):
+    """결제 승인 (Toss Payments)"""
+    import requests
+    import base64
+    
+    data = request.get_json()
+    
+    payment_key = data.get('paymentKey')
+    order_id = data.get('orderId')
+    amount = data.get('amount')
+    
+    if not payment_key or not order_id or not amount:
+        return jsonify({'message': '결제 정보가 올바르지 않습니다.'}), 400
+    
+    # Toss Payments API 호출
+    secret_key = app.config['TOSS_SECRET_KEY']
+    encoded_key = base64.b64encode(f"{secret_key}:".encode('utf-8')).decode('utf-8')
+    
+    headers = {
+        'Authorization': f'Basic {encoded_key}',
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        'paymentKey': payment_key,
+        'orderId': order_id,
+        'amount': amount
+    }
+    
+    try:
+        response = requests.post(
+            'https://api.tosspayments.com/v1/payments/confirm',
+            headers=headers,
+            json=payload,
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            payment_data = response.json()
+            
+            # 결제 정보 데이터베이스에 저장
+            new_payment = Payment(
+                user_id=current_user.id,
+                order_id=order_id,
+                payment_key=payment_key,
+                payment_method=payment_data.get('method', 'UNKNOWN'),
+                amount=amount,
+                status='DONE',
+                approved_at=datetime.utcnow()
+            )
+            db.session.add(new_payment)
+            
+            # 구매 기록 저장 (기존 로직 유지)
+            prompt_id = order_id.split('_')[2] if len(order_id.split('_')) > 2 else 'unknown'
+            new_purchase = Purchase(
+                user_id=current_user.id,
+                prompt_id=prompt_id,
+                prompt_title=payment_data.get('orderName', '프롬프트'),
+                price=amount
+            )
+            db.session.add(new_purchase)
+            
+            db.session.commit()
+            
+            return jsonify({
+                'message': '결제가 완료되었습니다!',
+                'payment': {
+                    'order_id': order_id,
+                    'amount': amount,
+                    'method': payment_data.get('method'),
+                    'approved_at': payment_data.get('approvedAt')
+                }
+            }), 200
+        else:
+            error_data = response.json()
+            return jsonify({
+                'message': '결제 승인에 실패했습니다.',
+                'error': error_data.get('message', '알 수 없는 오류')
+            }), 400
+            
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            'message': '결제 처리 중 오류가 발생했습니다.',
+            'error': str(e)
+        }), 500
+
+@app.route('/payment/success')
+def payment_success():
+    """결제 성공 페이지"""
+    return '''
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>결제 완료</title>
+        <style>
+            body {
+                font-family: 'Noto Sans KR', sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+            .success-container {
+                background: white;
+                padding: 3rem;
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                text-align: center;
+                max-width: 500px;
+            }
+            .success-icon {
+                font-size: 5rem;
+                margin-bottom: 1rem;
+            }
+            h1 {
+                color: #333;
+                margin-bottom: 1rem;
+            }
+            p {
+                color: #666;
+                line-height: 1.6;
+                margin-bottom: 2rem;
+            }
+            .btn {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 1rem 2rem;
+                border: none;
+                border-radius: 10px;
+                font-size: 1rem;
+                cursor: pointer;
+                text-decoration: none;
+                display: inline-block;
+            }
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            }
+        </style>
+        <script>
+            // URL에서 결제 정보 추출
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentKey = urlParams.get('paymentKey');
+            const orderId = urlParams.get('orderId');
+            const amount = urlParams.get('amount');
+            
+            // 자동으로 결제 승인 처리
+            if (paymentKey && orderId && amount) {
+                const token = localStorage.getItem('token');
+                
+                fetch('/api/payment/confirm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        paymentKey: paymentKey,
+                        orderId: orderId,
+                        amount: parseInt(amount)
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('결제 승인 완료:', data);
+                })
+                .catch(error => {
+                    console.error('결제 승인 실패:', error);
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <div class="success-container">
+            <div class="success-icon">✅</div>
+            <h1>결제가 완료되었습니다!</h1>
+            <p>
+                구매하신 프롬프트는 마이페이지에서 확인하실 수 있습니다.<br>
+                찐부부 AI 프롬프트를 이용해주셔서 감사합니다!
+            </p>
+            <a href="/" class="btn">홈으로 돌아가기</a>
+        </div>
+    </body>
+    </html>
+    '''
+
+@app.route('/payment/fail')
+def payment_fail():
+    """결제 실패 페이지"""
+    return '''
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>결제 실패</title>
+        <style>
+            body {
+                font-family: 'Noto Sans KR', sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+            .fail-container {
+                background: white;
+                padding: 3rem;
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                text-align: center;
+                max-width: 500px;
+            }
+            .fail-icon {
+                font-size: 5rem;
+                margin-bottom: 1rem;
+            }
+            h1 {
+                color: #333;
+                margin-bottom: 1rem;
+            }
+            p {
+                color: #666;
+                line-height: 1.6;
+                margin-bottom: 2rem;
+            }
+            .btn {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 1rem 2rem;
+                border: none;
+                border-radius: 10px;
+                font-size: 1rem;
+                cursor: pointer;
+                text-decoration: none;
+                display: inline-block;
+            }
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="fail-container">
+            <div class="fail-icon">❌</div>
+            <h1>결제에 실패했습니다</h1>
+            <p>
+                결제 처리 중 문제가 발생했습니다.<br>
+                다시 시도해주시거나, 문제가 계속되면 고객센터로 문의해주세요.
+            </p>
+            <a href="/" class="btn">홈으로 돌아가기</a>
+        </div>
+    </body>
+    </html>
+    '''
 
 if __name__ == '__main__':
     init_db()

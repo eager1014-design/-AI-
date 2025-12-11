@@ -786,6 +786,7 @@ function openModal(prompt) {
         
         purchaseBtn.style.display = 'block';
         purchaseBtn.textContent = prompt.isSubscription ? '구독 시작하기' : '구매하기';
+        purchaseBtn.setAttribute('data-prompt-id', prompt.id);
     }
     
     promptModal.classList.add('active');
