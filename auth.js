@@ -221,6 +221,13 @@ async function handleLogin(event) {
         AuthManager.setToken(response.token);
         AuthManager.setUser(response.user);
         
+        // 관리자인 경우 대시보드로 이동
+        if (response.user.is_admin) {
+            alert('👑 관리자로 로그인되었습니다. 관리자 대시보드로 이동합니다.');
+            window.location.href = '/admin-dashboard.html';
+            return;
+        }
+        
         alert('✅ ' + response.message);
         closeAuthModal();
         updateUIForLoggedInUser(response.user);
@@ -237,6 +244,12 @@ function closeAuthModal() {
 }
 
 function updateUIForLoggedInUser(user) {
+    // 관리자 버튼 표시/숨김
+    const adminBtn = document.getElementById('adminBtn');
+    if (adminBtn && user.is_admin) {
+        adminBtn.style.display = 'flex';
+    }
+    
     // 헤더에 사용자 정보 표시
     const nav = document.querySelector('.nav');
     if (nav) {
@@ -255,10 +268,16 @@ function updateUIForLoggedInUser(user) {
     // 회원/비회원 가격 자동 설정
     if (user.is_member) {
         isMember = true;
-        document.getElementById('memberSwitch').checked = false;
+        const memberSwitch = document.getElementById('memberSwitch');
+        if (memberSwitch) {
+            memberSwitch.checked = false;
+        }
     } else {
         isMember = false;
-        document.getElementById('memberSwitch').checked = true;
+        const memberSwitch = document.getElementById('memberSwitch');
+        if (memberSwitch) {
+            memberSwitch.checked = true;
+        }
     }
     
     updatePrices();

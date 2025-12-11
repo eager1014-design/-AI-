@@ -120,6 +120,46 @@ body {
     font-size: 0.9375rem;
 }
 
+/* 관리자 버튼 */
+.admin-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+    color: white;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+}
+
+.admin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.5);
+    background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%);
+}
+
+.admin-icon {
+    font-size: 1.125rem;
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        transform: scale(1.2) rotate(5deg);
+    }
+}
+
+.admin-text {
+    font-size: 0.9375rem;
+}
+
 /* 회원/비회원 토글 */
 .membership-toggle {
     display: flex;

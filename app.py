@@ -13,6 +13,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///jjinbubu_market.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
+# 정산 계좌 정보
+app.config['SETTLEMENT_BANK'] = '농협'
+app.config['SETTLEMENT_ACCOUNT'] = '3521621346013'
+app.config['SETTLEMENT_HOLDER'] = '천성준'
+
 db = SQLAlchemy(app)
 CORS(app, supports_credentials=True)
 
@@ -750,7 +755,12 @@ def admin_dashboard(current_user):
         'total_payments': total_payments,
         'new_users_week': new_users_week,
         'new_purchases_week': new_purchases_week,
-        'popular_prompts': popular_prompts_data
+        'popular_prompts': popular_prompts_data,
+        'settlement_account': {
+            'bank': app.config['SETTLEMENT_BANK'],
+            'account': app.config['SETTLEMENT_ACCOUNT'],
+            'holder': app.config['SETTLEMENT_HOLDER']
+        }
     }), 200
 
 # ==================== 결제 API ====================
