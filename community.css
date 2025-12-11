@@ -47,10 +47,12 @@
     background: white;
     border-radius: 16px;
     padding: 1.5rem;
+    padding-top: 4rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border: 1px solid #e5e7eb;
     transition: all 0.3s ease;
     position: relative;
+    min-height: 150px;
 }
 
 .post-card:hover {

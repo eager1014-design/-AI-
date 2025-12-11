@@ -19,7 +19,7 @@
                     <span class="logo-text">찐부부 AI 프롬프트</span>
                 </div>
                 <nav class="nav">
-                    <a href="/community.html" class="community-btn">
+                    <a href="#communitySection" class="community-btn" onclick="event.preventDefault(); document.getElementById('communitySection').scrollIntoView({behavior: 'smooth'})">
                         <span class="community-icon">💬</span>
                         <span class="community-text">커뮤니티</span>
                     </a>
@@ -462,9 +462,9 @@
             </div>
             
             <div class="gallery-footer">
-                <a href="/community-mobile.html" class="more-photos-btn">
-                    더 많은 사진 보기 →
-                </a>
+                <button class="more-photos-btn" onclick="document.getElementById('photoGallery').scrollIntoView({behavior: 'smooth'})">
+                    사진 갤러리 보기 →
+                </button>
             </div>
         </div>
     </section>
