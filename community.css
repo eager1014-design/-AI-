@@ -65,6 +65,7 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1rem;
+    position: relative;
 }
 
 .post-badge {
@@ -77,8 +78,12 @@
 }
 
 .post-actions {
-    display: flex;
+    display: flex !important;
     gap: 0.5rem;
+    position: absolute;
+    top: -2.5rem;
+    right: 0;
+    z-index: 10;
 }
 
 .post-edit-btn,
