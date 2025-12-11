@@ -137,6 +137,23 @@ class SomoimPost(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class SomoimPhoto(db.Model):
+    """소모임 활동 사진 갤러리"""
+    id = db.Column(db.Integer, primary_key=True)
+    somoim_id = db.Column(db.String(100), nullable=False)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
+    image_url = db.Column(db.String(500), nullable=False)
+    photo_date = db.Column(db.DateTime, nullable=True)  # 사진 촬영 날짜
+    location = db.Column(db.String(200))  # 장소
+    tags = db.Column(db.String(200))  # 태그 (쉼표로 구분)
+    likes = db.Column(db.Integer, default=0)
+    views = db.Column(db.Integer, default=0)
+    is_featured = db.Column(db.Boolean, default=False)  # 메인에 노출 여부
+    display_order = db.Column(db.Integer, default=0)  # 표시 순서
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 # ==================== 헬퍼 함수 ====================
 
 def token_required(f):
@@ -993,6 +1010,172 @@ def like_somoim_post(post_id):
     db.session.commit()
     
     return jsonify({'message': '좋아요!', 'likes': post.likes}), 200
+
+# ==================== 소모임 사진 갤러리 API ====================
+
+# 소모임 사진 목록 조회
+@app.route('/api/somoim/photos', methods=['GET'])
+def get_somoim_photos():
+    """소모임 활동 사진 조회"""
+    featured_only = request.args.get('featured', 'false').lower() == 'true'
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 12))
+    
+    query = SomoimPhoto.query
+    
+    if featured_only:
+        query = query.filter_by(is_featured=True)
+    
+    photos = query.order_by(SomoimPhoto.display_order.desc(), SomoimPhoto.created_at.desc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+    
+    photos_data = []
+    for photo in photos.items:
+        photos_data.append({
+            'id': photo.id,
+            'somoim_id': photo.somoim_id,
+            'title': photo.title,
+            'description': photo.description,
+            'image_url': photo.image_url,
+            'photo_date': photo.photo_date.isoformat() if photo.photo_date else None,
+            'location': photo.location,
+            'tags': photo.tags.split(',') if photo.tags else [],
+            'likes': photo.likes,
+            'views': photo.views,
+            'is_featured': photo.is_featured,
+            'created_at': photo.created_at.isoformat()
+        })
+    
+    return jsonify({
+        'photos': photos_data,
+        'total': photos.total,
+        'page': page,
+        'per_page': per_page,
+        'total_pages': photos.pages
+    }), 200
+
+# 소모임 사진 상세 조회
+@app.route('/api/somoim/photos/<int:photo_id>', methods=['GET'])
+def get_somoim_photo(photo_id):
+    """소모임 사진 상세 조회"""
+    photo = SomoimPhoto.query.get_or_404(photo_id)
+    
+    # 조회수 증가
+    photo.views += 1
+    db.session.commit()
+    
+    return jsonify({
+        'id': photo.id,
+        'somoim_id': photo.somoim_id,
+        'title': photo.title,
+        'description': photo.description,
+        'image_url': photo.image_url,
+        'photo_date': photo.photo_date.isoformat() if photo.photo_date else None,
+        'location': photo.location,
+        'tags': photo.tags.split(',') if photo.tags else [],
+        'likes': photo.likes,
+        'views': photo.views,
+        'is_featured': photo.is_featured,
+        'display_order': photo.display_order,
+        'created_at': photo.created_at.isoformat()
+    }), 200
+
+# 소모임 사진 등록 (관리자 전용)
+@app.route('/api/somoim/photos', methods=['POST'])
+@admin_required
+def create_somoim_photo(current_user):
+    """소모임 사진 등록 (관리자 전용)"""
+    data = request.get_json()
+    
+    if not data or not data.get('title') or not data.get('image_url'):
+        return jsonify({'message': '제목과 이미지 URL을 입력해주세요.'}), 400
+    
+    photo_date = None
+    if data.get('photo_date'):
+        try:
+            photo_date = datetime.fromisoformat(data['photo_date'])
+        except:
+            pass
+    
+    new_photo = SomoimPhoto(
+        somoim_id=data.get('somoim_id', '8cafe332-cbff-11ef-b613-0a50aa12fbb11'),
+        title=data['title'],
+        description=data.get('description'),
+        image_url=data['image_url'],
+        photo_date=photo_date,
+        location=data.get('location'),
+        tags=data.get('tags'),
+        is_featured=data.get('is_featured', False),
+        display_order=data.get('display_order', 0)
+    )
+    
+    db.session.add(new_photo)
+    db.session.commit()
+    
+    return jsonify({
+        'message': '사진이 등록되었습니다!',
+        'photo': {
+            'id': new_photo.id,
+            'title': new_photo.title,
+            'created_at': new_photo.created_at.isoformat()
+        }
+    }), 201
+
+# 소모임 사진 수정 (관리자 전용)
+@app.route('/api/somoim/photos/<int:photo_id>', methods=['PUT'])
+@admin_required
+def update_somoim_photo(current_user, photo_id):
+    """소모임 사진 수정 (관리자 전용)"""
+    photo = SomoimPhoto.query.get_or_404(photo_id)
+    data = request.get_json()
+    
+    if data.get('title'):
+        photo.title = data['title']
+    if data.get('description'):
+        photo.description = data['description']
+    if data.get('image_url'):
+        photo.image_url = data['image_url']
+    if data.get('location'):
+        photo.location = data['location']
+    if data.get('tags'):
+        photo.tags = data['tags']
+    if data.get('photo_date'):
+        try:
+            photo.photo_date = datetime.fromisoformat(data['photo_date'])
+        except:
+            pass
+    if 'is_featured' in data:
+        photo.is_featured = data['is_featured']
+    if 'display_order' in data:
+        photo.display_order = data['display_order']
+    
+    photo.updated_at = datetime.utcnow()
+    db.session.commit()
+    
+    return jsonify({'message': '사진이 수정되었습니다.'}), 200
+
+# 소모임 사진 삭제 (관리자 전용)
+@app.route('/api/somoim/photos/<int:photo_id>', methods=['DELETE'])
+@admin_required
+def delete_somoim_photo(current_user, photo_id):
+    """소모임 사진 삭제 (관리자 전용)"""
+    photo = SomoimPhoto.query.get_or_404(photo_id)
+    
+    db.session.delete(photo)
+    db.session.commit()
+    
+    return jsonify({'message': '사진이 삭제되었습니다.'}), 200
+
+# 소모임 사진 좋아요
+@app.route('/api/somoim/photos/<int:photo_id>/like', methods=['POST'])
+def like_somoim_photo(photo_id):
+    """소모임 사진 좋아요"""
+    photo = SomoimPhoto.query.get_or_404(photo_id)
+    photo.likes += 1
+    db.session.commit()
+    
+    return jsonify({'message': '좋아요!', 'likes': photo.likes}), 200
 
 # ==================== 관리자 API ====================
 

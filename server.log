@@ -187,3 +187,50 @@
 10.64.166.34 - - [11/Dec/2025 11:46:28] "GET /auth.js HTTP/1.1" 200 -
 10.64.166.34 - - [11/Dec/2025 11:46:29] "GET /api/user/discount HTTP/1.1" 200 -
 10.64.166.34 - - [11/Dec/2025 11:46:29] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.64.166.34 - - [11/Dec/2025 11:47:44] "GET / HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:47:44] "GET /styles.css HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:47:44] "[36mGET /script.js HTTP/1.1[0m" 304 -
+10.64.166.34 - - [11/Dec/2025 11:47:44] "[36mGET /auth.js HTTP/1.1[0m" 304 -
+10.64.166.34 - - [11/Dec/2025 11:47:44] "[36mGET /somoim-integration.js HTTP/1.1[0m" 304 -
+10.64.166.34 - - [11/Dec/2025 11:47:44] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:48:45] "GET /api/user/discount HTTP/1.1" 200 -
+ * Detected change in '/home/user/webapp/app.py', reloading
+ * Restarting with stat
+✅ 데이터베이스 테이블 생성 완료!
+✅ 관리자 계정 이미 존재: eager1014@gmail.com
+==================================================
+🚀 찐부부 AI 프롬프트 마켓 서버 시작!
+==================================================
+👑 관리자 이메일: eager1014@gmail.com
+==================================================
+ * Debugger is active!
+ * Debugger PIN: 122-972-965
+/home/user/webapp/app.py:172: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  current_user = User.query.get(data['user_id'])
+/home/user/webapp/app.py:60: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  time_since_signup = datetime.utcnow() - self.created_at
+/home/user/webapp/app.py:555: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  time_since_signup = datetime.utcnow() - current_user.created_at
+10.64.166.34 - - [11/Dec/2025 11:49:45] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:49:46] "GET /api/user/discount HTTP/1.1" 200 -
+ * Detected change in '/home/user/webapp/app.py', reloading
+ * Restarting with stat
+✅ 데이터베이스 테이블 생성 완료!
+✅ 관리자 계정 이미 존재: eager1014@gmail.com
+==================================================
+🚀 찐부부 AI 프롬프트 마켓 서버 시작!
+==================================================
+👑 관리자 이메일: eager1014@gmail.com
+==================================================
+ * Debugger is active!
+ * Debugger PIN: 122-972-965
+/home/user/webapp/app.py:172: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  current_user = User.query.get(data['user_id'])
+/home/user/webapp/app.py:60: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  time_since_signup = datetime.utcnow() - self.created_at
+/home/user/webapp/app.py:555: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  time_since_signup = datetime.utcnow() - current_user.created_at
+10.64.166.34 - - [11/Dec/2025 11:50:45] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:50:46] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:50:46] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.166.34 - - [11/Dec/2025 11:50:47] "GET /api/user/discount HTTP/1.1" 200 -
