@@ -24,3 +24,145 @@
  * Debugger PIN: 122-972-965
 127.0.0.1 - - [11/Dec/2025 14:24:58] "GET / HTTP/1.1" 200 -
 10.64.252.176 - - [11/Dec/2025 14:26:57] "HEAD / HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:27:46] "GET / HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:28:05] "GET / HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:28:38] "GET / HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:28:38] "GET /styles.css HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:28:38] "GET /mobile-enhanced.css HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:28:38] "GET /somoim-integration.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:28:38] "GET /auth.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:28:38] "GET /script.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:28:38] "GET /payment.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:28:38] "GET /photo-gallery.js HTTP/1.1" 200 -
+/home/user/webapp/app.py:217: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  current_user = User.query.get(data['user_id'])
+/home/user/webapp/app.py:67: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  time_since_signup = datetime.utcnow() - self.created_at
+/home/user/webapp/app.py:600: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  time_since_signup = datetime.utcnow() - current_user.created_at
+10.64.252.176 - - [11/Dec/2025 14:28:39] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:28:39] "GET /api/somoim/photos?featured=true&per_page=6 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:28:39] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.64.252.176 - - [11/Dec/2025 14:29:13] "GET /community-mobile.html HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:29:13] "GET /api/posts?per_page=50 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:29:13] "GET /api/somoim/posts?per_page=50 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:29:23] "GET /somoim-test.html HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:29:25] "GET /api/somoim/posts?per_page=50 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:29:26] "[36mGET / HTTP/1.1[0m" 304 -
+10.64.252.176 - - [11/Dec/2025 14:29:26] "[36mGET /styles.css HTTP/1.1[0m" 304 -
+10.64.252.176 - - [11/Dec/2025 14:29:26] "[36mGET /mobile-enhanced.css HTTP/1.1[0m" 304 -
+10.64.252.176 - - [11/Dec/2025 14:29:26] "[36mGET /script.js HTTP/1.1[0m" 304 -
+10.64.252.176 - - [11/Dec/2025 14:29:26] "[36mGET /auth.js HTTP/1.1[0m" 304 -
+10.64.252.176 - - [11/Dec/2025 14:29:26] "[36mGET /payment.js HTTP/1.1[0m" 304 -
+10.64.252.176 - - [11/Dec/2025 14:29:26] "[36mGET /somoim-integration.js HTTP/1.1[0m" 304 -
+10.64.252.176 - - [11/Dec/2025 14:29:26] "[36mGET /photo-gallery.js HTTP/1.1[0m" 304 -
+10.64.252.176 - - [11/Dec/2025 14:29:26] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:29:26] "GET /api/somoim/photos?featured=true&per_page=6 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:31:24] "[36mGET /community-mobile.html HTTP/1.1[0m" 304 -
+10.64.252.176 - - [11/Dec/2025 14:31:25] "GET /api/posts?per_page=50 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:31:25] "GET /api/somoim/posts?per_page=50 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:31:31] "[31m[1mGET / HTTP/1.1[0m" 416 -
+10.64.252.176 - - [11/Dec/2025 14:31:33] "[31m[1mGET /community-mobile.html HTTP/1.1[0m" 416 -
+10.64.252.176 - - [11/Dec/2025 14:31:34] "[31m[1mGET /mypage.html HTTP/1.1[0m" 416 -
+10.64.252.176 - - [11/Dec/2025 14:31:46] "[31m[1mGET /dashboard.html HTTP/1.1[0m" 416 -
+10.64.252.176 - - [11/Dec/2025 14:32:01] "[31m[1mGET /admin-login.html HTTP/1.1[0m" 416 -
+10.64.252.176 - - [11/Dec/2025 14:33:05] "GET /api/somoim/posts?per_page=50 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:33:09] "GET /community.html HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:33:09] "[36mGET /styles.css HTTP/1.1[0m" 304 -
+10.64.252.176 - - [11/Dec/2025 14:33:09] "[36mGET /auth.js HTTP/1.1[0m" 304 -
+10.64.252.176 - - [11/Dec/2025 14:33:09] "GET /community.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:33:10] "GET /api/posts?page=1&per_page=10 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:04] "GET / HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:05] "GET /styles.css HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:05] "GET /mobile-enhanced.css HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:05] "GET /script.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:05] "GET /auth.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:05] "GET /photo-gallery.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:05] "GET /somoim-integration.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:05] "GET /payment.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:07] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:07] "GET /api/somoim/photos?featured=true&per_page=6 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:07] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.64.252.176 - - [11/Dec/2025 14:34:15] "GET / HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:15] "GET /styles.css HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:15] "GET /mobile-enhanced.css HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:15] "GET /photo-gallery.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:15] "GET /script.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:15] "GET /somoim-integration.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:15] "GET /payment.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:15] "GET /auth.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:17] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:17] "GET /api/somoim/photos?featured=true&per_page=6 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:17] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.64.252.176 - - [11/Dec/2025 14:34:35] "GET / HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:35] "GET /styles.css HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:35] "GET /mobile-enhanced.css HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:35] "GET /payment.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:35] "GET /somoim-integration.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:35] "GET /auth.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:35] "GET /photo-gallery.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:35] "GET /script.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:36] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:36] "GET /api/somoim/photos?featured=true&per_page=6 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:36] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.64.252.176 - - [11/Dec/2025 14:34:38] "GET / HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:39] "GET /mobile-enhanced.css HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:39] "GET /styles.css HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:39] "GET /script.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:39] "GET /photo-gallery.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:39] "GET /somoim-integration.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:39] "GET /auth.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:39] "GET /payment.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:40] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:40] "GET /api/somoim/photos?featured=true&per_page=6 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:40] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+10.64.252.176 - - [11/Dec/2025 14:34:54] "GET / HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:54] "GET /styles.css HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:54] "GET /mobile-enhanced.css HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:55] "GET /script.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:55] "GET /payment.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:55] "GET /somoim-integration.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:55] "GET /photo-gallery.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:55] "GET /auth.js HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:55] "GET /api/user/discount HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:55] "GET /api/somoim/photos?featured=true&per_page=6 HTTP/1.1" 200 -
+10.64.252.176 - - [11/Dec/2025 14:34:55] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+ * Detected change in '/home/user/webapp/app.py', reloading
+ * Restarting with stat
+Traceback (most recent call last):
+  File "/home/user/webapp/app.py", line 2114, in <module>
+    init_db()
+  File "/home/user/webapp/app.py", line 1591, in init_db
+    db.create_all()
+  File "/usr/local/lib/python3.12/site-packages/flask_sqlalchemy/extension.py", line 900, in create_all
+    self._call_for_binds(bind_key, "create_all")
+  File "/usr/local/lib/python3.12/site-packages/flask_sqlalchemy/extension.py", line 881, in _call_for_binds
+    getattr(metadata, op_name)(bind=engine)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 5928, in create_all
+    bind._run_ddl_visitor(
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3260, in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2467, in _run_ddl_visitor
+    ).traverse_single(element)
+      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/sql/visitors.py", line 661, in traverse_single
+    return meth(obj, **kw)
+           ^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/sql/ddl.py", line 962, in visit_metadata
+    collection = sort_tables_and_constraints(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/sql/ddl.py", line 1394, in sort_tables_and_constraints
+    dependent_on = fkc.referred_table
+                   ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 4799, in referred_table
+    return self.elements[0].column.table
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 1226, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+                                           ^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 3199, in column
+    return self._resolve_column()
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 3222, in _resolve_column
+    raise exc.NoReferencedTableError(
+sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'community_posts.author_id' could not find table 'users' with which to generate a foreign key to target column 'id'

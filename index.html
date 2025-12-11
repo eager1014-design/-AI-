@@ -6,6 +6,7 @@
     <title>찐부부 AI 프롬프트 마켓 - SNS 성장 전문</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="mobile-enhanced.css">
+    <link rel="stylesheet" href="community.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -427,6 +428,28 @@
         </a>
     </div>
 
+    <!-- 💬 커뮤니티 섹션 -->
+    <section class="community-section" id="communitySection">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">💬 찐부부 커뮤니티</h2>
+                <p class="section-subtitle">함께 성장하는 크리에이터 커뮤니티</p>
+            </div>
+            
+            <!-- 글쓰기 버튼 (관리자 전용) -->
+            <div class="community-write-btn-wrapper" id="writeButtonWrapper" style="display: none;">
+                <button class="community-write-btn" id="writePostBtn">
+                    ✍️ 새 글 쓰기
+                </button>
+            </div>
+            
+            <!-- 게시글 목록 -->
+            <div class="community-posts" id="communityPosts">
+                <div class="posts-loading">게시글을 불러오는 중...</div>
+            </div>
+        </div>
+    </section>
+
     <!-- 소모임 활동 사진 갤러리 -->
     <section class="photo-gallery">
         <div class="container">
@@ -478,6 +501,34 @@
     <script src="somoim-integration.js"></script>
     <script src="photo-gallery.js"></script>
     <script src="payment.js"></script>
+    <script src="community.js"></script>
+    
+    <!-- 💬 커뮤니티 글쓰기/수정 모달 -->
+    <div class="community-modal" id="communityModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">✍️ 새 글 쓰기</h3>
+                <button class="modal-close" id="modalClose">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="postForm">
+                    <input type="hidden" id="postId">
+                    <div class="form-group">
+                        <label class="form-label" for="postTitle">제목</label>
+                        <input type="text" class="form-input" id="postTitle" placeholder="제목을 입력하세요" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="postContent">내용</label>
+                        <textarea class="form-textarea" id="postContent" placeholder="내용을 입력하세요" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="btnCancel">취소</button>
+                <button class="btn-submit" id="btnSubmit">작성하기</button>
+            </div>
+        </div>
+    </div>
     
     <!-- 🎯 모바일 하단 네비게이션 -->
     <nav class="mobile-bottom-nav" style="display: none;" id="mobileBottomNav">

@@ -161,6 +161,20 @@ class SomoimPhoto(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+# 커뮤니티 게시글 모델
+class CommunityPost(db.Model):
+    __tablename__ = 'community_posts'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationship
+    author = db.relationship('User', backref='posts')
+
 class Coupon(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(50), unique=True, nullable=False)  # 쿠폰 코드
@@ -2095,6 +2109,149 @@ def payment_fail():
     </body>
     </html>
     '''
+
+# ==================== 커뮤니티 API ====================
+
+# 게시글 목록 조회 (모든 사용자)
+@app.route('/api/community/posts', methods=['GET'])
+def get_community_posts():
+    try:
+        posts = CommunityPost.query.order_by(CommunityPost.created_at.desc()).all()
+        
+        posts_list = []
+        for post in posts:
+            posts_list.append({
+                'id': post.id,
+                'title': post.title,
+                'content': post.content,
+                'author_id': post.author_id,
+                'created_at': post.created_at.isoformat(),
+                'updated_at': post.updated_at.isoformat()
+            })
+        
+        return jsonify({
+            'success': True,
+            'posts': posts_list
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# 게시글 단일 조회 (관리자만)
+@app.route('/api/community/posts/<int:post_id>', methods=['GET'])
+@token_required
+def get_community_post(current_user, post_id):
+    try:
+        post = CommunityPost.query.get_or_404(post_id)
+        
+        return jsonify({
+            'success': True,
+            'post': {
+                'id': post.id,
+                'title': post.title,
+                'content': post.content,
+                'author_id': post.author_id,
+                'created_at': post.created_at.isoformat(),
+                'updated_at': post.updated_at.isoformat()
+            }
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# 게시글 작성 (관리자만)
+@app.route('/api/community/posts', methods=['POST'])
+@token_required
+def create_community_post(current_user):
+    if not current_user.is_admin:
+        return jsonify({'error': '관리자만 게시글을 작성할 수 있습니다.'}), 403
+    
+    try:
+        data = request.get_json()
+        title = data.get('title', '').strip()
+        content = data.get('content', '').strip()
+        
+        if not title or not content:
+            return jsonify({'error': '제목과 내용을 입력해주세요.'}), 400
+        
+        new_post = CommunityPost(
+            title=title,
+            content=content,
+            author_id=current_user.id
+        )
+        
+        db.session.add(new_post)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': '게시글이 작성되었습니다.',
+            'post': {
+                'id': new_post.id,
+                'title': new_post.title,
+                'content': new_post.content,
+                'created_at': new_post.created_at.isoformat()
+            }
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+# 게시글 수정 (관리자만)
+@app.route('/api/community/posts/<int:post_id>', methods=['PUT'])
+@token_required
+def update_community_post(current_user, post_id):
+    if not current_user.is_admin:
+        return jsonify({'error': '관리자만 게시글을 수정할 수 있습니다.'}), 403
+    
+    try:
+        post = CommunityPost.query.get_or_404(post_id)
+        
+        data = request.get_json()
+        title = data.get('title', '').strip()
+        content = data.get('content', '').strip()
+        
+        if not title or not content:
+            return jsonify({'error': '제목과 내용을 입력해주세요.'}), 400
+        
+        post.title = title
+        post.content = content
+        post.updated_at = datetime.utcnow()
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': '게시글이 수정되었습니다.',
+            'post': {
+                'id': post.id,
+                'title': post.title,
+                'content': post.content,
+                'updated_at': post.updated_at.isoformat()
+            }
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+# 게시글 삭제 (관리자만)
+@app.route('/api/community/posts/<int:post_id>', methods=['DELETE'])
+@token_required
+def delete_community_post(current_user, post_id):
+    if not current_user.is_admin:
+        return jsonify({'error': '관리자만 게시글을 삭제할 수 있습니다.'}), 403
+    
+    try:
+        post = CommunityPost.query.get_or_404(post_id)
+        
+        db.session.delete(post)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': '게시글이 삭제되었습니다.'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     init_db()
