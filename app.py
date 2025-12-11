@@ -120,6 +120,23 @@ class Comment(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user = db.relationship('User', backref='comments')
 
+class SomoimPost(db.Model):
+    """소모임 연동 게시글 (공지사항, 정모 등)"""
+    id = db.Column(db.Integer, primary_key=True)
+    somoim_id = db.Column(db.String(100), nullable=False)  # 소모임 고유 ID
+    somoim_post_id = db.Column(db.String(100))  # 소모임 측 게시글 ID
+    post_type = db.Column(db.String(20), nullable=False)  # 'notice', 'meeting', 'general'
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    author = db.Column(db.String(80), default='소모임 관리자')
+    meeting_date = db.Column(db.DateTime, nullable=True)  # 정모 일시
+    meeting_location = db.Column(db.String(200), nullable=True)  # 정모 장소
+    is_synced_to_main = db.Column(db.Boolean, default=True)  # 메인 홈페이지에 표시 여부
+    views = db.Column(db.Integer, default=0)
+    likes = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 # ==================== 헬퍼 함수 ====================
 
 def token_required(f):
@@ -805,6 +822,173 @@ def delete_comment(current_user, comment_id):
 @token_required
 def like_post(current_user, post_id):
     post = Post.query.get_or_404(post_id)
+    post.likes += 1
+    db.session.commit()
+    
+    return jsonify({'message': '좋아요!', 'likes': post.likes}), 200
+
+# ==================== 소모임 연동 API ====================
+
+# 소모임 게시글 목록 조회
+@app.route('/api/somoim/posts', methods=['GET'])
+def get_somoim_posts():
+    """소모임 연동 게시글 조회 (공지, 정모 등)"""
+    post_type = request.args.get('type', 'all')  # all, notice, meeting
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 20))
+    
+    query = SomoimPost.query.filter_by(is_synced_to_main=True)
+    
+    if post_type != 'all':
+        query = query.filter_by(post_type=post_type)
+    
+    posts = query.order_by(SomoimPost.created_at.desc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+    
+    posts_data = []
+    for post in posts.items:
+        posts_data.append({
+            'id': post.id,
+            'somoim_id': post.somoim_id,
+            'post_type': post.post_type,
+            'title': post.title,
+            'content': post.content,
+            'author': post.author,
+            'meeting_date': post.meeting_date.isoformat() if post.meeting_date else None,
+            'meeting_location': post.meeting_location,
+            'views': post.views,
+            'likes': post.likes,
+            'created_at': post.created_at.isoformat(),
+            'updated_at': post.updated_at.isoformat()
+        })
+    
+    return jsonify({
+        'posts': posts_data,
+        'total': posts.total,
+        'page': page,
+        'per_page': per_page,
+        'total_pages': posts.pages
+    }), 200
+
+# 소모임 게시글 상세 조회
+@app.route('/api/somoim/posts/<int:post_id>', methods=['GET'])
+def get_somoim_post(post_id):
+    """소모임 게시글 상세 조회"""
+    post = SomoimPost.query.get_or_404(post_id)
+    
+    # 조회수 증가
+    post.views += 1
+    db.session.commit()
+    
+    return jsonify({
+        'id': post.id,
+        'somoim_id': post.somoim_id,
+        'post_type': post.post_type,
+        'title': post.title,
+        'content': post.content,
+        'author': post.author,
+        'meeting_date': post.meeting_date.isoformat() if post.meeting_date else None,
+        'meeting_location': post.meeting_location,
+        'views': post.views,
+        'likes': post.likes,
+        'created_at': post.created_at.isoformat(),
+        'updated_at': post.updated_at.isoformat()
+    }), 200
+
+# 소모임 게시글 등록 (관리자 또는 소모임에서 자동 동기화)
+@app.route('/api/somoim/posts', methods=['POST'])
+@admin_required
+def create_somoim_post(current_user):
+    """소모임 게시글 등록 (관리자 전용 또는 소모임 자동 동기화)"""
+    data = request.get_json()
+    
+    if not data or not data.get('title') or not data.get('content'):
+        return jsonify({'message': '제목과 내용을 입력해주세요.'}), 400
+    
+    post_type = data.get('post_type', 'general')  # notice, meeting, general
+    
+    # 정모 게시글인 경우 날짜와 장소 필수
+    meeting_date = None
+    if post_type == 'meeting':
+        meeting_date_str = data.get('meeting_date')
+        if meeting_date_str:
+            try:
+                meeting_date = datetime.fromisoformat(meeting_date_str)
+            except:
+                meeting_date = None
+    
+    new_post = SomoimPost(
+        somoim_id=data.get('somoim_id', '8cafe332-cbff-11ef-b613-0a50aa12fbb11'),
+        somoim_post_id=data.get('somoim_post_id'),
+        post_type=post_type,
+        title=data['title'],
+        content=data['content'],
+        author=data.get('author', '소모임 관리자'),
+        meeting_date=meeting_date,
+        meeting_location=data.get('meeting_location'),
+        is_synced_to_main=data.get('is_synced_to_main', True)
+    )
+    
+    db.session.add(new_post)
+    db.session.commit()
+    
+    return jsonify({
+        'message': '소모임 게시글이 등록되었습니다!',
+        'post': {
+            'id': new_post.id,
+            'title': new_post.title,
+            'post_type': new_post.post_type,
+            'created_at': new_post.created_at.isoformat()
+        }
+    }), 201
+
+# 소모임 게시글 수정
+@app.route('/api/somoim/posts/<int:post_id>', methods=['PUT'])
+@admin_required
+def update_somoim_post(current_user, post_id):
+    """소모임 게시글 수정 (관리자 전용)"""
+    post = SomoimPost.query.get_or_404(post_id)
+    data = request.get_json()
+    
+    if data.get('title'):
+        post.title = data['title']
+    if data.get('content'):
+        post.content = data['content']
+    if data.get('post_type'):
+        post.post_type = data['post_type']
+    if data.get('meeting_location'):
+        post.meeting_location = data['meeting_location']
+    if data.get('meeting_date'):
+        try:
+            post.meeting_date = datetime.fromisoformat(data['meeting_date'])
+        except:
+            pass
+    if 'is_synced_to_main' in data:
+        post.is_synced_to_main = data['is_synced_to_main']
+    
+    post.updated_at = datetime.utcnow()
+    db.session.commit()
+    
+    return jsonify({'message': '게시글이 수정되었습니다.'}), 200
+
+# 소모임 게시글 삭제
+@app.route('/api/somoim/posts/<int:post_id>', methods=['DELETE'])
+@admin_required
+def delete_somoim_post(current_user, post_id):
+    """소모임 게시글 삭제 (관리자 전용)"""
+    post = SomoimPost.query.get_or_404(post_id)
+    
+    db.session.delete(post)
+    db.session.commit()
+    
+    return jsonify({'message': '게시글이 삭제되었습니다.'}), 200
+
+# 소모임 게시글 좋아요
+@app.route('/api/somoim/posts/<int:post_id>/like', methods=['POST'])
+def like_somoim_post(post_id):
+    """소모임 게시글 좋아요"""
+    post = SomoimPost.query.get_or_404(post_id)
     post.likes += 1
     db.session.commit()
     

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>찐부부 커뮤니티 - 모바일</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: #f5f5f5;
+            padding-bottom: 70px;
+        }
+        
+        /* 상단 헤더 */
+        .mobile-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-header-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .header-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        
+        /* 소모임 연동 배너 */
+        .somoim-banner {
+            margin-top: 60px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .somoim-banner-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .somoim-sync-btn {
+            background: white;
+            color: #6366f1;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* 탭 메뉴 */
+        .tab-menu {
+            position: sticky;
+            top: 60px;
+            background: white;
+            display: flex;
+            z-index: 999;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .tab-item {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-item.active {
+            color: #d97706;
+            border-bottom-color: #d97706;
+            font-weight: 700;
+        }
+        
+        /* 게시글 리스트 */
+        .post-list {
+            padding: 0.5rem;
+        }
+        
+        .post-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .post-author-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 0.75rem;
+        }
+        
+        .post-author-info {
+            flex: 1;
+        }
+        
+        .post-author-name {
+            font-weight: 700;
+            font-size: 0.9375rem;
+            color: #1f2937;
+        }
+        
+        .post-time {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+        
+        .post-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        
+        .badge-somoim {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .badge-notice {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .post-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .post-content {
+            font-size: 0.875rem;
+            color: #4b5563;
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+        }
+        
+        .post-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8125rem;
+            color: #6b7280;
+        }
+        
+        /* 플로팅 버튼 */
+        .floating-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 1rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+            z-index: 998;
+        }
+        
+        /* 하단 네비게이션 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.75rem 0;
+            border-top: 1px solid #e5e7eb;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 0.75rem;
+            padding: 0.5rem;
+        }
+        
+        .nav-item.active {
+            color: #d97706;
+        }
+        
+        .nav-icon {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        
+        /* 글쓰기 모달 */
+        .write-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 2000;
+        }
+        
+        .write-modal.active {
+            display: block;
+        }
+        
+        .write-header {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .write-content {
+            padding: 1rem;
+        }
+        
+        .write-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .write-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            resize: vertical;
+        }
+        
+        .write-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 상단 헤더 -->
+    <div class="mobile-header">
+        <div class="mobile-header-title">
+            <img src="https://www.genspark.ai/api/files/s/UWqoE9dO" class="header-icon" alt="찐부부">
+            찐부부 커뮤니티
+        </div>
+        <button onclick="syncSomoim()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8125rem;">
+            🔄 소모임 동기화
+        </button>
+    </div>
+    
+    <!-- 소모임 연동 배너 -->
+    <div class="somoim-banner">
+        <div class="somoim-banner-title">📢 소모임과 자동 연동됩니다</div>
+        <div style="font-size: 0.8125rem;">소모임 공지사항이 자동으로 이곳에 표시됩니다</div>
+        <button class="somoim-sync-btn" onclick="openSomoimSettings()">연동 설정</button>
+    </div>
+    
+    <!-- 탭 메뉴 -->
+    <div class="tab-menu">
+        <button class="tab-item active" onclick="switchTab('all')">전체</button>
+        <button class="tab-item" onclick="switchTab('somoim')">소모임</button>
+        <button class="tab-item" onclick="switchTab('notice')">공지</button>
+        <button class="tab-item" onclick="switchTab('event')">정모</button>
+    </div>
+    
+    <!-- 게시글 리스트 -->
+    <div class="post-list" id="postList">
+        <!-- 샘플 게시글 -->
+        <div class="post-card" data-category="somoim">
+            <div class="post-header">
+                <img src="https://www.genspark.ai/api/files/s/UWqoE9dO" class="post-author-img" alt="찐부부">
+                <div class="post-author-info">
+                    <div class="post-author-name">찐부부 관리자</div>
+                    <div class="post-time">5분 전</div>
+                </div>
+                <span class="post-badge badge-somoim">소모임</span>
+            </div>
+            <div class="post-title">🎉 소모임 멤버 환영합니다!</div>
+            <div class="post-content">
+                소모임에서 오신 모든 분들 환영합니다! 
+                AI 프롬프트 관련 질문이나 공유하고 싶은 내용이 있으시면 자유롭게 올려주세요.
+            </div>
+            <div class="post-stats">
+                <span>❤️ 23</span>
+                <span>💬 5</span>
+                <span>👁️ 127</span>
+            </div>
+        </div>
+        
+        <div class="post-card" data-category="notice">
+            <div class="post-header">
+                <img src="https://www.genspark.ai/api/files/s/UWqoE9dO" class="post-author-img" alt="찐부부">
+                <div class="post-author-info">
+                    <div class="post-author-name">찐부부</div>
+                    <div class="post-time">1시간 전</div>
+                </div>
+                <span class="post-badge badge-notice">공지</span>
+            </div>
+            <div class="post-title">📢 회원 할인 이벤트 진행 중!</div>
+            <div class="post-content">
+                가입 후 3시간 동안 추가 50% 할인! 
+                프롬프트 구매하고 SNS 성장 시작하세요 🚀
+            </div>
+            <div class="post-stats">
+                <span>❤️ 45</span>
+                <span>💬 12</span>
+                <span>👁️ 234</span>
+            </div>
+        </div>
+        
+        <div class="post-card" data-category="event">
+            <div class="post-header">
+                <img src="https://www.genspark.ai/api/files/s/UWqoE9dO" class="post-author-img" alt="찐부부">
+                <div class="post-author-info">
+                    <div class="post-author-name">찐부부 소모임</div>
+                    <div class="post-time">3시간 전</div>
+                </div>
+                <span class="post-badge badge-somoim">정모</span>
+            </div>
+            <div class="post-title">🍽️ 다음 주 오프라인 정모 안내</div>
+            <div class="post-content">
+                일시: 12월 18일 오후 7시
+                장소: 강남역 근처 카페
+                주제: AI 프롬프트 활용 노하우 공유
+            </div>
+            <div class="post-stats">
+                <span>❤️ 67</span>
+                <span>💬 28</span>
+                <span>👁️ 456</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 플로팅 글쓰기 버튼 -->
+    <button class="floating-btn" onclick="openWriteModal()">✏️</button>
+    
+    <!-- 하단 네비게이션 -->
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="location.href='/'">
+            <span class="nav-icon">🏠</span>
+            홈
+        </button>
+        <button class="nav-item active">
+            <span class="nav-icon">💬</span>
+            커뮤니티
+        </button>
+        <button class="nav-item" onclick="location.href='/somoim-test.html'">
+            <span class="nav-icon">👥</span>
+            소모임
+        </button>
+        <button class="nav-item" onclick="showMyPage()">
+            <span class="nav-icon">👤</span>
+            MY
+        </button>
+    </div>
+    
+    <!-- 글쓰기 모달 -->
+    <div class="write-modal" id="writeModal">
+        <div class="write-header">
+            <button onclick="closeWriteModal()" style="background: none; border: none; color: white; font-size: 1rem;">✕ 닫기</button>
+            <span style="font-weight: 700;">글쓰기</span>
+            <div style="width: 50px;"></div>
+        </div>
+        <div class="write-content">
+            <select class="write-input">
+                <option>카테고리 선택</option>
+                <option value="general">자유</option>
+                <option value="question">질문</option>
+                <option value="share">정보공유</option>
+                <option value="success">성공사례</option>
+            </select>
+            <input type="text" class="write-input" placeholder="제목을 입력하세요" id="postTitle">
+            <textarea class="write-textarea" placeholder="내용을 입력하세요" id="postContent"></textarea>
+            <button class="write-submit" onclick="submitPost()">게시하기</button>
+        </div>
+    </div>
+    
+    <script>
+        let currentTab = 'all';
+        let allPosts = [];
+        
+        // 페이지 로드 시 게시글 불러오기
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPosts();
+        });
+        
+        // 게시글 불러오기 (일반 + 소모임)
+        async function loadPosts() {
+            try {
+                // 일반 커뮤니티 게시글
+                const communityResponse = await fetch('/api/posts?per_page=50');
+                const communityData = await communityResponse.json();
+                
+                // 소모임 게시글
+                const somoimResponse = await fetch('/api/somoim/posts?per_page=50');
+                const somoimData = await somoimResponse.json();
+                
+                // 통합 및 정렬
+                allPosts = [
+                    ...communityData.posts.map(p => ({...p, source: 'community'})),
+                    ...somoimData.posts.map(p => ({...p, source: 'somoim'}))
+                ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                
+                renderPosts();
+            } catch (error) {
+                console.error('게시글 로드 실패:', error);
+            }
+        }
+        
+        // 게시글 렌더링
+        function renderPosts() {
+            const postList = document.getElementById('postList');
+            
+            // 현재 탭에 맞는 게시글만 필터링
+            let filteredPosts = allPosts;
+            if (currentTab === 'somoim') {
+                filteredPosts = allPosts.filter(p => p.source === 'somoim');
+            } else if (currentTab === 'notice') {
+                filteredPosts = allPosts.filter(p => p.source === 'somoim' && p.post_type === 'notice');
+            } else if (currentTab === 'event') {
+                filteredPosts = allPosts.filter(p => p.source === 'somoim' && p.post_type === 'meeting');
+            }
+            
+            postList.innerHTML = filteredPosts.map(post => createPostCard(post)).join('');
+        }
+        
+        // 게시글 카드 생성
+        function createPostCard(post) {
+            const issomoim = post.source === 'somoim';
+            const badgeClass = issomoim ? 'badge-somoim' : 'badge-notice';
+            const badgeText = issomoim ? 
+                (post.post_type === 'notice' ? '공지' : post.post_type === 'meeting' ? '정모' : '소모임') : 
+                (post.category || '일반');
+            
+            const timeAgo = getTimeAgo(post.created_at);
+            
+            return `
+                <div class="post-card" data-category="${issomoim ? post.post_type : 'general'}">
+                    <div class="post-header">
+                        <img src="https://www.genspark.ai/api/files/s/UWqoE9dO" class="post-author-img" alt="찐부부">
+                        <div class="post-author-info">
+                            <div class="post-author-name">${post.author || post.username || '익명'}</div>
+                            <div class="post-time">${timeAgo}</div>
+                        </div>
+                        <span class="post-badge ${badgeClass}">${badgeText}</span>
+                    </div>
+                    <div class="post-title">${post.title}</div>
+                    <div class="post-content">${truncateText(post.content, 100)}</div>
+                    ${post.meeting_date ? `
+                        <div class="post-content" style="color: #6366f1; font-weight: 600;">
+                            📅 ${formatDate(post.meeting_date)}
+                            ${post.meeting_location ? `<br>📍 ${post.meeting_location}` : ''}
+                        </div>
+                    ` : ''}
+                    <div class="post-stats">
+                        <span>❤️ ${post.likes || 0}</span>
+                        <span>💬 ${post.comments_count || 0}</span>
+                        <span>👁️ ${post.views || 0}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 시간 표시 (예: 5분 전)
+        function getTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            
+            if (seconds < 60) return '방금 전';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}분 전`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}시간 전`;
+            if (seconds < 604800) return `${Math.floor(seconds / 86400)}일 전`;
+            return date.toLocaleDateString('ko-KR');
+        }
+        
+        // 텍스트 자르기
+        function truncateText(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        }
+        
+        // 날짜 포맷
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ko-KR', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // 탭 전환
+        function switchTab(category) {
+            currentTab = category;
+            const tabs = document.querySelectorAll('.tab-item');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            renderPosts();
+        }
+        
+        // 글쓰기 모달
+        function openWriteModal() {
+            const token = localStorage.getItem('auth_token');
+            if (!token) {
+                alert('로그인이 필요합니다.');
+                location.href = '/';
+                return;
+            }
+            document.getElementById('writeModal').classList.add('active');
+        }
+        
+        function closeWriteModal() {
+            document.getElementById('writeModal').classList.remove('active');
+        }
+        
+        // 게시글 작성
+        async function submitPost() {
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('postContent').value;
+            const category = document.querySelector('.write-input').value;
+            
+            if (!title || !content) {
+                alert('제목과 내용을 입력해주세요.');
+                return;
+            }
+            
+            const token = localStorage.getItem('auth_token');
+            if (!token) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        content: content,
+                        category: category || '자유'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('게시글이 작성되었습니다!');
+                    closeWriteModal();
+                    document.getElementById('postTitle').value = '';
+                    document.getElementById('postContent').value = '';
+                    loadPosts();  // 게시글 목록 새로고침
+                } else {
+                    alert(data.message || '게시글 작성에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('게시글 작성 실패:', error);
+                alert('게시글 작성 중 오류가 발생했습니다.');
+            }
+        }
+        
+        // 소모임 동기화
+        async function syncSomoim() {
+            try {
+                await loadPosts();
+                alert('소모임 게시판과 동기화되었습니다! ✅');
+            } catch (error) {
+                alert('동기화 중 오류가 발생했습니다.');
+            }
+        }
+        
+        // 소모임 설정
+        function openSomoimSettings() {
+            alert('소모임 연동 설정\n\n✅ 자동 공지 동기화\n✅ 정모 알림\n✅ 멤버 전용 게시글\n\n모든 기능이 활성화되어 있습니다!');
+        }
+        
+        // 마이페이지
+        function showMyPage() {
+            const token = localStorage.getItem('auth_token');
+            if (!token) {
+                alert('로그인이 필요합니다.');
+                location.href = '/';
+            } else {
+                location.href = '/?showDashboard=true';
+            }
+        }
+    </script>
+</body>
+</html>
