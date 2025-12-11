@@ -233,6 +233,7 @@
         
         <div class="tabs">
             <button class="tab active" onclick="switchTab('dashboard')">📊 대시보드</button>
+            <button class="tab" onclick="switchTab('community')">💬 커뮤니티</button>
             <button class="tab" onclick="switchTab('users')">👥 사용자 관리</button>
             <button class="tab" onclick="switchTab('purchases')">💰 구매 내역</button>
             <button class="tab" onclick="switchTab('payments')">💳 결제 내역</button>
@@ -256,6 +257,32 @@
                     </thead>
                     <tbody id="popular-prompts-body">
                         <tr><td colspan="3" class="loading">로딩 중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 커뮤니티 관리 탭 -->
+        <div id="community" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2>💬 커뮤니티 게시글 관리</h2>
+                <button class="action-btn action-btn-primary" onclick="openPostModal()">
+                    ✍️ 새 게시글 작성
+                </button>
+            </div>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>제목</th>
+                            <th>작성일</th>
+                            <th>이미지</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody id="community-posts-body">
+                        <tr><td colspan="5" class="loading">로딩 중...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -389,6 +416,7 @@
             
             // 데이터 로드
             if (tabName === 'dashboard') loadDashboard();
+            else if (tabName === 'community') loadCommunityPosts();
             else if (tabName === 'users') loadUsers();
             else if (tabName === 'purchases') loadPurchases();
             else if (tabName === 'payments') loadPayments();
@@ -624,6 +652,189 @@
                 alert('관리자 권한 확인 실패: ' + error.message);
                 window.location.href = '/';
             }
+        }
+        
+        // 커뮤니티 게시글 로드
+        async function loadCommunityPosts() {
+            try {
+                const response = await fetch('/api/community/posts');
+                const data = await response.json();
+                const tbody = document.getElementById('community-posts-body');
+                
+                if (data.posts && data.posts.length > 0) {
+                    tbody.innerHTML = data.posts.map(post => `
+                        <tr>
+                            <td>${post.id}</td>
+                            <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${post.title}</td>
+                            <td>${new Date(post.created_at).toLocaleDateString()}</td>
+                            <td>${post.image_url ? '📸 있음' : '-'}</td>
+                            <td>
+                                <button class="action-btn action-btn-primary" onclick="editPost(${post.id})">
+                                    ✏️ 수정
+                                </button>
+                                <button class="action-btn action-btn-danger" onclick="deletePost(${post.id})">
+                                    🗑️ 삭제
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">게시글이 없습니다.</td></tr>';
+                }
+            } catch (error) {
+                console.error('게시글 로드 실패:', error);
+                document.getElementById('community-posts-body').innerHTML = 
+                    '<tr><td colspan="5" class="error-message">게시글을 불러오는데 실패했습니다.</td></tr>';
+            }
+        }
+        
+        // 게시글 작성 모달 열기
+        function openPostModal(postData = null) {
+            const title = postData ? '✏️ 게시글 수정' : '✍️ 새 게시글 작성';
+            const content = `
+                <div style="padding: 2rem;">
+                    <h3 style="margin-bottom: 1.5rem;">${title}</h3>
+                    <form id="postForm" onsubmit="submitPost(event); return false;">
+                        <input type="hidden" id="editPostId" value="${postData ? postData.id : ''}">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">제목</label>
+                            <input type="text" id="postTitle" required 
+                                   value="${postData ? postData.title : ''}"
+                                   style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 1rem;">
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">내용</label>
+                            <textarea id="postContent" required rows="6"
+                                      style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 1rem; resize: vertical;">${postData ? postData.content : ''}</textarea>
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">📸 이미지 (선택)</label>
+                            <input type="file" id="postImage" accept="image/*"
+                                   style="width: 100%; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 8px;">
+                            ${postData && postData.image_url ? `<div style="margin-top: 0.5rem;"><img src="${postData.image_url}" style="max-width: 200px; border-radius: 8px;"></div>` : ''}
+                        </div>
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                            <button type="button" onclick="closeCustomModal()" 
+                                    style="padding: 0.75rem 1.5rem; border: 1px solid #e5e7eb; background: white; border-radius: 8px; cursor: pointer;">
+                                취소
+                            </button>
+                            <button type="submit" 
+                                    style="padding: 0.75rem 1.5rem; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                ${postData ? '수정하기' : '작성하기'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            showCustomModal(content);
+        }
+        
+        // 게시글 제출
+        async function submitPost(event) {
+            event.preventDefault();
+            
+            const postId = document.getElementById('editPostId').value;
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('postContent').value;
+            const imageFile = document.getElementById('postImage').files[0];
+            
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('content', content);
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+            
+            try {
+                const url = postId ? `/api/community/posts/${postId}` : '/api/community/posts';
+                const method = postId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert(postId ? '게시글이 수정되었습니다!' : '게시글이 작성되었습니다!');
+                    closeCustomModal();
+                    loadCommunityPosts();
+                } else {
+                    alert(data.error || '오류가 발생했습니다.');
+                }
+            } catch (error) {
+                console.error('게시글 제출 실패:', error);
+                alert('오류가 발생했습니다.');
+            }
+        }
+        
+        // 게시글 수정
+        async function editPost(postId) {
+            try {
+                const response = await fetch(`/api/community/posts/${postId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    openPostModal(data.post);
+                } else {
+                    alert('게시글을 불러오는데 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('게시글 로드 실패:', error);
+                alert('오류가 발생했습니다.');
+            }
+        }
+        
+        // 게시글 삭제
+        async function deletePost(postId) {
+            if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) return;
+            
+            try {
+                const response = await fetch(`/api/community/posts/${postId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('게시글이 삭제되었습니다.');
+                    loadCommunityPosts();
+                } else {
+                    alert(data.error || '삭제에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('게시글 삭제 실패:', error);
+                alert('오류가 발생했습니다.');
+            }
+        }
+        
+        // 커스텀 모달 표시
+        function showCustomModal(content) {
+            const modal = document.createElement('div');
+            modal.id = 'customModal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;';
+            modal.innerHTML = `<div style="background: white; border-radius: 16px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">${content}</div>`;
+            modal.onclick = function(e) {
+                if (e.target === modal) closeCustomModal();
+            };
+            document.body.appendChild(modal);
+        }
+        
+        // 커스텀 모달 닫기
+        function closeCustomModal() {
+            const modal = document.getElementById('customModal');
+            if (modal) modal.remove();
         }
         
         // 페이지 로드 시 초기화
