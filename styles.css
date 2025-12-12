@@ -2634,3 +2634,36 @@ body {
         box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
     }
 }
+
+/* 헤더 네비게이션 줄바꿈 방지 */
+.nav {
+    flex-wrap: nowrap !important;
+    white-space: nowrap;
+}
+
+.nav > * {
+    flex-shrink: 0;
+}
+
+/* 작은 화면에서 버튼 크기 조정 */
+@media (max-width: 1024px) {
+    .nav button, .nav a {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.875rem !important;
+    }
+    
+    #authButtons {
+        gap: 0.25rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav {
+        gap: 0.5rem !important;
+    }
+    
+    .nav button, .nav a {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.8rem !important;
+    }
+}
