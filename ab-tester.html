@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI A/B 테스터 - JINBUBU AI Market</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .variants-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .variant-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .variant-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .variant-header h2 {
+            color: #f5576c;
+            font-size: 1.5em;
+        }
+
+        .variant-label {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #f5576c;
+            box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .test-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+        }
+
+        .test-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #f5576c;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-section {
+            display: none;
+        }
+
+        .result-section.active {
+            display: block;
+        }
+
+        .winner-announcement {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .winner-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .winner-score {
+            font-size: 3em;
+            font-weight: 700;
+            color: #f5576c;
+            margin: 20px 0;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .comparison-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .comparison-card.winner {
+            border: 3px solid #f5576c;
+        }
+
+        .score-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 30px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: 600;
+            transition: width 1s ease;
+        }
+
+        .insights-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-top: 20px;
+        }
+
+        .insights-card h3 {
+            color: #f5576c;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .insight-item {
+            background: linear-gradient(135deg, #fff5f7 0%, #ffe0e5 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #f5576c;
+        }
+
+        .recommendation {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 15px;
+        }
+
+        .recommendation strong {
+            color: #f5576c;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 1024px) {
+            .variants-container,
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .variant-card,
+            .comparison-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ai-tools.html" class="back-button">← AI 도구 허브로 돌아가기</a>
+        
+        <div class="header">
+            <h1>⚡ AI A/B 테스터</h1>
+            <p>두 콘텐츠 버전을 비교하고 최적의 선택을 찾아보세요</p>
+        </div>
+
+        <div class="variants-container">
+            <!-- Variant A -->
+            <div class="variant-card">
+                <div class="variant-header">
+                    <h2>버전 A</h2>
+                    <span class="variant-label">원본</span>
+                </div>
+                <form id="variantFormA">
+                    <div class="form-group">
+                        <label>제목</label>
+                        <input type="text" id="titleA" placeholder="콘텐츠 제목을 입력하세요" required>
+                        <div class="char-count"><span id="titleACount">0</span> 글자</div>
+                    </div>
+                    <div class="form-group">
+                        <label>본문</label>
+                        <textarea id="contentA" placeholder="콘텐츠 본문을 입력하세요" required></textarea>
+                        <div class="char-count"><span id="contentACount">0</span> 글자</div>
+                    </div>
+                    <div class="form-group">
+                        <label>해시태그 (쉼표로 구분)</label>
+                        <input type="text" id="hashtagsA" placeholder="#AI, #마케팅, #SNS">
+                        <div class="char-count"><span id="hashtagsACount">0</span>개</div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Variant B -->
+            <div class="variant-card">
+                <div class="variant-header">
+                    <h2>버전 B</h2>
+                    <span class="variant-label" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">대안</span>
+                </div>
+                <form id="variantFormB">
+                    <div class="form-group">
+                        <label>제목</label>
+                        <input type="text" id="titleB" placeholder="다른 버전의 제목을 입력하세요" required>
+                        <div class="char-count"><span id="titleBCount">0</span> 글자</div>
+                    </div>
+                    <div class="form-group">
+                        <label>본문</label>
+                        <textarea id="contentB" placeholder="다른 버전의 본문을 입력하세요" required></textarea>
+                        <div class="char-count"><span id="contentBCount">0</span> 글자</div>
+                    </div>
+                    <div class="form-group">
+                        <label>해시태그 (쉼표로 구분)</label>
+                        <input type="text" id="hashtagsB" placeholder="#콘텐츠, #성장, #전략">
+                        <div class="char-count"><span id="hashtagsBCount">0</span>개</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <button class="test-btn" onclick="runABTest()">🚀 A/B 테스트 실행하기</button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>AI가 두 버전을 분석하고 있습니다...</p>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="winner-announcement">
+                <div class="winner-badge">🏆 승자</div>
+                <h2 id="winnerTitle" style="color: #f5576c; font-size: 2em; margin-bottom: 10px;"></h2>
+                <div class="winner-score" id="winnerScore"></div>
+                <p id="winnerConfidence" style="font-size: 1.2em; color: #666;"></p>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-card" id="cardA">
+                    <h3 style="color: #f5576c; margin-bottom: 15px;">버전 A</h3>
+                    <div class="score-bar">
+                        <div class="score-fill" id="scoreBarA" style="width: 0%;">0%</div>
+                    </div>
+                    <p id="variantADetails" style="margin-top: 15px; color: #666;"></p>
+                </div>
+
+                <div class="comparison-card" id="cardB">
+                    <h3 style="color: #00f2fe; margin-bottom: 15px;">버전 B</h3>
+                    <div class="score-bar">
+                        <div class="score-fill" id="scoreBarB" style="width: 0%; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);">0%</div>
+                    </div>
+                    <p id="variantBDetails" style="margin-top: 15px; color: #666;"></p>
+                </div>
+            </div>
+
+            <div class="insights-card">
+                <h3>💡 AI 인사이트</h3>
+                <div id="insightsContainer"></div>
+            </div>
+
+            <div class="insights-card">
+                <h3>🎯 추천 액션</h3>
+                <div class="recommendation" id="recommendationContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 글자 수 카운터
+        function setupCharCounter(inputId, countId) {
+            const input = document.getElementById(inputId);
+            const counter = document.getElementById(countId);
+            
+            input.addEventListener('input', function() {
+                if (inputId.includes('hashtags')) {
+                    const tags = this.value.split(',').filter(t => t.trim().length > 0);
+                    counter.textContent = tags.length;
+                } else {
+                    counter.textContent = this.value.length;
+                }
+            });
+        }
+
+        // 모든 입력 필드에 카운터 설정
+        setupCharCounter('titleA', 'titleACount');
+        setupCharCounter('contentA', 'contentACount');
+        setupCharCounter('hashtagsA', 'hashtagsACount');
+        setupCharCounter('titleB', 'titleBCount');
+        setupCharCounter('contentB', 'contentBCount');
+        setupCharCounter('hashtagsB', 'hashtagsBCount');
+
+        async function runABTest() {
+            // 입력값 가져오기
+            const variantA = {
+                title: document.getElementById('titleA').value,
+                content: document.getElementById('contentA').value,
+                hashtags: document.getElementById('hashtagsA').value.split(',').map(t => t.trim()).filter(t => t.length > 0)
+            };
+
+            const variantB = {
+                title: document.getElementById('titleB').value,
+                content: document.getElementById('contentB').value,
+                hashtags: document.getElementById('hashtagsB').value.split(',').map(t => t.trim()).filter(t => t.length > 0)
+            };
+
+            // 검증
+            if (!variantA.title || !variantA.content || !variantB.title || !variantB.content) {
+                alert('모든 필수 필드를 입력해주세요!');
+                return;
+            }
+
+            // 로딩 표시
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('resultSection').classList.remove('active');
+
+            try {
+                const response = await fetch('/api/ab-test-realtime', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        variant_a: variantA,
+                        variant_b: variantB
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    displayResults(data);
+                } else {
+                    alert('A/B 테스트에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('서버와 통신 중 오류가 발생했습니다.');
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        }
+
+        function displayResults(data) {
+            const winner = data.winner;
+            const variantA = data.variant_a;
+            const variantB = data.variant_b;
+            const insights = data.insights;
+            const recommendation = data.recommendation;
+
+            // 승자 발표
+            document.getElementById('winnerTitle').textContent = `버전 ${winner.toUpperCase()}`;
+            document.getElementById('winnerScore').textContent = winner === 'a' ? 
+                `${Math.round(variantA.score * 100)}점` : 
+                `${Math.round(variantB.score * 100)}점`;
+            document.getElementById('winnerConfidence').textContent = 
+                `신뢰도: ${Math.round(data.confidence * 100)}%`;
+
+            // 승자 카드 하이라이트
+            if (winner === 'a') {
+                document.getElementById('cardA').classList.add('winner');
+                document.getElementById('cardB').classList.remove('winner');
+            } else {
+                document.getElementById('cardB').classList.add('winner');
+                document.getElementById('cardA').classList.remove('winner');
+            }
+
+            // 점수바 업데이트
+            setTimeout(() => {
+                document.getElementById('scoreBarA').style.width = `${variantA.score * 100}%`;
+                document.getElementById('scoreBarA').textContent = `${Math.round(variantA.score * 100)}점`;
+                
+                document.getElementById('scoreBarB').style.width = `${variantB.score * 100}%`;
+                document.getElementById('scoreBarB').textContent = `${Math.round(variantB.score * 100)}점`;
+            }, 100);
+
+            // 상세 정보
+            document.getElementById('variantADetails').innerHTML = `
+                📝 제목 길이: ${variantA.metrics.title_length}자<br>
+                📄 본문 길이: ${variantA.metrics.content_length}자<br>
+                🏷️ 해시태그: ${variantA.metrics.hashtag_count}개
+            `;
+
+            document.getElementById('variantBDetails').innerHTML = `
+                📝 제목 길이: ${variantB.metrics.title_length}자<br>
+                📄 본문 길이: ${variantB.metrics.content_length}자<br>
+                🏷️ 해시태그: ${variantB.metrics.hashtag_count}개
+            `;
+
+            // 인사이트
+            const insightsContainer = document.getElementById('insightsContainer');
+            insightsContainer.innerHTML = '';
+            Object.entries(insights).forEach(([key, value]) => {
+                const insightDiv = document.createElement('div');
+                insightDiv.className = 'insight-item';
+                insightDiv.innerHTML = `<strong>${key}:</strong> ${value}`;
+                insightsContainer.appendChild(insightDiv);
+            });
+
+            // 추천 액션
+            document.getElementById('recommendationContainer').innerHTML = `
+                <strong>${recommendation.action}</strong><br><br>
+                예상 개선율: <span style="color: #f5576c; font-size: 1.3em; font-weight: 600;">${Math.round(recommendation.expected_improvement * 100)}%</span>
+            `;
+
+            // 결과 섹션 표시
+            document.getElementById('resultSection').classList.add('active');
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

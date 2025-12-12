@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 콘텐츠 생성기 - JINBUBU AI Market</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag-button {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .tag-button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .tag-button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-section {
+            display: none;
+        }
+
+        .result-section.active {
+            display: block;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .result-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .result-card p {
+            color: #333;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .result-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .result-card ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .result-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+
+        .copy-btn {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ai-tools.html" class="back-button">← AI 도구 허브로 돌아가기</a>
+        
+        <div class="header">
+            <h1>🎨 AI 콘텐츠 생성기</h1>
+            <p>개인화된 SNS 콘텐츠를 자동으로 생성합니다</p>
+        </div>
+
+        <div class="card">
+            <form id="contentForm">
+                <div class="form-group">
+                    <label>관심사 (쉼표로 구분)</label>
+                    <input type="text" id="interests" placeholder="예: AI, SNS 마케팅, 콘텐츠 제작" required>
+                </div>
+
+                <div class="form-group">
+                    <label>타겟 오디언스</label>
+                    <input type="text" id="audience" placeholder="예: 1인 크리에이터, 소상공인" required>
+                </div>
+
+                <div class="form-group">
+                    <label>플랫폼 선택</label>
+                    <div class="button-group" id="platformGroup">
+                        <button type="button" class="tag-button" data-value="instagram">인스타그램</button>
+                        <button type="button" class="tag-button" data-value="youtube">유튜브</button>
+                        <button type="button" class="tag-button" data-value="tiktok">틱톡</button>
+                        <button type="button" class="tag-button" data-value="blog">블로그</button>
+                        <button type="button" class="tag-button" data-value="twitter">트위터</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>콘텐츠 목표 (선택사항)</label>
+                    <textarea id="goal" placeholder="예: 팔로워 증가, 제품 홍보, 브랜드 인지도 상승"></textarea>
+                </div>
+
+                <button type="submit" class="generate-btn">✨ 콘텐츠 생성하기</button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>AI가 맞춤형 콘텐츠를 생성 중입니다...</p>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="card">
+                <h2 style="color: #667eea; margin-bottom: 20px;">📊 생성된 콘텐츠 전략</h2>
+                
+                <div class="result-card">
+                    <h3>📝 제목</h3>
+                    <p id="resultTitle"></p>
+                    <button class="copy-btn" onclick="copyToClipboard('resultTitle')">복사하기</button>
+                </div>
+
+                <div class="result-card">
+                    <h3>🎯 후크 (Hook)</h3>
+                    <p id="resultHook"></p>
+                    <button class="copy-btn" onclick="copyToClipboard('resultHook')">복사하기</button>
+                </div>
+
+                <div class="result-card">
+                    <h3>💡 핵심 포인트</h3>
+                    <ul id="resultPoints"></ul>
+                </div>
+
+                <div class="result-card">
+                    <h3>🚀 CTA (Call to Action)</h3>
+                    <p id="resultCTA"></p>
+                    <button class="copy-btn" onclick="copyToClipboard('resultCTA')">복사하기</button>
+                </div>
+
+                <div class="result-card">
+                    <h3>🏷️ 추천 해시태그</h3>
+                    <p id="resultHashtags"></p>
+                    <button class="copy-btn" onclick="copyToClipboard('resultHashtags')">복사하기</button>
+                </div>
+
+                <div class="result-card">
+                    <h3>📱 최적 형식</h3>
+                    <p id="resultFormat"></p>
+                </div>
+
+                <div class="result-card">
+                    <h3>📈 참여도 예측</h3>
+                    <div id="resultEngagement"></div>
+                </div>
+
+                <div class="result-card">
+                    <h3>⏰ 최적 발행 시간</h3>
+                    <p id="resultTiming"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPlatform = '';
+
+        // 플랫폼 선택 버튼
+        document.querySelectorAll('#platformGroup .tag-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('#platformGroup .tag-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                selectedPlatform = this.getAttribute('data-value');
+            });
+        });
+
+        // 폼 제출
+        document.getElementById('contentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (!selectedPlatform) {
+                alert('플랫폼을 선택해주세요!');
+                return;
+            }
+
+            const interests = document.getElementById('interests').value.split(',').map(i => i.trim());
+            const audience = document.getElementById('audience').value;
+            const goal = document.getElementById('goal').value;
+
+            // 로딩 표시
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('resultSection').classList.remove('active');
+
+            try {
+                const response = await fetch('/api/personalized-content', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_interests: interests,
+                        target_audience: audience,
+                        platform: selectedPlatform,
+                        content_goal: goal || '참여도 증가'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    displayResults(data);
+                } else {
+                    alert('콘텐츠 생성에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('서버와 통신 중 오류가 발생했습니다.');
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        });
+
+        function displayResults(data) {
+            const content = data.content;
+            const engagement = data.engagement_prediction;
+
+            // 제목
+            document.getElementById('resultTitle').textContent = content.title;
+
+            // 후크
+            document.getElementById('resultHook').textContent = content.hook;
+
+            // 핵심 포인트
+            const pointsList = document.getElementById('resultPoints');
+            pointsList.innerHTML = '';
+            content.main_points.forEach(point => {
+                const li = document.createElement('li');
+                li.textContent = point;
+                pointsList.appendChild(li);
+            });
+
+            // CTA
+            document.getElementById('resultCTA').textContent = content.cta;
+
+            // 해시태그
+            document.getElementById('resultHashtags').textContent = content.hashtags.join(' ');
+
+            // 형식
+            document.getElementById('resultFormat').innerHTML = `
+                <strong>${content.recommended_format}</strong><br>
+                최적 길이: ${content.optimal_length}
+            `;
+
+            // 참여도 예측
+            document.getElementById('resultEngagement').innerHTML = `
+                <span class="metric-badge">신뢰도 ${Math.round(engagement.confidence * 100)}%</span>
+                <span class="metric-badge">참여율 ${Math.round(engagement.engagement_rate * 100)}%</span>
+                <span class="metric-badge">예상 좋아요 ${engagement.predicted_likes}</span>
+                <span class="metric-badge">예상 댓글 ${engagement.predicted_comments}</span>
+                <span class="metric-badge">예상 공유 ${engagement.predicted_shares}</span>
+            `;
+
+            // 발행 시간
+            document.getElementById('resultTiming').innerHTML = `
+                <strong>${engagement.optimal_posting_time}</strong><br>
+                💡 팁: ${engagement.tips}
+            `;
+
+            // 결과 섹션 표시
+            document.getElementById('resultSection').classList.add('active');
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('클립보드에 복사되었습니다!');
+            }).catch(err => {
+                console.error('복사 실패:', err);
+            });
+        }
+    </script>
+</body>
+</html>

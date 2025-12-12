@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 경쟁자 분석기 - JINBUBU AI Market</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #fa709a;
+            box-shadow: 0 0 0 3px rgba(250, 112, 154, 0.1);
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(250, 112, 154, 0.4);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #fa709a;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-section {
+            display: none;
+        }
+
+        .result-section.active {
+            display: block;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .analysis-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .analysis-card h3 {
+            color: #fa709a;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .strength-item,
+        .weakness-item {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+        }
+
+        .strength-item {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-color: #4caf50;
+        }
+
+        .weakness-item {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-color: #ff6b6b;
+        }
+
+        .opportunity-card {
+            background: linear-gradient(135deg, #fff5f7 0%, #ffe0e5 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #fa709a;
+        }
+
+        .opportunity-card h4 {
+            color: #fa709a;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .strategy-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .strategy-card h3 {
+            color: #fa709a;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .action-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .action-number {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: #fa709a;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ai-tools.html" class="back-button">← AI 도구 허브로 돌아가기</a>
+        
+        <div class="header">
+            <h1>🎯 AI 경쟁자 분석기</h1>
+            <p>경쟁사를 분석하고 차별화 전략을 찾아보세요</p>
+        </div>
+
+        <div class="card">
+            <form id="competitorForm">
+                <div class="form-group">
+                    <label>🏢 경쟁사 이름</label>
+                    <input type="text" id="competitor" placeholder="예: 찐부부AI, 크리에이터랩" required>
+                </div>
+
+                <div class="form-group">
+                    <label>📱 플랫폼</label>
+                    <select id="platform" required>
+                        <option value="">선택하세요</option>
+                        <option value="instagram">인스타그램</option>
+                        <option value="youtube">유튜브</option>
+                        <option value="tiktok">틱톡</option>
+                        <option value="blog">블로그</option>
+                        <option value="all">전체 플랫폼</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>🎨 콘텐츠 유형</label>
+                    <input type="text" id="contentType" placeholder="예: 교육, 엔터테인먼트, 마케팅">
+                </div>
+
+                <button type="submit" class="analyze-btn">🚀 경쟁사 분석하기</button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>AI가 경쟁사를 심층 분석 중입니다...</p>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="analysis-grid">
+                <div class="analysis-card">
+                    <h3>💪 강점 분석</h3>
+                    <div id="strengthsContainer"></div>
+                </div>
+
+                <div class="analysis-card">
+                    <h3>⚠️ 약점 분석</h3>
+                    <div id="weaknessesContainer"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="color: #fa709a; margin-bottom: 20px;">🎁 차별화 기회</h2>
+                <div id="opportunitiesContainer"></div>
+            </div>
+
+            <div class="strategy-card">
+                <h3>🎯 실행 전략</h3>
+                <div id="strategyContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('competitorForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const competitor = document.getElementById('competitor').value.trim();
+            const platform = document.getElementById('platform').value;
+            const contentType = document.getElementById('contentType').value.trim();
+
+            if (!competitor || !platform) {
+                alert('모든 필수 필드를 입력해주세요!');
+                return;
+            }
+
+            // 로딩 표시
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('resultSection').classList.remove('active');
+
+            try {
+                const response = await fetch('/api/competitor/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        competitor_name: competitor,
+                        platform: platform,
+                        content_type: contentType || '일반 콘텐츠'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    displayResults(data);
+                } else {
+                    alert('경쟁사 분석에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('서버와 통신 중 오류가 발생했습니다.');
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        });
+
+        function displayResults(data) {
+            const analysis = data.competitor_analysis;
+
+            // 강점
+            const strengthsContainer = document.getElementById('strengthsContainer');
+            strengthsContainer.innerHTML = '';
+            analysis.strengths.forEach(strength => {
+                const div = document.createElement('div');
+                div.className = 'strength-item';
+                div.innerHTML = `<strong>✓</strong> ${strength}`;
+                strengthsContainer.appendChild(div);
+            });
+
+            // 약점
+            const weaknessesContainer = document.getElementById('weaknessesContainer');
+            weaknessesContainer.innerHTML = '';
+            analysis.weaknesses.forEach(weakness => {
+                const div = document.createElement('div');
+                div.className = 'weakness-item';
+                div.innerHTML = `<strong>!</strong> ${weakness}`;
+                weaknessesContainer.appendChild(div);
+            });
+
+            // 차별화 기회
+            const opportunitiesContainer = document.getElementById('opportunitiesContainer');
+            opportunitiesContainer.innerHTML = '';
+            analysis.differentiation_opportunities.forEach((opp, index) => {
+                const card = document.createElement('div');
+                card.className = 'opportunity-card';
+                card.innerHTML = `
+                    <h4>기회 ${index + 1}</h4>
+                    <p>${opp}</p>
+                `;
+                opportunitiesContainer.appendChild(card);
+            });
+
+            // 실행 전략
+            const strategyContainer = document.getElementById('strategyContainer');
+            strategyContainer.innerHTML = '';
+            analysis.action_strategy.forEach((action, index) => {
+                const div = document.createElement('div');
+                div.className = 'action-item';
+                div.innerHTML = `
+                    <div class="action-number">${index + 1}</div>
+                    <div>${action}</div>
+                `;
+                strategyContainer.appendChild(div);
+            });
+
+            // 결과 섹션 표시
+            document.getElementById('resultSection').classList.add('active');
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

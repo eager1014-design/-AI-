@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 트렌드 분석기 - JINBUBU AI Market</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00f2fe;
+            box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.1);
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.4);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #00f2fe;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-section {
+            display: none;
+        }
+
+        .result-section.active {
+            display: block;
+        }
+
+        .popularity-meter {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .popularity-score {
+            font-size: 4em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px 0;
+        }
+
+        .progress-ring {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }
+
+        .trend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .trend-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .trend-card h3 {
+            color: #00f2fe;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .trend-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #e0f7ff 0%, #b3ecff 100%);
+            color: #0077b6;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .hashtag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .hashtag {
+            background: #f0f9ff;
+            color: #0077b6;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hashtag:hover {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .strategy-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #00f2fe;
+        }
+
+        .strategy-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .strategy-box ul li {
+            padding: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .strategy-box ul li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00f2fe;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .trend-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ai-tools.html" class="back-button">← AI 도구 허브로 돌아가기</a>
+        
+        <div class="header">
+            <h1>📈 AI 트렌드 분석기</h1>
+            <p>실시간 키워드 트렌드를 분석하고 전략을 제안합니다</p>
+        </div>
+
+        <div class="card">
+            <form id="trendForm">
+                <div class="form-group">
+                    <label>🔍 분석할 키워드</label>
+                    <input type="text" id="keyword" placeholder="예: AI, 마케팅, 인스타그램" required>
+                </div>
+                <button type="submit" class="analyze-btn">🚀 트렌드 분석하기</button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>AI가 최신 트렌드를 분석 중입니다...</p>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="popularity-meter">
+                <h2 style="color: #333; margin-bottom: 10px;">인기도 점수</h2>
+                <div class="popularity-score" id="popularityScore">0</div>
+                <p style="color: #666; font-size: 1.1em;" id="status"></p>
+            </div>
+
+            <div class="trend-grid">
+                <div class="trend-card">
+                    <h3>🔥 관련 트렌드</h3>
+                    <div id="relatedTrends"></div>
+                </div>
+
+                <div class="trend-card">
+                    <h3>🏷️ 추천 해시태그</h3>
+                    <div class="hashtag-list" id="hashtagList"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="color: #00f2fe; margin-bottom: 20px;">💡 콘텐츠 전략</h2>
+                <div class="strategy-box" id="strategyBox"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('trendForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const keyword = document.getElementById('keyword').value.trim();
+
+            if (!keyword) {
+                alert('키워드를 입력해주세요!');
+                return;
+            }
+
+            // 로딩 표시
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('resultSection').classList.remove('active');
+
+            try {
+                const response = await fetch('/api/trends/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        keyword: keyword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    displayResults(data);
+                } else {
+                    alert('트렌드 분석에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('서버와 통신 중 오류가 발생했습니다.');
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        });
+
+        function displayResults(data) {
+            const trend = data.trend_data;
+
+            // 인기도 점수
+            const score = Math.round(trend.popularity_score);
+            document.getElementById('popularityScore').textContent = score;
+            document.getElementById('status').textContent = trend.status;
+
+            // 관련 트렌드
+            const relatedTrendsContainer = document.getElementById('relatedTrends');
+            relatedTrendsContainer.innerHTML = '';
+            trend.related_trends.forEach(relatedTrend => {
+                const tag = document.createElement('span');
+                tag.className = 'trend-tag';
+                tag.textContent = relatedTrend;
+                relatedTrendsContainer.appendChild(tag);
+            });
+
+            // 추천 해시태그
+            const hashtagList = document.getElementById('hashtagList');
+            hashtagList.innerHTML = '';
+            trend.recommended_hashtags.forEach(hashtag => {
+                const hashtagDiv = document.createElement('div');
+                hashtagDiv.className = 'hashtag';
+                hashtagDiv.textContent = hashtag;
+                hashtagDiv.onclick = () => {
+                    navigator.clipboard.writeText(hashtag);
+                    alert('클립보드에 복사되었습니다!');
+                };
+                hashtagList.appendChild(hashtagDiv);
+            });
+
+            // 콘텐츠 전략
+            const strategyBox = document.getElementById('strategyBox');
+            strategyBox.innerHTML = '<ul>' + 
+                trend.content_strategy.map(strategy => `<li>${strategy}</li>`).join('') +
+                '</ul>';
+
+            // 결과 섹션 표시
+            document.getElementById('resultSection').classList.add('active');
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
