@@ -21,8 +21,20 @@
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 122-972-965
-/home/user/webapp/app.py:2516: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
-  current_day = datetime.utcnow().weekday()
-/home/user/webapp/app.py:2549: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
-  "generated_at": datetime.utcnow().isoformat()
-127.0.0.1 - - [12/Dec/2025 06:05:53] "POST /api/personalized-content HTTP/1.1" 200 -
+10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET / HTTP/1.1[0m" 304 -
+10.64.232.124 - - [12/Dec/2025 06:33:12] "GET /script.js HTTP/1.1" 200 -
+10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET /static/css/community-simple.css HTTP/1.1[0m" 304 -
+10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET /auth.js HTTP/1.1[0m" 304 -
+10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET /payment.js HTTP/1.1[0m" 304 -
+10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET /static/js/community-simple.js HTTP/1.1[0m" 304 -
+10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET /styles.css HTTP/1.1[0m" 304 -
+10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET /mobile-enhanced.css HTTP/1.1[0m" 304 -
+10.64.232.124 - - [12/Dec/2025 06:33:13] "GET /api/community/posts HTTP/1.1" 200 -
+10.64.232.124 - - [12/Dec/2025 06:33:13] "[36mGET /static/uploads/20251212_004757_A_heartwarming_emotional_digital_illustration_set-1765439915220.png HTTP/1.1[0m" 304 -
+/home/user/webapp/app.py:59: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  'exp': datetime.utcnow() + timedelta(hours=1)  # 1시간 세션
+/home/user/webapp/app.py:67: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  time_since_signup = datetime.utcnow() - self.created_at
+10.64.232.124 - - [12/Dec/2025 06:35:14] "POST /api/login HTTP/1.1" 200 -
+10.64.232.124 - - [12/Dec/2025 06:36:52] "[31m[1mGET / HTTP/1.1[0m" 416 -
+10.64.232.124 - - [12/Dec/2025 06:36:56] "[31m[1mGET /admin-login.html HTTP/1.1[0m" 416 -

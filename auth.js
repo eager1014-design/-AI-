@@ -256,12 +256,18 @@ async function handleRegister(event) {
     try {
         const response = await apiRequest('/api/register', 'POST', data);
         
-        AuthManager.setToken(response.token);
+        // Remember Me로 토큰 저장 (자동 로그인)
+        AuthManager.setToken(response.token, true);
         AuthManager.setUser(response.user);
         
-        alert('✅ ' + response.message);
+        showSuccessNotification('회원가입이 완료되었습니다! 🎉');
         closeAuthModal();
         updateUIForLoggedInUser(response.user);
+        
+        // 페이지 새로고침하여 프롬프트 가격 업데이트
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
     } catch (error) {
         alert('❌ ' + error.message);
     }
@@ -286,6 +292,12 @@ function showLoginModal() {
                     <div class="form-group">
                         <label>비밀번호</label>
                         <input type="password" name="password" placeholder="비밀번호" required>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" name="remember" checked style="width: 20px; height: 20px; cursor: pointer;">
+                            <span style="font-size: 0.9rem; color: #374151;">로그인 상태 유지 (자동 로그인)</span>
+                        </label>
                     </div>
                     <button type="submit" class="auth-submit-btn">로그인</button>
                 </form>
@@ -312,6 +324,7 @@ async function handleLogin(event) {
     
     const form = event.target;
     const formData = new FormData(form);
+    const remember = formData.get('remember') === 'on';
     
     const data = {
         email: formData.get('email'),
@@ -321,19 +334,28 @@ async function handleLogin(event) {
     try {
         const response = await apiRequest('/api/login', 'POST', data);
         
-        AuthManager.setToken(response.token);
+        // Remember Me 설정에 따라 토큰 저장
+        AuthManager.setToken(response.token, remember);
         AuthManager.setUser(response.user);
         
         // 관리자인 경우 대시보드로 이동
         if (response.user.is_admin) {
-            alert('👑 관리자로 로그인되었습니다. 관리자 대시보드로 이동합니다.');
-            window.location.href = '/admin-dashboard.html';
+            showSuccessNotification('관리자로 로그인되었습니다!');
+            closeAuthModal();
+            setTimeout(() => {
+                window.location.href = '/admin-dashboard.html';
+            }, 1000);
             return;
         }
         
-        alert('✅ ' + response.message);
+        showSuccessNotification('로그인 성공! 환영합니다 😊');
         closeAuthModal();
         updateUIForLoggedInUser(response.user);
+        
+        // 페이지 새로고침하여 프롬프트 가격 업데이트
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
     } catch (error) {
         alert('❌ ' + error.message);
     }
@@ -873,9 +895,184 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 자동 로그인 체크 및 세션 갱신
     await AuthManager.checkAndRefreshSession();
     
+    // UI 업데이트
+    const currentUser = AuthManager.getUser();
+    if (currentUser) {
+        updateUIForLoggedInUser(currentUser);
+    } else {
+        updateUIForLoggedInUser(null);
+    }
+    
     // 세션 타이머 시작 (로그인 만료 10분 전 알림)
     if (AuthManager.isLoggedIn()) {
         AuthManager.startSessionTimer();
         console.log('세션 타이머 시작 완료');
     }
 });
+
+// ==================== UI 업데이트 함수 ====================
+
+// 로그인 상태에 따른 UI 업데이트
+function updateUIForLoggedInUser(user) {
+    console.log('UI 업데이트:', user);
+    
+    if (!user || !user.id) {
+        // 비로그인 상태
+        document.getElementById('authButtons').style.display = 'flex';
+        document.getElementById('userMenu').style.display = 'none';
+        document.getElementById('extendLoginBtn').style.display = 'none';
+        document.getElementById('adminBtn').style.display = 'none';
+        return;
+    }
+    
+    // 로그인 상태
+    document.getElementById('authButtons').style.display = 'none';
+    document.getElementById('userMenu').style.display = 'block';
+    document.getElementById('extendLoginBtn').style.display = 'inline-flex';
+    
+    // 사용자 이름 표시
+    const userName = user.username || user.email.split('@')[0];
+    document.getElementById('userNameDisplay').textContent = `👤 ${userName}`;
+    
+    // 관리자인 경우 관리자 버튼 표시
+    if (user.is_admin) {
+        document.getElementById('adminBtn').style.display = 'inline-flex';
+    }
+    
+    // 3시간 특별가 배너 표시
+    if (user.in_welcome_period) {
+        const welcomeBanner = document.getElementById('welcomeBanner');
+        if (welcomeBanner) {
+            welcomeBanner.style.display = 'block';
+        }
+    }
+    
+    // 프롬프트 카드 다시 렌더링 (가격 업데이트)
+    if (typeof renderPrompts === 'function') {
+        renderPrompts();
+    }
+}
+
+// 사용자 메뉴 토글
+document.addEventListener('DOMContentLoaded', () => {
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdown = document.getElementById('userDropdown');
+    
+    if (userMenuBtn) {
+        userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.style.display = userDropdown.style.display === 'none' ? 'block' : 'none';
+        });
+    }
+    
+    // 외부 클릭 시 드롭다운 닫기
+    document.addEventListener('click', () => {
+        if (userDropdown) {
+            userDropdown.style.display = 'none';
+        }
+    });
+});
+
+// 로그인 연장 함수
+async function extendLoginSession() {
+    try {
+        const btn = document.getElementById('extendLoginBtn');
+        const originalText = btn.innerHTML;
+        
+        btn.innerHTML = '<span>⏳</span><span>연장 중...</span>';
+        btn.disabled = true;
+        
+        const success = await AuthManager.refreshSession();
+        
+        if (success) {
+            btn.innerHTML = '<span>✅</span><span>연장 완료!</span>';
+            
+            // 알림 표시
+            showSuccessNotification('로그인이 1시간 연장되었습니다!');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 2000);
+        } else {
+            throw new Error('연장 실패');
+        }
+    } catch (error) {
+        console.error('로그인 연장 실패:', error);
+        alert('❌ 로그인 연장에 실패했습니다. 다시 로그인해주세요.');
+        AuthManager.logout();
+    }
+}
+
+// 성공 알림 표시
+function showSuccessNotification(message) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        font-weight: 600;
+        animation: slideIn 0.3s ease-out;
+    `;
+    notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span style="font-size: 1.5rem;">✅</span>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// 사용자 대시보드 표시
+function showUserDashboard() {
+    alert('사용자 대시보드 기능은 준비 중입니다.');
+}
+
+// CSS 애니메이션 추가
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+    
+    #userMenuBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    #extendLoginBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+`;
+document.head.appendChild(style);
