@@ -14,12 +14,12 @@
         }
         
         .admin-header {
-            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
             color: white;
             padding: 2rem;
             border-radius: 16px;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
         
         .admin-header h1 {
@@ -67,8 +67,8 @@
         }
         
         .tab.active {
-            color: #d97706;
-            border-bottom-color: #d97706;
+            color: #2563eb;
+            border-bottom-color: #2563eb;
         }
         
         .tab:hover {
@@ -184,12 +184,12 @@
         }
         
         .action-btn-primary {
-            background: #d97706;
+            background: #2563eb;
             color: white;
         }
         
         .action-btn-primary:hover {
-            background: #b45309;
+            background: #1d4ed8;
         }
         
         .action-btn-secondary {
@@ -264,10 +264,11 @@
         
         <!-- 커뮤니티 관리 탭 -->
         <div id="community" class="tab-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h2>💬 커뮤니티 게시글 관리</h2>
-                <button class="action-btn action-btn-primary" onclick="openPostModal()">
-                    ✍️ 새 게시글 작성
+            <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                <h2 style="color: #1e40af; margin-bottom: 0.5rem;">💬 커뮤니티 게시글 관리</h2>
+                <p style="color: #64748b; margin-bottom: 1rem;">메인 페이지 커뮤니티 섹션에 표시될 게시글을 관리합니다.</p>
+                <button class="action-btn action-btn-primary" onclick="openPostModal()" style="background: #2563eb; color: white; padding: 1rem 2rem; border: none; border-radius: 12px; font-size: 1.125rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);">
+                    ✍️ 새 게시글 작성하기 (여기 클릭!)
                 </button>
             </div>
             <div class="data-table">
@@ -275,6 +276,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>카테고리</th>
                             <th>제목</th>
                             <th>작성일</th>
                             <th>이미지</th>
@@ -662,9 +664,11 @@
                 const tbody = document.getElementById('community-posts-body');
                 
                 if (data.posts && data.posts.length > 0) {
+                    const categoryEmoji = { '공지': '📢', '질문': '❓', '자유': '💬' };
                     tbody.innerHTML = data.posts.map(post => `
                         <tr>
                             <td>${post.id}</td>
+                            <td><span style="background: ${post.category === '공지' ? '#fef3c7' : post.category === '질문' ? '#dbeafe' : '#e0e7ff'}; color: ${post.category === '공지' ? '#92400e' : post.category === '질문' ? '#1e40af' : '#3730a3'}; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.875rem; font-weight: 600;">${categoryEmoji[post.category] || '💬'} ${post.category}</span></td>
                             <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${post.title}</td>
                             <td>${new Date(post.created_at).toLocaleDateString()}</td>
                             <td>${post.image_url ? '📸 있음' : '-'}</td>
@@ -679,12 +683,12 @@
                         </tr>
                     `).join('');
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">게시글이 없습니다.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">게시글이 없습니다.</td></tr>';
                 }
             } catch (error) {
                 console.error('게시글 로드 실패:', error);
                 document.getElementById('community-posts-body').innerHTML = 
-                    '<tr><td colspan="5" class="error-message">게시글을 불러오는데 실패했습니다.</td></tr>';
+                    '<tr><td colspan="6" class="error-message">게시글을 불러오는데 실패했습니다.</td></tr>';
             }
         }
         
