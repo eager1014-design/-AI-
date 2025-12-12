@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎭 실시간 감정 분석 - JINBUBU AI Market</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 2rem;
+        }
+
+        .input-section {
+            margin-bottom: 2rem;
+        }
+
+        .input-section label {
+            display: block;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.75rem;
+        }
+
+        .text-input {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            font-size: 1rem;
+            font-family: inherit;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 1.25rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .analyze-btn:active {
+            transform: translateY(0);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-section {
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .emotion-badge {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-radius: 50px;
+            margin-bottom: 1.5rem;
+        }
+
+        .emotion-positive {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .emotion-negative {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .emotion-neutral {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+
+        .confidence {
+            font-size: 1.125rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        .recommendation-section {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .recommendation-section h3 {
+            font-size: 1.5rem;
+            color: #111827;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .recommendation-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .recommendation-item h4 {
+            font-size: 1.125rem;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .recommendation-item p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .hashtags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .hashtag {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .analysis-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .detail-item {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .detail-item .label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-item .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 2rem;
+        }
+
+        .back-btn:hover {
+            background: #f3f4f6;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎭 실시간 감정 분석</h1>
+            <p>텍스트의 감정을 AI가 분석하고 최적의 콘텐츠 전략을 추천해드립니다</p>
+        </div>
+
+        <div class="card">
+            <div class="input-section">
+                <label for="textInput">분석할 텍스트를 입력하세요</label>
+                <textarea 
+                    id="textInput" 
+                    class="text-input" 
+                    placeholder="예시: 오늘 정말 행복한 하루였어요! 새로운 프로젝트가 성공적으로 완료되어서 너무 기쁩니다."
+                ></textarea>
+            </div>
+
+            <button id="analyzeBtn" class="analyze-btn">
+                <span id="btnText">🔍 감정 분석하기</span>
+                <div id="spinner" class="spinner"></div>
+            </button>
+
+            <div id="resultSection" class="result-section">
+                <div id="emotionResult"></div>
+                <div id="recommendationResult"></div>
+                <div id="analysisDetails"></div>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="/" class="back-btn">🏠 메인으로 돌아가기</a>
+        </div>
+    </div>
+
+    <script>
+        const textInput = document.getElementById('textInput');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('spinner');
+        const resultSection = document.getElementById('resultSection');
+
+        analyzeBtn.addEventListener('click', analyzeEmotion);
+
+        async function analyzeEmotion() {
+            const text = textInput.value.trim();
+
+            if (!text) {
+                alert('분석할 텍스트를 입력해주세요.');
+                return;
+            }
+
+            // UI 상태 변경
+            analyzeBtn.disabled = true;
+            btnText.textContent = '분석 중...';
+            spinner.style.display = 'block';
+            resultSection.classList.remove('show');
+
+            try {
+                const response = await fetch('/api/emotion-realtime', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text })
+                });
+
+                if (!response.ok) {
+                    throw new Error('분석에 실패했습니다.');
+                }
+
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                alert('오류가 발생했습니다: ' + error.message);
+            } finally {
+                // UI 상태 복원
+                analyzeBtn.disabled = false;
+                btnText.textContent = '🔍 감정 분석하기';
+                spinner.style.display = 'none';
+            }
+        }
+
+        function displayResults(data) {
+            // 감정 결과
+            const emotionEmoji = {
+                'positive': '😊',
+                'negative': '😢',
+                'neutral': '😐'
+            };
+
+            const emotionText = {
+                'positive': '긍정적',
+                'negative': '부정적',
+                'neutral': '중립적'
+            };
+
+            const emotionClass = `emotion-${data.emotion}`;
+
+            document.getElementById('emotionResult').innerHTML = `
+                <div style="text-align: center;">
+                    <div class="emotion-badge ${emotionClass}">
+                        ${emotionEmoji[data.emotion]} ${emotionText[data.emotion]} 감정
+                    </div>
+                    <div class="confidence">
+                        신뢰도: ${(data.confidence * 100).toFixed(0)}%
+                    </div>
+                </div>
+            `;
+
+            // 추천 사항
+            const rec = data.recommendation;
+            document.getElementById('recommendationResult').innerHTML = `
+                <div class="recommendation-section">
+                    <h3>💡 콘텐츠 전략 추천</h3>
+                    
+                    <div class="recommendation-item">
+                        <h4>🎨 추천 톤</h4>
+                        <p>${rec.tone}</p>
+                    </div>
+
+                    <div class="recommendation-item">
+                        <h4>📝 추천 콘텐츠 유형</h4>
+                        <p>${rec.content_type}</p>
+                    </div>
+
+                    <div class="recommendation-item">
+                        <h4>⏰ 최적 게시 시간</h4>
+                        <p>${rec.best_time}</p>
+                    </div>
+
+                    <div class="recommendation-item">
+                        <h4>🏷️ 추천 해시태그</h4>
+                        <div class="hashtags">
+                            ${rec.hashtags.map(tag => `<span class="hashtag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 분석 상세 정보
+            document.getElementById('analysisDetails').innerHTML = `
+                <div class="analysis-details">
+                    <div class="detail-item">
+                        <div class="label">텍스트 길이</div>
+                        <div class="value">${data.analysis.text_length}자</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">단어 수</div>
+                        <div class="value">${data.analysis.word_count}개</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">분석 시간</div>
+                        <div class="value">${new Date(data.analysis.analyzed_at).toLocaleTimeString('ko-KR')}</div>
+                    </div>
+                </div>
+            `;
+
+            // 결과 표시
+            resultSection.classList.add('show');
+        }
+
+        // Enter 키로 분석 실행
+        textInput.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                analyzeEmotion();
+            }
+        });
+    </script>
+</body>
+</html>

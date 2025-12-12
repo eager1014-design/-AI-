@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI 도구 모음 - JINBUBU AI Market</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 70px rgba(0,0,0,0.4);
+        }
+
+        .tool-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1rem;
+        }
+
+        .tool-description {
+            font-size: 1.125rem;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-features li {
+            padding: 0.5rem 0;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-features li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .tool-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: white;
+            color: #2563eb;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 2rem;
+        }
+
+        .back-btn:hover {
+            background: #f3f4f6;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .tool-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI 도구 모음</h1>
+            <p>콘텐츠 제작을 혁신하는 5가지 AI 도구를 무료로 사용해보세요</p>
+        </div>
+
+        <div class="tools-grid">
+            <!-- 감정 분석 -->
+            <div class="tool-card" onclick="location.href='/emotion-analyzer.html'">
+                <div class="tool-icon">🎭</div>
+                <h2 class="tool-title">실시간 감정 분석</h2>
+                <p class="tool-description">
+                    텍스트의 감정을 AI가 분석하고 최적의 콘텐츠 전략을 추천합니다
+                </p>
+                <ul class="tool-features">
+                    <li>감정 분류 (긍정/부정/중립)</li>
+                    <li>콘텐츠 톤 추천</li>
+                    <li>최적 해시태그 제안</li>
+                    <li>게시 시간 추천</li>
+                </ul>
+                <span class="tool-badge">무료 체험</span>
+            </div>
+
+            <!-- 콘텐츠 생성기 -->
+            <div class="tool-card" onclick="location.href='/content-generator.html'">
+                <div class="tool-icon">🎨</div>
+                <h2 class="tool-title">개인화 콘텐츠 생성</h2>
+                <p class="tool-description">
+                    관심사와 타겟을 입력하면 맞춤형 콘텐츠 전략을 자동 생성합니다
+                </p>
+                <ul class="tool-features">
+                    <li>플랫폼별 최적화</li>
+                    <li>참여도 예측</li>
+                    <li>최적 게시 시간</li>
+                    <li>타겟 맞춤화</li>
+                </ul>
+                <span class="tool-badge">무료 체험</span>
+            </div>
+
+            <!-- A/B 테스트 -->
+            <div class="tool-card" onclick="location.href='/ab-tester.html'">
+                <div class="tool-icon">🔬</div>
+                <h2 class="tool-title">실시간 A/B 테스트</h2>
+                <p class="tool-description">
+                    두 가지 버전을 비교하고 더 나은 콘텐츠를 추천받으세요
+                </p>
+                <ul class="tool-features">
+                    <li>성과 점수 비교</li>
+                    <li>승자 결정</li>
+                    <li>상세 인사이트</li>
+                    <li>다음 액션 추천</li>
+                </ul>
+                <span class="tool-badge">무료 체험</span>
+            </div>
+
+            <!-- 트렌드 분석 -->
+            <div class="tool-card" onclick="location.href='/trend-analyzer.html'">
+                <div class="tool-icon">📈</div>
+                <h2 class="tool-title">트렌드 분석</h2>
+                <p class="tool-description">
+                    키워드의 트렌드를 분석하고 최적의 타이밍을 찾아드립니다
+                </p>
+                <ul class="tool-features">
+                    <li>트렌드 점수 계산</li>
+                    <li>인기도 분석</li>
+                    <li>관련 해시태그</li>
+                    <li>타이밍 전략</li>
+                </ul>
+                <span class="tool-badge">무료 체험</span>
+            </div>
+
+            <!-- 경쟁자 분석 -->
+            <div class="tool-card" onclick="location.href='/competitor-analyzer.html'">
+                <div class="tool-icon">🎯</div>
+                <h2 class="tool-title">경쟁자 분석</h2>
+                <p class="tool-description">
+                    경쟁자의 전략을 분석하고 개선점을 찾아드립니다
+                </p>
+                <ul class="tool-features">
+                    <li>게시 빈도 분석</li>
+                    <li>최고 성과 콘텐츠</li>
+                    <li>참여율 계산</li>
+                    <li>개선 전략 추천</li>
+                </ul>
+                <span class="tool-badge">무료 체험</span>
+            </div>
+
+            <!-- API 문서 -->
+            <div class="tool-card" onclick="window.open('https://github.com/eager1014-design/-AI-/blob/main/AI_API_GUIDE.md', '_blank')">
+                <div class="tool-icon">📚</div>
+                <h2 class="tool-title">API 문서</h2>
+                <p class="tool-description">
+                    개발자를 위한 완전한 API 가이드와 사용 예시
+                </p>
+                <ul class="tool-features">
+                    <li>REST API 엔드포인트</li>
+                    <li>요청/응답 예시</li>
+                    <li>코드 샘플</li>
+                    <li>통합 가이드</li>
+                </ul>
+                <span class="tool-badge">문서 보기</span>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="/" class="back-btn">🏠 메인으로 돌아가기</a>
+        </div>
+    </div>
+</body>
+</html>
