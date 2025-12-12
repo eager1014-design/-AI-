@@ -1,11 +1,34 @@
 /**
- * 💬 깔끔한 커뮤니티 - 간단한 읽기 전용 게시판
+ * 💬 깔끔한 커뮤니티 - 카테고리별 게시판
  */
+
+let currentCategory = 'all';
+let allPosts = [];
 
 // 페이지 로드 시 게시글 불러오기
 document.addEventListener('DOMContentLoaded', () => {
     loadPosts();
+    setupCategoryTabs();
 });
+
+/**
+ * 카테고리 탭 설정
+ */
+function setupCategoryTabs() {
+    const tabs = document.querySelectorAll('.category-tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // 모든 탭 비활성화
+            tabs.forEach(t => t.classList.remove('active'));
+            // 클릭한 탭 활성화
+            tab.classList.add('active');
+            
+            // 카테고리 변경
+            currentCategory = tab.dataset.category;
+            filterPosts();
+        });
+    });
+}
 
 /**
  * 게시글 목록 불러오기
@@ -21,21 +44,44 @@ async function loadPosts() {
         }
         
         const data = await response.json();
-        const posts = data.posts || [];
+        allPosts = data.posts || [];
         
-        // 게시글이 없는 경우
-        if (posts.length === 0) {
-            postsContainer.innerHTML = '<p class="empty-state">📝 아직 게시글이 없습니다.</p>';
-            return;
-        }
-        
-        // 게시글 렌더링
-        postsContainer.innerHTML = posts.map(post => createPostCard(post)).join('');
+        filterPosts();
         
     } catch (error) {
         console.error('게시글 로딩 오류:', error);
         postsContainer.innerHTML = '<p class="empty-state">⚠️ 게시글을 불러오는 중 오류가 발생했습니다.</p>';
     }
+}
+
+/**
+ * 카테고리별 필터링
+ */
+function filterPosts() {
+    const postsContainer = document.getElementById('communityPosts');
+    
+    let filteredPosts = allPosts;
+    
+    // 카테고리 필터
+    if (currentCategory !== 'all') {
+        filteredPosts = allPosts.filter(post => post.category === currentCategory);
+    }
+    
+    // 게시글이 없는 경우
+    if (filteredPosts.length === 0) {
+        postsContainer.innerHTML = '<p class="empty-state">📝 아직 게시글이 없습니다.</p>';
+        return;
+    }
+    
+    // 공지사항을 먼저, 그 다음 최신순
+    filteredPosts.sort((a, b) => {
+        if (a.category === '공지' && b.category !== '공지') return -1;
+        if (a.category !== '공지' && b.category === '공지') return 1;
+        return new Date(b.created_at) - new Date(a.created_at);
+    });
+    
+    // 게시글 렌더링
+    postsContainer.innerHTML = filteredPosts.map(post => createPostCard(post)).join('');
 }
 
 /**
@@ -48,10 +94,17 @@ function createPostCard(post) {
     
     const formattedDate = formatDate(post.created_at);
     
+    const categoryEmoji = {
+        '공지': '📢',
+        '질문': '❓',
+        '자유': '💬'
+    };
+    
     return `
         <div class="post-card">
             ${imageHtml}
             <div class="post-body">
+                <span class="post-category ${post.category}">${categoryEmoji[post.category] || '💬'} ${post.category}</span>
                 <h3 class="post-title">${escapeHtml(post.title)}</h3>
                 <p class="post-content">${escapeHtml(post.content)}</p>
                 <div class="post-footer">

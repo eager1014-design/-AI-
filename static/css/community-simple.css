@@ -4,6 +4,40 @@
     background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
 }
 
+/* 카테고리 탭 */
+.category-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 0 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.category-tab {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.category-tab:hover {
+    border-color: #2563eb;
+    color: #2563eb;
+    transform: translateY(-2px);
+}
+
+.category-tab.active {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
 .community-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -103,10 +137,45 @@
     font-size: 1.125rem;
 }
 
+/* 카테고리 배지 */
+.post-category {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.post-category.공지 {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.post-category.질문 {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.post-category.자유 {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
 /* 모바일 반응형 */
 @media (max-width: 768px) {
     .community-section {
         padding: 3rem 0;
+    }
+
+    .category-tabs {
+        gap: 0.5rem;
+        padding: 0;
+    }
+
+    .category-tab {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
     }
 
     .community-grid {

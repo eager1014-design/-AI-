@@ -697,6 +697,15 @@
                     <form id="postForm" onsubmit="submitPost(event); return false;">
                         <input type="hidden" id="editPostId" value="${postData ? postData.id : ''}">
                         <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">카테고리</label>
+                            <select id="postCategory" required
+                                    style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 1rem; cursor: pointer;">
+                                <option value="공지" ${postData && postData.category === '공지' ? 'selected' : ''}>📢 공지</option>
+                                <option value="질문" ${postData && postData.category === '질문' ? 'selected' : ''}>❓ 궁금한 것</option>
+                                <option value="자유" ${postData && postData.category === '자유' ? 'selected' : ''}>💬 자유</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">제목</label>
                             <input type="text" id="postTitle" required 
                                    value="${postData ? postData.title : ''}"
@@ -734,11 +743,13 @@
             event.preventDefault();
             
             const postId = document.getElementById('editPostId').value;
+            const category = document.getElementById('postCategory').value;
             const title = document.getElementById('postTitle').value;
             const content = document.getElementById('postContent').value;
             const imageFile = document.getElementById('postImage').files[0];
             
             const formData = new FormData();
+            formData.append('category', category);
             formData.append('title', title);
             formData.append('content', content);
             if (imageFile) {

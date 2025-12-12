@@ -166,6 +166,7 @@ class CommunityPost(db.Model):
     __tablename__ = 'community_posts'
     
     id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(50), nullable=False, default='자유')  # 공지, 질문, 자유
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(500), nullable=True)  # 사진 URL
@@ -2172,6 +2173,7 @@ def create_community_post(current_user):
     try:
         # FormData로 전송된 경우
         if request.content_type and 'multipart/form-data' in request.content_type:
+            category = request.form.get('category', '자유').strip()
             title = request.form.get('title', '').strip()
             content = request.form.get('content', '').strip()
             image = request.files.get('image')
@@ -2195,6 +2197,7 @@ def create_community_post(current_user):
         else:
             # JSON으로 전송된 경우
             data = request.get_json()
+            category = data.get('category', '자유').strip()
             title = data.get('title', '').strip()
             content = data.get('content', '').strip()
             image_url = None
@@ -2203,6 +2206,7 @@ def create_community_post(current_user):
             return jsonify({'error': '제목과 내용을 입력해주세요.'}), 400
         
         new_post = CommunityPost(
+            category=category,
             title=title,
             content=content,
             image_url=image_url,
