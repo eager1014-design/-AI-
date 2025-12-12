@@ -627,46 +627,26 @@ function openModal(prompt) {
     modalPrice.innerHTML = priceHtml;
     modalDescription.textContent = prompt.description;
     
-    // 구매 여부 확인 (무료 프롬프트는 로그인만 하면 OK, 유료는 구매 필요)
-    const hasPurchased = (prompt.isFree && isLoggedIn) || checkIfPurchased(prompt.id);
-    
-    if (hasPurchased) {
-        // 구매했거나 무료(+로그인): 전체 프롬프트 표시
+    // 무료 프롬프트는 항상 전체 내용 보여주기 (흐림 효과 없음)
+    if (prompt.isFree) {
+        // 무료 프롬프트: 전체 내용 표시 (흐림 효과 없음!)
         promptCode.textContent = prompt.fullPrompt;
         promptCode.classList.remove('blurred');
-        copyBtn.disabled = false;
-        copyBtn.style.display = 'flex';
-        copyBtn.textContent = '📋 복사하기';
         
-        if (prompt.isFree) {
+        if (isLoggedIn) {
+            // 로그인한 경우: 복사 가능
+            copyBtn.disabled = false;
+            copyBtn.style.display = 'flex';
+            copyBtn.textContent = '📋 복사하기';
             purchaseBtn.style.display = 'none';
         } else {
-            purchaseBtn.style.display = 'none';
-        }
-    } else {
-        // 미구매 또는 비로그인: 일부만 미리보기 + 흐림 효과
-        const previewLength = 200; // 200자만 미리보기
-        let previewMessage = '';
-        
-        if (prompt.isFree) {
-            // 무료 프롬프트 - 회원가입 유도
-            previewMessage = '\n\n━━━━━━━━━━━━━━━━━━━━\n\n🔐 전체 내용을 보시려면 회원가입이 필요합니다.\n\n✨ 회원가입 혜택:\n🎁 무료 AI 진단 프롬프트 전체 공개\n🎉 가입 후 3시간 동안 모든 프롬프트 5,000원\n💎 이후에도 회원 전용 50% 할인\n\n[회원가입하고 무료로 전체 보기] 👆';
-        } else {
-            // 유료 프롬프트
-            previewMessage = '\n\n━━━━━━━━━━━━━━━━━━━━\n\n🔐 전체 내용을 보시려면 구매가 필요합니다.\n\n💡 이 프롬프트는 실제로 ' + prompt.fullPrompt.length + '자의 상세한 내용을 포함하고 있습니다.\n\n✨ 회원가입 후 특별가로 구매하세요!';
-        }
-        
-        const preview = prompt.fullPrompt.substring(0, previewLength) + '\n\n[... 이하 생략 ...]' + previewMessage;
-        promptCode.textContent = preview;
-        promptCode.classList.add('blurred');
-        copyBtn.disabled = true;
-        copyBtn.style.display = 'flex';
-        copyBtn.textContent = '🔒 로그인 후 복사 가능';
-        
-        if (prompt.isFree) {
-            // 무료 프롬프트 - 회원가입 버튼
+            // 비로그인: 복사 불가, 회원가입 유도
+            copyBtn.disabled = true;
+            copyBtn.style.display = 'flex';
+            copyBtn.textContent = '🔒 로그인 후 복사 가능';
+            
             purchaseBtn.style.display = 'block';
-            purchaseBtn.textContent = '🎁 회원가입하고 무료로 보기';
+            purchaseBtn.textContent = '🎁 회원가입하고 복사하기';
             purchaseBtn.disabled = false;
             purchaseBtn.style.opacity = '1';
             purchaseBtn.style.cursor = 'pointer';
@@ -677,8 +657,27 @@ function openModal(prompt) {
                     showRegisterModal();
                 }
             };
+        }
+    } else {
+        // 유료 프롬프트 처리
+        const hasPurchased = checkIfPurchased(prompt.id);
+        
+        if (hasPurchased) {
+            // 구매한 유료 프롬프트: 전체 내용 표시 (흐림 효과 없음)
+            promptCode.textContent = prompt.fullPrompt;
+            promptCode.classList.remove('blurred');
+            copyBtn.disabled = false;
+            copyBtn.style.display = 'flex';
+            copyBtn.textContent = '📋 복사하기';
+            purchaseBtn.style.display = 'none';
         } else {
-            // 유료 프롬프트 - 결제 시스템 준비중
+            // 미구매 유료 프롬프트: 전체 내용 보여주되 흐림 효과 적용!
+            promptCode.textContent = prompt.fullPrompt + '\n\n━━━━━━━━━━━━━━━━━━━━\n\n🔐 이 프롬프트를 사용하시려면 구매가 필요합니다.\n\n💡 총 ' + prompt.fullPrompt.length + '자의 상세한 내용을 포함하고 있습니다.\n\n✨ 회원가입 후 특별가로 구매하세요!';
+            promptCode.classList.add('blurred');
+            copyBtn.disabled = true;
+            copyBtn.style.display = 'flex';
+            copyBtn.textContent = '🔒 구매 후 복사 가능';
+            
             purchaseBtn.style.display = 'block';
             purchaseBtn.textContent = '🔧 결제 시스템 준비중';
             purchaseBtn.disabled = true;

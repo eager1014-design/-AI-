@@ -945,6 +945,15 @@ function updateUIForLoggedInUser(user) {
         if (welcomeBanner) {
             welcomeBanner.style.display = 'block';
         }
+        // 3시간 타이머 시작
+        if (typeof startWelcomeTimer === 'function') {
+            startWelcomeTimer();
+        }
+    } else {
+        // 타이머 중지
+        if (typeof stopWelcomeTimer === 'function') {
+            stopWelcomeTimer();
+        }
     }
     
     // 프롬프트 카드 다시 렌더링 (가격 업데이트)
@@ -1172,19 +1181,4 @@ function stopWelcomeTimer() {
         welcomeTimerDisplay.style.display = 'none';
     }
 }
-
-// updateUIForLoggedInUser 함수 수정 (타이머 시작 추가)
-const originalUpdateUI = updateUIForLoggedInUser;
-updateUIForLoggedInUser = function(user) {
-    if (originalUpdateUI) {
-        originalUpdateUI(user);
-    }
-    
-    // 3시간 특별가 기간이면 타이머 시작
-    if (user && user.in_welcome_period) {
-        startWelcomeTimer();
-    } else {
-        stopWelcomeTimer();
-    }
-};
 
