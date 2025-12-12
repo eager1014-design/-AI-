@@ -22,6 +22,9 @@ const promptsDatabase = [
         isFree: true,
         badge: '🎁 무료',
         badgeColor: '#10b981',
+        usersCount: 1847, // 이미 사용중인 사용자 수
+        rating: 4.8, // 평점 (5점 만점)
+        reviewCount: 234, // 리뷰 개수
         fullPrompt: `【 ChatGPT 활용 능력 진단 프롬프트 】
 
 당신은 "AI 활용 능력 평가 전문가"입니다.
@@ -173,103 +176,49 @@ Q3. ChatGPT 사용 시 가장 어려운 점은 무엇인가요?
         discount: 80,
         badge: '🔥 인기',
         badgeColor: '#ef4444',
-        fullPrompt: `【 감정 스토리텔링 생성기 프롬프트 】
+        usersCount: 892, // 이미 구매한 사용자 수
+        rating: 4.9, // 평점
+        reviewCount: 156, // 리뷰 개수
+        fullPrompt: `【 감정 스토리텔링 생성기 - 미리보기 】
 
-당신은 "감정 마케팅 전문 카피라이터"입니다.
+💡 이 프롬프트로 할 수 있는 것:
 
-사람들의 마음을 움직이는 스토리를 만들어주세요.
+✅ 타겟 감정에 맞는 스토리 자동 생성
+✅ 인스타/유튜브/블로그 3가지 버전 제공
+✅ 썸네일, 제목, 해시태그 세트 자동 생성
+✅ 바이럴 마케팅 전략 TIP 포함
 
-【 핵심 구성 】
-✅ 타겟 감정 (공감/설렘/분노/희망 등) 선택
-✅ 스토리 라인 3가지 자동 생성
-✅ 각 스토리별 최적 플랫폼 추천
-✅ 썸네일/제목/해시태그 세트 제공
+【 활용 예시 】
 
-【 핵심 기능 】
-1. 특정 감정 자극하는 스토리 생성
-2. 타겟 페르소나 맞춤형 전개
-3. 플랫폼별 최적화 (인스타/유튜브/블로그)
-4. 바이럴 요소 자동 삽입
+"30대 워킹맘을 타겟으로 '공감' 감정을 자극하는 
+육아 콘텐츠를 만들어주세요"
 
-【 추천 대상 】
+→ AI가 3가지 버전의 스토리 자동 생성:
+  • 인스타 릴스용 30초 대본
+  • 유튜브 쇼츠용 60초 대본
+  • 블로그용 500자 스토리
+
+각 버전마다 제공되는 것:
+📝 전체 대본 (복사해서 바로 사용)
+🎨 썸네일 아이디어
+🎵 BGM 추천
+#️⃣ 해시태그 10개
+
+【 이런 분께 추천 】
 - 공감 콘텐츠 만들고 싶은 크리에이터
-- 감성 마케팅 필요한 브랜드
-- SNS 반응 높이고 싶은 마케터
-- 스토리텔링 배우고 싶은 초보자
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-💎 전체 프롬프트 (구매 후 이용 가능)
-
-당신은 "감정 마케팅 전문 스토리텔러"입니다.
-사람들의 마음을 움직이고, 공감을 이끌어내는 스토리를 창작합니다.
-
-【 입력 정보 】
-사용자가 다음 정보를 제공하면:
-1. 타겟 감정 (예: 공감, 설렘, 희망, 분노, 슬픔, 기쁨 등)
-2. 주제/제품/서비스 (예: 다이어트, 육아, 창업, 자기계발 등)
-3. 타겟 고객 (예: 30대 워킹맘, 20대 직장인, 50대 은퇴자 등)
-4. 콘텐츠 목적 (예: 제품 홍보, 브랜드 인지도, 팔로워 증가 등)
-
-【 출력 형식 】
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎬 감정 스토리텔링 3가지 버전
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-【 스토리 버전 1: [제목] 】
-📱 최적 플랫폼: 인스타그램 릴스
-🎯 타겟 감정: [감정]
-⏱️ 예상 시간: 30초
-
-📖 스토리 전개:
-[도입] (3초) - [후킹 문장]
-[전개] (15초) - [감정 자극 스토리]
-[클라이맥스] (7초) - [공감 포인트]
-[마무리] (5초) - [행동 유도]
-
-📝 전체 대본:
-"[실제 대본 전문]"
-
-🎨 시각적 요소:
-- 썸네일: [설명]
-- 자막 스타일: [폰트/색상]
-- BGM 추천: [분위기]
-
-#️⃣ 해시태그 (10개):
-#[해시태그1] #[해시태그2] ... #[해시태그10]
+- 감성 마케팅이 필요한 브랜드
+- SNS 반응률을 높이고 싶은 마케터
+- 스토리텔링을 배우고 싶은 초보자
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-【 스토리 버전 2: [제목] 】
-📱 최적 플랫폼: 유튜브 쇼츠
-🎯 타겟 감정: [감정]
-⏱️ 예상 시간: 60초
+🔐 전체 프롬프트는 구매 후 확인 가능합니다.
 
-[동일한 구조로 제공]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-【 스토리 버전 3: [제목] 】
-📱 최적 플랫폼: 블로그/카카오스토리
-🎯 타겟 감정: [감정]
-⏱️ 예상 길이: 500자
-
-[동일한 구조로 제공]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-💡 바이럴 전략 TIP:
-1. [구체적 팁 1]
-2. [구체적 팁 2]
-3. [구체적 팁 3]
-
-📊 예상 반응률: 상 / 중 / 하
-💰 예상 전환율: 상 / 중 / 하
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-자, 이제 시작해볼까요?
-위 4가지 정보를 알려주세요! 🚀`
+구매하시면:
+✅ 완성된 프롬프트 전문 제공
+✅ 복사해서 ChatGPT에 바로 사용
+✅ 무제한 사용 가능
+✅ 평생 업데이트 지원`
     },
     
     // 3. 인스타 릴스 자동 생성기
@@ -713,12 +662,29 @@ function renderPrompts() {
         // 구독 표시
         const subscriptionLabel = prompt.isSubscription ? '<span class="subscription-label">/월</span>' : '';
         
+        // 사용자 수 및 평점 표시
+        const statsHtml = prompt.usersCount ? `
+            <div class="prompt-stats" style="display: flex; gap: 1rem; margin-top: 0.75rem; font-size: 0.875rem; color: #6b7280;">
+                <div style="display: flex; align-items: center; gap: 0.25rem;">
+                    <span>👥</span>
+                    <span>${prompt.usersCount.toLocaleString()}명 사용중</span>
+                </div>
+                ${prompt.rating ? `
+                <div style="display: flex; align-items: center; gap: 0.25rem;">
+                    <span>⭐</span>
+                    <span>${prompt.rating} (${prompt.reviewCount || 0})</span>
+                </div>
+                ` : ''}
+            </div>
+        ` : '';
+        
         card.innerHTML = `
             ${badgeHtml}
             ${discountHtml}
             <div class="prompt-icon">${prompt.icon}</div>
             <h3 class="prompt-title">${prompt.title}</h3>
             <p class="prompt-description">${prompt.description}</p>
+            ${statsHtml}
             <div class="prompt-price">
                 <div class="price-info">
                     ${originalPriceHtml}
@@ -1101,3 +1067,57 @@ document.addEventListener('DOMContentLoaded', () => {
     animateUserCount();
     checkWelcomeDiscount(); // 3시간 할인 체크
 });
+
+// ==================== 소셜 공유 기능 ====================
+function sharePrompt(prompt) {
+    const url = window.location.href;
+    const text = `${prompt.title} - JINBUBU AI Market\n\n${prompt.description}`;
+    
+    // 카카오톡 공유
+    if (typeof Kakao !== 'undefined' && Kakao.Link) {
+        Kakao.Link.sendDefault({
+            objectType: 'feed',
+            content: {
+                title: prompt.title,
+                description: prompt.description,
+                imageUrl: 'https://via.placeholder.com/400x300?text=JINBUBU+AI',
+                link: {
+                    mobileWebUrl: url,
+                    webUrl: url,
+                },
+            },
+            buttons: [
+                {
+                    title: '자세히 보기',
+                    link: {
+                        mobileWebUrl: url,
+                        webUrl: url,
+                    },
+                },
+            ],
+        });
+    }
+}
+
+function copyPromptLink(prompt) {
+    const url = window.location.href;
+    
+    // 클립보드에 복사
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => {
+            alert('링크가 복사되었습니다!\n친구에게 공유해보세요 😊');
+        }).catch(() => {
+            // 폴백: textarea 사용
+            const textarea = document.createElement('textarea');
+            textarea.value = url;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('링크가 복사되었습니다!\n친구에게 공유해보세요 😊');
+        });
+    } else {
+        alert(url);
+    }
+}
+
