@@ -6,7 +6,7 @@
     <title>찐부부 AI 프롬프트 마켓 - SNS 성장 전문</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="mobile-enhanced.css">
-    <link rel="stylesheet" href="community.css">
+    <link rel="stylesheet" href="static/css/community-simple.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -19,10 +19,7 @@
                     <span class="logo-text">찐부부 AI 프롬프트</span>
                 </div>
                 <nav class="nav">
-                    <a href="#communitySection" class="community-btn" onclick="event.preventDefault(); document.getElementById('communitySection').scrollIntoView({behavior: 'smooth'})">
-                        <span class="community-icon">💬</span>
-                        <span class="community-text">커뮤니티</span>
-                    </a>
+
                     <!-- 관리자 버튼 (로그인 시 표시) -->
                     <a href="/admin-dashboard.html" class="admin-btn" id="adminBtn" style="display: none;">
                         <span class="admin-icon">👑</span>
@@ -433,12 +430,12 @@
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">💬 찐부부 커뮤니티</h2>
-                <p class="section-subtitle">함께 성장하는 크리에이터 커뮤니티</p>
+                <p class="section-subtitle">함께 성장하는 SNS 마케팅 커뮤니티</p>
             </div>
             
             <!-- 게시글 목록 -->
-            <div class="community-posts" id="communityPosts">
-                <div class="posts-loading">게시글을 불러오는 중...</div>
+            <div class="community-grid" id="communityPosts">
+                <p class="empty-state">아직 게시글이 없습니다.</p>
             </div>
         </div>
     </section>
@@ -472,45 +469,8 @@
     
     <script src="script.js"></script>
     <script src="auth.js"></script>
-    <script src="somoim-integration.js"></script>
-    <script src="photo-gallery.js"></script>
     <script src="payment.js"></script>
-    <script src="community.js"></script>
-    
-    <!-- 💬 커뮤니티 글쓰기/수정 모달 -->
-    <div class="community-modal" id="communityModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">✍️ 새 글 쓰기</h3>
-                <button class="modal-close" id="modalClose">×</button>
-            </div>
-            <div class="modal-body">
-                <form id="postForm" enctype="multipart/form-data">
-                    <input type="hidden" id="postId">
-                    <div class="form-group">
-                        <label class="form-label" for="postTitle">제목</label>
-                        <input type="text" class="form-input" id="postTitle" placeholder="제목을 입력하세요" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="postContent">내용</label>
-                        <textarea class="form-textarea" id="postContent" placeholder="느낀 점, 생각, 경험 등을 자유롭게 작성해주세요 😊" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="postImage">📸 사진 첨부 (선택)</label>
-                        <input type="file" class="form-input" id="postImage" accept="image/*" style="padding: 0.5rem;">
-                        <div id="imagePreview" style="margin-top: 1rem; display: none;">
-                            <img id="previewImg" style="max-width: 100%; border-radius: 8px; border: 2px solid #e5e7eb;">
-                            <button type="button" id="removeImage" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer;">❌ 사진 제거</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-cancel" id="btnCancel">취소</button>
-                <button class="btn-submit" id="btnSubmit">작성하기</button>
-            </div>
-        </div>
-    </div>
+    <script src="static/js/community-simple.js"></script>
     
     <!-- 🎯 모바일 하단 네비게이션 -->
     <nav class="mobile-bottom-nav" style="display: none;" id="mobileBottomNav">
@@ -518,10 +478,7 @@
             <span class="nav-icon">🏠</span>
             <span class="nav-label">홈</span>
         </a>
-        <a href="/community-mobile.html" class="nav-item">
-            <span class="nav-icon">💬</span>
-            <span class="nav-label">커뮤니티</span>
-        </a>
+
         <a href="/mypage.html" class="nav-item">
             <span class="nav-icon">👤</span>
             <span class="nav-label">마이</span>
