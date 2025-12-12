@@ -505,8 +505,13 @@ function renderPrompts() {
         // 뱃지 HTML
         let badgeHtml = '';
         if (prompt.isFree) {
-            // 무료 프롬프트는 비회원도 접근 가능
-            badgeHtml = `<div class="card-badge" style="background: #10b981">${prompt.badge || '🎁 완전 무료'}</div>`;
+            // 무료 프롬프트는 로그인 필요
+            const isLoggedIn = AuthManager && typeof AuthManager.isLoggedIn === 'function' && AuthManager.isLoggedIn();
+            if (isLoggedIn) {
+                badgeHtml = `<div class="card-badge" style="background: #10b981">${prompt.badge || '🎁 무료'}</div>`;
+            } else {
+                badgeHtml = `<div class="card-badge" style="background: #2563eb">🔐 가입하면 무료</div>`;
+            }
         } else if (prompt.badge) {
             badgeHtml = `<div class="card-badge" style="background: ${prompt.badgeColor || '#6b7280'}">${prompt.badge}</div>`;
         }
@@ -554,12 +559,16 @@ function openModal(prompt) {
     const isLoggedIn = AuthManager && typeof AuthManager.isLoggedIn === 'function' && AuthManager.isLoggedIn();
     const currentUser = AuthManager && typeof AuthManager.getUser === 'function' ? AuthManager.getUser() : null;
     
-    // 무료 프롬프트는 비회원도 접근 가능 - 로그인 필요 없음!
-    // (무료는 모두에게 공개)
-    
-    // 유료 프롬프트는 회원가입 필요
-    if (!prompt.isFree && !isLoggedIn) {
-        if (confirm('💎 회원가입 후 모든 프롬프트를 이용하세요!\n\n🎉 가입 후 3시간 동안 모든 프롬프트 5,000원\n✨ 이후에도 회원 전용 50% 할인\n🎁 무료 AI 진단 프롬프트 제공\n\n지금 가입하시겠습니까?')) {
+    // 무료 프롬프트도 회원가입 필요! (전체 내용 보려면 로그인 필수)
+    if (!isLoggedIn) {
+        let message = '';
+        if (prompt.isFree) {
+            message = '🎁 무료 프롬프트 전체 보기\n\n회원가입하고 AI 활용 능력 진단 프롬프트 전체 내용을 확인하세요!\n\n✨ 무료 회원가입 혜택:\n🎁 무료 AI 진단 프롬프트 전체 공개\n🎉 가입 후 3시간 동안 모든 프롬프트 5,000원\n💎 이후에도 회원 전용 50% 할인\n\n지금 가입하시겠습니까?';
+        } else {
+            message = '💎 회원가입 후 모든 프롬프트를 이용하세요!\n\n🎉 가입 후 3시간 동안 모든 프롬프트 5,000원\n✨ 이후에도 회원 전용 50% 할인\n🎁 무료 AI 진단 프롬프트 제공\n\n지금 가입하시겠습니까?';
+        }
+        
+        if (confirm(message)) {
             if (typeof showRegisterModal === 'function') {
                 showRegisterModal();
             } else {
@@ -637,11 +646,11 @@ function openModal(prompt) {
     modalPrice.innerHTML = priceHtml;
     modalDescription.textContent = prompt.description;
     
-    // 구매 여부 확인 (무료 프롬프트 또는 구매한 프롬프트)
-    const hasPurchased = prompt.isFree || checkIfPurchased(prompt.id);
+    // 구매 여부 확인 (무료 프롬프트는 로그인만 하면 OK, 유료는 구매 필요)
+    const hasPurchased = (prompt.isFree && isLoggedIn) || checkIfPurchased(prompt.id);
     
     if (hasPurchased) {
-        // 구매했거나 무료: 전체 프롬프트 표시
+        // 구매했거나 무료(+로그인): 전체 프롬프트 표시
         promptCode.textContent = prompt.fullPrompt;
         promptCode.classList.remove('blurred');
         copyBtn.disabled = false;
