@@ -734,11 +734,8 @@ function renderPrompts() {
 function openModal(prompt) {
     // 무료 프롬프트는 로그인 필수
     if (prompt.isFree && (!AuthManager || typeof AuthManager.isLoggedIn !== 'function' || !AuthManager.isLoggedIn())) {
-        alert('⚠️ 로그인이 필요합니다\n\n무료 AI 진단 프롬프트는 회원가입 후 이용 가능합니다.\n지금 바로 가입하고 무료로 체험해보세요! 🎁');
-        
-        if (confirm('로그인 페이지로 이동하시겠습니까?')) {
-            window.location.href = '/login.html';
-        }
+        // 알림 없이 바로 로그인 페이지로 이동
+        window.location.href = '/login.html';
         return;
     }
     
@@ -896,12 +893,8 @@ function setupEventListeners() {
     freeDiagnosisBtn.addEventListener('click', () => {
         // 로그인 확인
         if (!AuthManager || typeof AuthManager.isLoggedIn !== 'function' || !AuthManager.isLoggedIn()) {
-            alert('⚠️ 로그인이 필요합니다\n\n무료 AI 진단 프롬프트는 회원가입 후 이용 가능합니다.\n지금 바로 가입하고 무료로 체험해보세요! 🎁');
-            
-            // 로그인 페이지로 이동할지 물어보기
-            if (confirm('로그인 페이지로 이동하시겠습니까?')) {
-                window.location.href = '/login.html';
-            }
+            // 알림 없이 바로 로그인 페이지로 이동
+            window.location.href = '/login.html';
             return;
         }
         
