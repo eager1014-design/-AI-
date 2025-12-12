@@ -22,18 +22,4 @@
 ==================================================
  * Debugger is active!
  * Debugger PIN: 122-972-965
-/home/user/webapp/app.py:234: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
-  current_user = User.query.get(data['user_id'])
-/home/user/webapp/app.py:67: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
-  time_since_signup = datetime.utcnow() - self.created_at
-/home/user/webapp/app.py:617: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
-  time_since_signup = datetime.utcnow() - current_user.created_at
-10.64.238.64 - - [12/Dec/2025 00:53:03] "GET /api/user/discount HTTP/1.1" 200 -
-10.64.238.64 - - [12/Dec/2025 00:53:03] "GET /api/user/discount HTTP/1.1" 200 -
-10.64.238.64 - - [12/Dec/2025 00:53:03] "GET /api/user/discount HTTP/1.1" 200 -
-10.64.238.64 - - [12/Dec/2025 00:53:04] "GET /api/user/discount HTTP/1.1" 200 -
-127.0.0.1 - - [12/Dec/2025 00:53:04] "GET / HTTP/1.1" 200 -
-10.64.238.64 - - [12/Dec/2025 00:53:04] "GET /api/user/discount HTTP/1.1" 200 -
-10.64.238.64 - - [12/Dec/2025 00:53:04] "GET /api/user/discount HTTP/1.1" 200 -
-10.64.238.64 - - [12/Dec/2025 00:53:04] "GET /api/user/discount HTTP/1.1" 200 -
-10.64.238.64 - - [12/Dec/2025 00:53:05] "GET /api/user/discount HTTP/1.1" 200 -
+127.0.0.1 - - [12/Dec/2025 01:18:45] "GET / HTTP/1.1" 200 -

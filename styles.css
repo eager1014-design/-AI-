@@ -2069,6 +2069,99 @@ body {
     box-shadow: 0 12px 30px rgba(188, 24, 136, 0.4);
 }
 
+.somoim-float {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    animation: pulse-somoim 2s ease-in-out infinite;
+}
+
+.somoim-float:hover {
+    transform: scale(1.15) translateY(-5px);
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.5);
+    animation: none;
+}
+
+@keyframes pulse-somoim {
+    0%, 100% {
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    }
+    50% {
+        box-shadow: 0 8px 30px rgba(37, 99, 235, 0.6);
+        transform: scale(1.05);
+    }
+}
+
+/* 🤖 소모임 배너 */
+.somoim-banner {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    padding: 3rem 0;
+    border-top: 3px solid #2563eb;
+    border-bottom: 3px solid #2563eb;
+}
+
+.somoim-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    background: white;
+    padding: 2rem 3rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(37, 99, 235, 0.15);
+}
+
+.somoim-icon {
+    font-size: 4rem;
+    animation: bounce-icon 2s ease-in-out infinite;
+}
+
+@keyframes bounce-icon {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.somoim-text {
+    flex: 1;
+}
+
+.somoim-title {
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: #1e40af;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.somoim-subtitle {
+    font-size: 1.125rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.somoim-cta-btn {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    color: white;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.somoim-cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.5);
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .header-content {
@@ -2091,6 +2184,29 @@ body {
     .membership-toggle {
         flex: 1;
         justify-content: center;
+    }
+
+    .somoim-content {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .somoim-icon {
+        font-size: 3rem;
+    }
+
+    .somoim-title {
+        font-size: 1.25rem;
+    }
+
+    .somoim-subtitle {
+        font-size: 1rem;
+    }
+
+    .somoim-cta-btn {
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
     }
 
     .hero-title {
