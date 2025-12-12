@@ -732,10 +732,28 @@ function renderPrompts() {
 
 // 모달 열기
 function openModal(prompt) {
-    // 무료 프롬프트는 로그인 필수
-    if (prompt.isFree && (!AuthManager || typeof AuthManager.isLoggedIn !== 'function' || !AuthManager.isLoggedIn())) {
-        // 알림 없이 바로 로그인 페이지로 이동
-        window.location.href = '/login.html';
+    // 로그인 상태 확인
+    const isLoggedIn = AuthManager && typeof AuthManager.isLoggedIn === 'function' && AuthManager.isLoggedIn();
+    
+    // 무료 프롬프트는 로그인 필수 (바로 로그인 모달)
+    if (prompt.isFree && !isLoggedIn) {
+        if (typeof showLoginModal === 'function') {
+            showLoginModal();
+        } else {
+            alert('로그인이 필요합니다.');
+        }
+        return;
+    }
+    
+    // 유료 프롬프트는 회원가입 안내
+    if (!prompt.isFree && !isLoggedIn) {
+        if (confirm('💎 회원가입이 필요합니다\n\n회원가입 후 다양한 혜택을 받아보세요!\n\n✨ 회원 전용 할인가\n🎁 무료 AI 진단 프롬프트\n📚 프리미엄 콘텐츠 접근\n\n지금 가입하시겠습니까?')) {
+            if (typeof showRegisterModal === 'function') {
+                showRegisterModal();
+            } else {
+                alert('회원가입 페이지로 이동할 수 없습니다.');
+            }
+        }
         return;
     }
     
@@ -893,8 +911,12 @@ function setupEventListeners() {
     freeDiagnosisBtn.addEventListener('click', () => {
         // 로그인 확인
         if (!AuthManager || typeof AuthManager.isLoggedIn !== 'function' || !AuthManager.isLoggedIn()) {
-            // 알림 없이 바로 로그인 페이지로 이동
-            window.location.href = '/login.html';
+            // 로그인 모달 표시
+            if (typeof showLoginModal === 'function') {
+                showLoginModal();
+            } else {
+                alert('로그인이 필요합니다.');
+            }
             return;
         }
         
