@@ -14,7 +14,7 @@
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <div class="logo">
+                <div class="logo" onclick="location.reload()" style="cursor: pointer; transition: transform 0.2s;">
                     <span class="logo-emoji" style="font-size: 2.5rem;">🤖</span>
                     <span class="logo-text">JINBUBU AI Market</span>
                 </div>
@@ -24,6 +24,12 @@
                         <span>🤖</span>
                         <span>AI 도구</span>
                     </a>
+
+                    <!-- 3시간 특별 할인 타이머 (신규 회원 전용) -->
+                    <div id="welcomeTimerDisplay" style="display: none; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: white; border-radius: 12px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1); animation: pulse 2s ease-in-out infinite;">
+                        <span>🎉</span>
+                        <span id="welcomeTimerText">특별가 남은 시간: 계산 중...</span>
+                    </div>
 
                     <!-- 로그인 연장 버튼 (로그인 시 표시) -->
                     <button id="extendLoginBtn" onclick="extendLoginSession()" style="display: none; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">

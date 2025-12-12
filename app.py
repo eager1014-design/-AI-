@@ -399,7 +399,9 @@ def register():
             'username': new_user.username,
             'phone': new_user.phone,
             'birthdate': new_user.birthdate.isoformat(),
-            'is_member': new_user.is_member
+            'is_member': new_user.is_member,
+            'created_at': new_user.created_at.isoformat() if new_user.created_at else None,  # 가입 시간 추가
+            'in_welcome_period': new_user.is_in_welcome_discount_period()  # 3시간 할인 기간 확인
         }
     }), 201
 
@@ -427,6 +429,7 @@ def login():
             'username': user.username,
             'is_member': user.is_member,
             'is_admin': user.is_admin,
+            'created_at': user.created_at.isoformat() if user.created_at else None,  # 가입 시간 추가
             'in_welcome_period': user.is_in_welcome_discount_period()  # 3시간 할인 기간 확인
         }
     }), 200

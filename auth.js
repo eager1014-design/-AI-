@@ -1076,3 +1076,115 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// ==================== 3시간 특별가 타이머 ====================
+let welcomeTimerInterval = null;
+
+function startWelcomeTimer() {
+    const user = AuthManager.getUser();
+    if (!user || !user.created_at || !user.in_welcome_period) {
+        stopWelcomeTimer();
+        return;
+    }
+    
+    const welcomeTimerDisplay = document.getElementById('welcomeTimerDisplay');
+    const welcomeTimerText = document.getElementById('welcomeTimerText');
+    
+    if (!welcomeTimerDisplay || !welcomeTimerText) {
+        return;
+    }
+    
+    // 3시간(10800초) = 3 * 60 * 60
+    const WELCOME_PERIOD_SECONDS = 3 * 60 * 60;
+    
+    function updateTimer() {
+        try {
+            const now = new Date();
+            const createdAt = new Date(user.created_at);
+            const elapsedSeconds = Math.floor((now - createdAt) / 1000);
+            const remainingSeconds = WELCOME_PERIOD_SECONDS - elapsedSeconds;
+            
+            if (remainingSeconds <= 0) {
+                // 3시간 만료됨
+                welcomeTimerText.textContent = '특별가 종료! 회원 50% 할인 적용중';
+                welcomeTimerDisplay.style.background = 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)';
+                
+                // 사용자 정보 업데이트
+                user.in_welcome_period = false;
+                AuthManager.setUser(user);
+                
+                // 타이머 중지
+                stopWelcomeTimer();
+                
+                // 5초 후 타이머 숨기기
+                setTimeout(() => {
+                    welcomeTimerDisplay.style.display = 'none';
+                    // 페이지 새로고침하여 가격 업데이트
+                    location.reload();
+                }, 5000);
+                
+                return;
+            }
+            
+            // 시간 계산
+            const hours = Math.floor(remainingSeconds / 3600);
+            const minutes = Math.floor((remainingSeconds % 3600) / 60);
+            const seconds = remainingSeconds % 60;
+            
+            // 타이머 텍스트 업데이트
+            const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            welcomeTimerText.textContent = `🎁 특별가 종료까지: ${timeStr}`;
+            
+            // 30분 미만일 때 색상 변경
+            if (remainingSeconds < 30 * 60) {
+                welcomeTimerDisplay.style.background = 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)';
+            } else if (remainingSeconds < 60 * 60) {
+                welcomeTimerDisplay.style.background = 'linear-gradient(135deg, #f59e0b 0%, #f97316 100%)';
+            }
+            
+            // 타이머 표시
+            welcomeTimerDisplay.style.display = 'flex';
+            welcomeTimerDisplay.style.alignItems = 'center';
+            welcomeTimerDisplay.style.gap = '0.5rem';
+            
+        } catch (error) {
+            console.error('타이머 업데이트 오류:', error);
+            stopWelcomeTimer();
+        }
+    }
+    
+    // 즉시 한 번 실행
+    updateTimer();
+    
+    // 1초마다 업데이트
+    stopWelcomeTimer(); // 기존 타이머 정리
+    welcomeTimerInterval = setInterval(updateTimer, 1000);
+}
+
+function stopWelcomeTimer() {
+    if (welcomeTimerInterval) {
+        clearInterval(welcomeTimerInterval);
+        welcomeTimerInterval = null;
+    }
+    
+    const welcomeTimerDisplay = document.getElementById('welcomeTimerDisplay');
+    if (welcomeTimerDisplay) {
+        welcomeTimerDisplay.style.display = 'none';
+    }
+}
+
+// updateUIForLoggedInUser 함수 수정 (타이머 시작 추가)
+const originalUpdateUI = updateUIForLoggedInUser;
+updateUIForLoggedInUser = function(user) {
+    if (originalUpdateUI) {
+        originalUpdateUI(user);
+    }
+    
+    // 3시간 특별가 기간이면 타이머 시작
+    if (user && user.in_welcome_period) {
+        startWelcomeTimer();
+    } else {
+        stopWelcomeTimer();
+    }
+};
+
