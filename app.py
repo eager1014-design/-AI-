@@ -56,12 +56,12 @@ class User(db.Model):
             'email': self.email,
             'is_member': self.is_member,
             'is_admin': self.is_admin,
-            'exp': datetime.utcnow() + timedelta(days=7)
+            'exp': datetime.utcnow() + timedelta(hours=1)  # 1시간 세션
         }
         return jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
     
     def is_in_welcome_discount_period(self):
-        """가입 후 3시간 이내인지 확인 (50% 추가 할인)"""
+        """가입 후 3시간 이내인지 확인 (특별 할인)"""
         if not self.created_at:
             return False
         time_since_signup = datetime.utcnow() - self.created_at
@@ -70,11 +70,11 @@ class User(db.Model):
     def get_discount_rate(self):
         """사용자의 할인율 계산"""
         if self.is_member:
-            # 회원이면서 가입 3시간 이내인 경우 50% 할인
+            # 회원이면서 가입 3시간 이내인 경우 특별가 5000원
             if self.is_in_welcome_discount_period():
-                return 0.50  # 50% 할인
+                return 'special_5000'  # 특별가 5000원
             else:
-                return 0.30  # 기본 회원 할인 (예: 30%)
+                return 0.50  # 기본 회원 할인 50%
         return 0  # 비회원은 할인 없음
 
 class Purchase(db.Model):
@@ -425,9 +425,34 @@ def login():
             'id': user.id,
             'email': user.email,
             'username': user.username,
-            'is_member': user.is_member
+            'is_member': user.is_member,
+            'is_admin': user.is_admin,
+            'in_welcome_period': user.is_in_welcome_discount_period()  # 3시간 할인 기간 확인
         }
     }), 200
+
+# 로그인 연장 API (토큰 갱신)
+@app.route('/api/auth/refresh', methods=['POST'])
+@token_required
+def refresh_token(current_user):
+    """로그인 세션 연장 (1시간 추가)"""
+    try:
+        # 새 토큰 생성 (1시간 추가)
+        new_token = current_user.generate_token()
+        
+        return jsonify({
+            'message': '로그인이 1시간 연장되었습니다.',
+            'token': new_token,
+            'user': {
+                'id': current_user.id,
+                'email': current_user.email,
+                'username': current_user.username,
+                'is_member': current_user.is_member,
+                'is_admin': current_user.is_admin
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
 
 # 사용자 정보 조회
 @app.route('/api/user/me', methods=['GET'])

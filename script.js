@@ -474,11 +474,21 @@ function updatePricing() {
 function renderPrompts() {
     promptGrid.innerHTML = '';
     
+    // 현재 사용자 정보 가져오기
+    const currentUser = AuthManager && typeof AuthManager.getUser === 'function' ? AuthManager.getUser() : null;
+    const inWelcomePeriod = currentUser && currentUser.in_welcome_period === true;
+    
     promptsDatabase.forEach(prompt => {
-        const price = isMember ? prompt.memberPrice : prompt.nonMemberPrice;
+        let price = isMember ? prompt.memberPrice : prompt.nonMemberPrice;
         const originalPrice = prompt.originalPrice;
+        
+        // 회원이고 가입 3시간 이내면 모든 유료 프롬프트 5000원
+        if (inWelcomePeriod && !prompt.isFree && !prompt.isSubscription) {
+            price = 5000;
+        }
+        
         const priceFormatted = prompt.isFree ? '무료' : `₩${price.toLocaleString()}`;
-        const priceLabel = prompt.isFree ? '🎁 완전 무료' : (isMember ? '회원가' : '일반가');
+        const priceLabel = prompt.isFree ? '🎁 완전 무료' : (inWelcomePeriod && !prompt.isSubscription ? '🎉 특별가' : (isMember ? '회원가' : '일반가'));
         
         const card = document.createElement('div');
         card.className = 'prompt-card';
@@ -495,13 +505,8 @@ function renderPrompts() {
         // 뱃지 HTML
         let badgeHtml = '';
         if (prompt.isFree) {
-            // 무료 프롬프트에는 로그인 필요 배지
-            const isLoggedIn = AuthManager && typeof AuthManager.isLoggedIn === 'function' && AuthManager.isLoggedIn();
-            if (isLoggedIn) {
-                badgeHtml = `<div class="card-badge" style="background: #10b981">${prompt.badge || '🎁 무료'}</div>`;
-            } else {
-                badgeHtml = `<div class="card-badge" style="background: #2563eb">🔐 로그인 필요</div>`;
-            }
+            // 무료 프롬프트는 비회원도 접근 가능
+            badgeHtml = `<div class="card-badge" style="background: #10b981">${prompt.badge || '🎁 완전 무료'}</div>`;
         } else if (prompt.badge) {
             badgeHtml = `<div class="card-badge" style="background: ${prompt.badgeColor || '#6b7280'}">${prompt.badge}</div>`;
         }
@@ -547,20 +552,14 @@ function renderPrompts() {
 function openModal(prompt) {
     // 로그인 상태 확인
     const isLoggedIn = AuthManager && typeof AuthManager.isLoggedIn === 'function' && AuthManager.isLoggedIn();
+    const currentUser = AuthManager && typeof AuthManager.getUser === 'function' ? AuthManager.getUser() : null;
     
-    // 무료 프롬프트는 로그인 필수 (바로 로그인 모달)
-    if (prompt.isFree && !isLoggedIn) {
-        if (typeof showLoginModal === 'function') {
-            showLoginModal();
-        } else {
-            alert('로그인이 필요합니다.');
-        }
-        return;
-    }
+    // 무료 프롬프트는 비회원도 접근 가능 - 로그인 필요 없음!
+    // (무료는 모두에게 공개)
     
-    // 유료 프롬프트는 회원가입 안내
+    // 유료 프롬프트는 회원가입 필요
     if (!prompt.isFree && !isLoggedIn) {
-        if (confirm('💎 회원가입이 필요합니다\n\n회원가입 후 다양한 혜택을 받아보세요!\n\n✨ 회원 전용 할인가\n🎁 무료 AI 진단 프롬프트\n📚 프리미엄 콘텐츠 접근\n\n지금 가입하시겠습니까?')) {
+        if (confirm('💎 회원가입 후 모든 프롬프트를 이용하세요!\n\n🎉 가입 후 3시간 동안 모든 프롬프트 5,000원\n✨ 이후에도 회원 전용 50% 할인\n🎁 무료 AI 진단 프롬프트 제공\n\n지금 가입하시겠습니까?')) {
             if (typeof showRegisterModal === 'function') {
                 showRegisterModal();
             } else {
@@ -570,33 +569,67 @@ function openModal(prompt) {
         return;
     }
     
-    const price = isMember ? prompt.memberPrice : prompt.nonMemberPrice;
+    // 3시간 특별가 확인
+    const inWelcomePeriod = currentUser && currentUser.in_welcome_period === true;
+    
+    let price = isMember ? prompt.memberPrice : prompt.nonMemberPrice;
     const originalPrice = prompt.originalPrice;
+    
+    // 회원이고 가입 3시간 이내면 모든 유료 프롬프트 5000원
+    if (inWelcomePeriod && !prompt.isFree && !prompt.isSubscription) {
+        price = 5000;
+    }
     
     // 가격 표시 포맷
     let priceHtml = '';
     if (prompt.isFree) {
         priceHtml = '🎁 완전 무료';
     } else {
-        const priceLabel = isMember ? '회원가' : '일반가';
         const subscriptionLabel = prompt.isSubscription ? '/월' : '';
         
-        if (originalPrice > 0) {
+        // 3시간 특별가 적용 중
+        if (inWelcomePeriod && !prompt.isSubscription) {
             priceHtml = `
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <span style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 700; animation: pulse 2s infinite;">
+                        🎉 가입 3시간 특별가!
+                    </span>
+                </div>
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <span style="text-decoration: line-through; color: #9ca3af; font-size: 1.25rem;">
                         ₩${originalPrice.toLocaleString()}
                     </span>
                     <span style="background: #ef4444; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 700;">
-                        ${prompt.discount}% 할인
+                        특별가 할인
                     </span>
                 </div>
-                <div style="margin-top: 0.5rem;">
-                    ${priceLabel}: <strong>₩${price.toLocaleString()}${subscriptionLabel}</strong>
+                <div style="margin-top: 0.5rem; font-size: 1.5rem; color: #ef4444; font-weight: 800;">
+                    특별가: <strong>₩5,000</strong>
+                </div>
+                <div style="margin-top: 0.3rem; font-size: 0.875rem; color: #6b7280;">
+                    ⏰ 가입 3시간 이내 한정!
                 </div>
             `;
         } else {
-            priceHtml = `${priceLabel}: ₩${price.toLocaleString()}${subscriptionLabel}`;
+            const priceLabel = isMember ? '회원가' : '일반가';
+            
+            if (originalPrice > 0) {
+                priceHtml = `
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span style="text-decoration: line-through; color: #9ca3af; font-size: 1.25rem;">
+                            ₩${originalPrice.toLocaleString()}
+                        </span>
+                        <span style="background: #ef4444; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: 700;">
+                            ${prompt.discount}% 할인
+                        </span>
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        ${priceLabel}: <strong>₩${price.toLocaleString()}${subscriptionLabel}</strong>
+                    </div>
+                `;
+            } else {
+                priceHtml = `${priceLabel}: ₩${price.toLocaleString()}${subscriptionLabel}`;
+            }
         }
     }
     

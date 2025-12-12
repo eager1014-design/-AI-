@@ -4,16 +4,24 @@ const API_BASE_URL = window.location.origin;
 
 // 토큰 저장/조회/삭제
 const AuthManager = {
-    setToken(token) {
-        localStorage.setItem('auth_token', token);
+    setToken(token, remember = false) {
+        if (remember) {
+            localStorage.setItem('auth_token', token);
+            localStorage.setItem('remember_me', 'true');
+        } else {
+            sessionStorage.setItem('auth_token', token);
+            localStorage.removeItem('remember_me');
+        }
     },
     
     getToken() {
-        return localStorage.getItem('auth_token');
+        return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
     },
     
     removeToken() {
         localStorage.removeItem('auth_token');
+        sessionStorage.removeItem('auth_token');
+        localStorage.removeItem('remember_me');
     },
     
     setUser(user) {
@@ -33,10 +41,99 @@ const AuthManager = {
         return !!this.getToken();
     },
     
+    isRememberMe() {
+        return localStorage.getItem('remember_me') === 'true';
+    },
+    
     logout() {
         this.removeToken();
         this.removeUser();
         location.reload();
+    },
+    
+    // 로그인 연장
+    async refreshSession() {
+        try {
+            const response = await apiRequest('/api/auth/refresh', 'POST');
+            this.setToken(response.token, this.isRememberMe());
+            this.setUser(response.user);
+            return true;
+        } catch (error) {
+            console.error('세션 연장 실패:', error);
+            return false;
+        }
+    },
+    
+    // 자동 로그인 체크 및 세션 유지
+    async checkAndRefreshSession() {
+        if (!this.isLoggedIn()) return false;
+        
+        // 로그인 상태라면 토큰 검증 및 갱신
+        try {
+            const response = await apiRequest('/api/user/me');
+            if (response && response.id) {
+                // 자동 로그인이 활성화된 경우 세션 자동 연장
+                if (this.isRememberMe()) {
+                    await this.refreshSession();
+                }
+                return true;
+            }
+        } catch (error) {
+            // 토큰이 만료되었거나 유효하지 않으면 로그아웃
+            console.error('세션 검증 실패:', error);
+            this.logout();
+            return false;
+        }
+    },
+    
+    // 로그인 시간 표시 및 연장 버튼 활성화
+    startSessionTimer() {
+        // 50분마다 알림 (1시간 = 60분, 10분 전에 알림)
+        setInterval(() => {
+            if (this.isLoggedIn() && !this.isRememberMe()) {
+                this.showSessionExpiryWarning();
+            }
+        }, 50 * 60 * 1000); // 50분
+    },
+    
+    showSessionExpiryWarning() {
+        const warningDiv = document.createElement('div');
+        warningDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10000;
+            max-width: 350px;
+        `;
+        warningDiv.innerHTML = `
+            <div style="font-size: 1.1rem; font-weight: bold; color: #92400e; margin-bottom: 10px;">
+                ⏰ 세션 만료 10분 전
+            </div>
+            <div style="color: #78350f; margin-bottom: 15px;">
+                로그인 세션이 곧 만료됩니다.
+            </div>
+            <button onclick="AuthManager.refreshSession().then(() => { alert('로그인이 1시간 연장되었습니다!'); this.parentElement.remove(); })" 
+                style="background: #f59e0b; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;">
+                로그인 연장하기 (1시간)
+            </button>
+            <button onclick="this.parentElement.remove()" 
+                style="background: #e5e7eb; color: #374151; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 8px; width: 100%;">
+                닫기
+            </button>
+        `;
+        document.body.appendChild(warningDiv);
+        
+        // 5초 후 자동으로 닫기 (사용자가 수동으로 닫지 않은 경우)
+        setTimeout(() => {
+            if (document.body.contains(warningDiv)) {
+                warningDiv.remove();
+            }
+        }, 30000); // 30초 후 자동 닫기
     }
 };
 
@@ -766,3 +863,19 @@ async function handlePasswordReset(event, resetToken) {
         alert('❌ ' + error.message);
     }
 }
+
+// ==================== 페이지 로드 시 자동 로그인 및 세션 관리 ====================
+
+// DOMContentLoaded 이벤트에서 자동 로그인 체크
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('자동 로그인 체크 시작...');
+    
+    // 자동 로그인 체크 및 세션 갱신
+    await AuthManager.checkAndRefreshSession();
+    
+    // 세션 타이머 시작 (로그인 만료 10분 전 알림)
+    if (AuthManager.isLoggedIn()) {
+        AuthManager.startSessionTimer();
+        console.log('세션 타이머 시작 완료');
+    }
+});
