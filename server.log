@@ -21,109 +21,17 @@
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 122-972-965
-/home/user/webapp/app.py:2407: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+127.0.0.1 - - [12/Dec/2025 05:57:22] "GET /api/community/posts HTTP/1.1" 200 -
+127.0.0.1 - - [12/Dec/2025 05:57:27] "GET /api/community/posts?category=ê³µì§\x80 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Dec/2025 05:57:33] "GET /api/community/posts?category=all HTTP/1.1" 200 -
+127.0.0.1 - - [12/Dec/2025 05:57:39] "GET /emotion-analyzer.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Dec/2025 05:57:39] "GET /content-generator.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Dec/2025 05:57:39] "GET /ab-tester.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Dec/2025 05:57:39] "GET /trend-analyzer.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Dec/2025 05:57:39] "GET /competitor-analyzer.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Dec/2025 05:57:39] "GET /ai-tools.html HTTP/1.1" 200 -
+/home/user/webapp/app.py:2414: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
   "analyzed_at": datetime.utcnow().isoformat()
-127.0.0.1 - - [12/Dec/2025 05:19:00] "POST /api/emotion-realtime HTTP/1.1" 200 -
-/home/user/webapp/app.py:2509: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
-  current_day = datetime.utcnow().weekday()
-/home/user/webapp/app.py:2542: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
-  "generated_at": datetime.utcnow().isoformat()
-127.0.0.1 - - [12/Dec/2025 05:19:05] "POST /api/personalized-content HTTP/1.1" 200 -
-/home/user/webapp/app.py:2640: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
-  "tested_at": datetime.utcnow().isoformat()
-127.0.0.1 - - [12/Dec/2025 05:19:14] "POST /api/ab-test-realtime HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:21:38] "[36mGET / HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:21:38] "[36mGET /styles.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:21:38] "[36mGET /script.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:21:38] "[36mGET /static/css/community-simple.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:21:38] "[36mGET /mobile-enhanced.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:21:38] "[36mGET /payment.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:21:38] "[36mGET /static/js/community-simple.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:21:38] "[36mGET /auth.js HTTP/1.1[0m" 304 -
-/home/user/webapp/app.py:234: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
-  current_user = User.query.get(data['user_id'])
-10.64.232.124 - - [12/Dec/2025 05:21:38] "GET /api/community/posts HTTP/1.1" 200 -
-/home/user/webapp/app.py:67: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
-  time_since_signup = datetime.utcnow() - self.created_at
-/home/user/webapp/app.py:617: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
-  time_since_signup = datetime.utcnow() - current_user.created_at
-10.64.232.124 - - [12/Dec/2025 05:21:38] "GET /api/user/discount HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:21:38] "[36mGET /static/uploads/20251212_004757_A_heartwarming_emotional_digital_illustration_set-1765439915220.png HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:22:52] "GET /api/user/me HTTP/1.1" 200 -
-127.0.0.1 - - [12/Dec/2025 05:27:02] "GET /emotion-analyzer.html HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:36:17] "GET / HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:36:17] "[36mGET /mobile-enhanced.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:36:17] "[36mGET /styles.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:36:17] "[36mGET /static/css/community-simple.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:36:17] "[36mGET /script.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:36:17] "[36mGET /auth.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:36:17] "[36mGET /payment.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:36:17] "[36mGET /static/js/community-simple.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:36:18] "GET /api/user/discount HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:36:18] "GET /api/community/posts HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:36:18] "[36mGET /static/uploads/20251212_004757_A_heartwarming_emotional_digital_illustration_set-1765439915220.png HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:36:32] "GET /ai-tools.html HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:38:03] "[36mGET / HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:38:03] "[36mGET /styles.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:38:03] "[36mGET /static/css/community-simple.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:38:03] "[36mGET /mobile-enhanced.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:38:03] "[36mGET /script.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:38:03] "[36mGET /auth.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:38:03] "[36mGET /payment.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:38:03] "[36mGET /static/js/community-simple.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:38:03] "GET /api/user/discount HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:38:03] "GET /api/community/posts HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:38:04] "[36mGET /static/uploads/20251212_004757_A_heartwarming_emotional_digital_illustration_set-1765439915220.png HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:39:44] "[36mGET /ai-tools.html HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:39:47] "GET /emotion-analyzer.html HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:40:35] "POST /api/emotion-realtime HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:45:03] "GET / HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:45:04] "GET /styles.css HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:45:04] "GET /mobile-enhanced.css HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:45:04] "GET /static/css/community-simple.css HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:45:04] "GET /payment.js HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:45:04] "GET /auth.js HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:45:04] "GET /script.js HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:45:04] "GET /static/js/community-simple.js HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:45:04] "GET /api/community/posts HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:45:05] "GET /static/uploads/20251212_004757_A_heartwarming_emotional_digital_illustration_set-1765439915220.png HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:45:23] "[36mGET / HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:45:23] "[36mGET /styles.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:45:23] "[36mGET /static/css/community-simple.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:45:23] "[36mGET /mobile-enhanced.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:45:23] "[36mGET /static/js/community-simple.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:45:23] "[36mGET /auth.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:45:23] "[36mGET /payment.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:45:23] "[36mGET /script.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:45:24] "GET /api/community/posts HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:45:24] "[36mGET /static/uploads/20251212_004757_A_heartwarming_emotional_digital_illustration_set-1765439915220.png HTTP/1.1[0m" 304 -
-/home/user/webapp/app.py:59: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
-  'exp': datetime.utcnow() + timedelta(days=7)
-10.64.232.124 - - [12/Dec/2025 05:47:01] "[35m[1mPOST /api/register HTTP/1.1[0m" 201 -
-10.64.232.124 - - [12/Dec/2025 05:47:28] "GET /ai-tools.html HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:47:53] "POST /api/login HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:48:10] "GET / HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:48:10] "[36mGET /static/css/community-simple.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:48:10] "[36mGET /mobile-enhanced.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:48:10] "[36mGET /styles.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:48:10] "[36mGET /static/js/community-simple.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:48:10] "[36mGET /payment.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:48:10] "[36mGET /auth.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:48:10] "[36mGET /script.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:48:10] "GET /api/user/discount HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:48:10] "GET /api/community/posts HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:48:10] "[36mGET /static/uploads/20251212_004757_A_heartwarming_emotional_digital_illustration_set-1765439915220.png HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:49:11] "GET /emotion-analyzer.html HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:51:04] "[36mGET / HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:51:05] "[36mGET /static/js/community-simple.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:51:05] "[36mGET /mobile-enhanced.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:51:05] "[36mGET /styles.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:51:05] "[36mGET /script.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:51:05] "[36mGET /auth.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:51:05] "[36mGET /static/css/community-simple.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:51:05] "[36mGET /payment.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:51:05] "GET /api/community/posts HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:51:05] "GET /api/user/discount HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:51:05] "[36mGET /static/uploads/20251212_004757_A_heartwarming_emotional_digital_illustration_set-1765439915220.png HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 05:52:05] "GET /api/user/discount HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 05:53:00] "[31m[1mGET / HTTP/1.1[0m" 416 -
+127.0.0.1 - - [12/Dec/2025 05:57:51] "POST /api/emotion-realtime HTTP/1.1" 200 -
+127.0.0.1 - - [12/Dec/2025 05:57:51] "POST /api/trends/analyze HTTP/1.1" 200 -
+127.0.0.1 - - [12/Dec/2025 05:57:51] "POST /api/competitor/analyze HTTP/1.1" 200 -

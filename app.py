@@ -2121,12 +2121,18 @@ def payment_fail():
 @app.route('/api/community/posts', methods=['GET'])
 def get_community_posts():
     try:
-        posts = CommunityPost.query.order_by(CommunityPost.created_at.desc()).all()
+        # 카테고리 필터링 지원
+        category = request.args.get('category')
+        if category and category != 'all':
+            posts = CommunityPost.query.filter_by(category=category).order_by(CommunityPost.created_at.desc()).all()
+        else:
+            posts = CommunityPost.query.order_by(CommunityPost.created_at.desc()).all()
         
         posts_list = []
         for post in posts:
             posts_list.append({
                 'id': post.id,
+                'category': post.category,  # 카테고리 필드 추가
                 'title': post.title,
                 'content': post.content,
                 'image_url': post.image_url,
@@ -2154,6 +2160,7 @@ def get_community_post(current_user, post_id):
             'success': True,
             'post': {
                 'id': post.id,
+                'category': post.category,  # 카테고리 필드 추가
                 'title': post.title,
                 'content': post.content,
                 'image_url': post.image_url,
