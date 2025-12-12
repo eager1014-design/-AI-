@@ -21,20 +21,56 @@
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 122-972-965
-10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET / HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 06:33:12] "GET /script.js HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET /static/css/community-simple.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET /auth.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET /payment.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET /static/js/community-simple.js HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET /styles.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 06:33:12] "[36mGET /mobile-enhanced.css HTTP/1.1[0m" 304 -
-10.64.232.124 - - [12/Dec/2025 06:33:13] "GET /api/community/posts HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 06:33:13] "[36mGET /static/uploads/20251212_004757_A_heartwarming_emotional_digital_illustration_set-1765439915220.png HTTP/1.1[0m" 304 -
 /home/user/webapp/app.py:59: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
   'exp': datetime.utcnow() + timedelta(hours=1)  # 1시간 세션
 /home/user/webapp/app.py:67: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
   time_since_signup = datetime.utcnow() - self.created_at
-10.64.232.124 - - [12/Dec/2025 06:35:14] "POST /api/login HTTP/1.1" 200 -
-10.64.232.124 - - [12/Dec/2025 06:36:52] "[31m[1mGET / HTTP/1.1[0m" 416 -
-10.64.232.124 - - [12/Dec/2025 06:36:56] "[31m[1mGET /admin-login.html HTTP/1.1[0m" 416 -
+10.64.232.124 - - [12/Dec/2025 08:13:32] "[35m[1mPOST /api/register HTTP/1.1[0m" 201 -
+10.64.232.124 - - [12/Dec/2025 08:13:33] "GET / HTTP/1.1" 200 -
+10.64.232.124 - - [12/Dec/2025 08:13:33] "[36mGET /mobile-enhanced.css HTTP/1.1[0m" 304 -
+10.64.232.124 - - [12/Dec/2025 08:13:33] "[36mGET /styles.css HTTP/1.1[0m" 304 -
+10.64.232.124 - - [12/Dec/2025 08:13:33] "[36mGET /static/css/community-simple.css HTTP/1.1[0m" 304 -
+10.64.232.124 - - [12/Dec/2025 08:13:33] "GET /script.js HTTP/1.1" 200 -
+10.64.232.124 - - [12/Dec/2025 08:13:33] "[36mGET /auth.js HTTP/1.1[0m" 304 -
+10.64.232.124 - - [12/Dec/2025 08:13:33] "[36mGET /payment.js HTTP/1.1[0m" 304 -
+10.64.232.124 - - [12/Dec/2025 08:13:33] "[36mGET /static/js/community-simple.js HTTP/1.1[0m" 304 -
+/home/user/webapp/app.py:234: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  current_user = User.query.get(data['user_id'])
+10.64.232.124 - - [12/Dec/2025 08:13:34] "GET /api/user/me HTTP/1.1" 200 -
+/home/user/webapp/app.py:645: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  time_since_signup = datetime.utcnow() - current_user.created_at
+10.64.232.124 - - [12/Dec/2025 08:13:34] "GET /api/community/posts HTTP/1.1" 200 -
+10.64.232.124 - - [12/Dec/2025 08:13:34] "[35m[1mGET /api/user/discount HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 1514, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/webapp/app.py", line 242, in decorated
+    return f(current_user, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/webapp/app.py", line 652, in get_user_discount
+    'discount_percentage': int(discount_rate * 100),
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: 'special_5000special_5000special_5000special_5000special_5000special_5000special_5000special_5000special_5000special_5000special_5000special_5000special_5000special_5000special_5000special_5000special
+10.64.232.124 - - [12/Dec/2025 08:13:34] "[36mGET /static/uploads/20251212_004757_A_heartwarming_emotional_digital_illustration_set-1765439915220.png HTTP/1.1[0m" 304 -
