@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>콘텐츠 생성기 테스트</title>
+</head>
+<body>
+    <h1>콘텐츠 생성기 테스트</h1>
+    <button onclick="testAPI()">API 테스트</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testAPI() {
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = '로딩 중...';
+            
+            try {
+                const response = await fetch('/api/personalized-content', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_interests: ["AI", "마케팅"],
+                        target_audience: "1인 크리에이터",
+                        platform: "instagram",
+                        content_goal: "팔로워 증가"
+                    })
+                });
+
+                const data = await response.json();
+                resultEl.textContent = JSON.stringify(data, null, 2);
+                
+                console.log('API Response:', data);
+                
+                if (data.content && data.engagement_prediction) {
+                    alert('✅ API 정상 작동!');
+                } else {
+                    alert('⚠️ 응답 구조 확인 필요');
+                }
+            } catch (error) {
+                resultEl.textContent = '❌ 오류: ' + error.message;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

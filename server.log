@@ -21,17 +21,8 @@
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 122-972-965
-127.0.0.1 - - [12/Dec/2025 05:57:22] "GET /api/community/posts HTTP/1.1" 200 -
-127.0.0.1 - - [12/Dec/2025 05:57:27] "GET /api/community/posts?category=ê³µì§\x80 HTTP/1.1" 200 -
-127.0.0.1 - - [12/Dec/2025 05:57:33] "GET /api/community/posts?category=all HTTP/1.1" 200 -
-127.0.0.1 - - [12/Dec/2025 05:57:39] "GET /emotion-analyzer.html HTTP/1.1" 200 -
-127.0.0.1 - - [12/Dec/2025 05:57:39] "GET /content-generator.html HTTP/1.1" 200 -
-127.0.0.1 - - [12/Dec/2025 05:57:39] "GET /ab-tester.html HTTP/1.1" 200 -
-127.0.0.1 - - [12/Dec/2025 05:57:39] "GET /trend-analyzer.html HTTP/1.1" 200 -
-127.0.0.1 - - [12/Dec/2025 05:57:39] "GET /competitor-analyzer.html HTTP/1.1" 200 -
-127.0.0.1 - - [12/Dec/2025 05:57:39] "GET /ai-tools.html HTTP/1.1" 200 -
-/home/user/webapp/app.py:2414: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
-  "analyzed_at": datetime.utcnow().isoformat()
-127.0.0.1 - - [12/Dec/2025 05:57:51] "POST /api/emotion-realtime HTTP/1.1" 200 -
-127.0.0.1 - - [12/Dec/2025 05:57:51] "POST /api/trends/analyze HTTP/1.1" 200 -
-127.0.0.1 - - [12/Dec/2025 05:57:51] "POST /api/competitor/analyze HTTP/1.1" 200 -
+/home/user/webapp/app.py:2516: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  current_day = datetime.utcnow().weekday()
+/home/user/webapp/app.py:2549: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_at": datetime.utcnow().isoformat()
+127.0.0.1 - - [12/Dec/2025 06:05:53] "POST /api/personalized-content HTTP/1.1" 200 -

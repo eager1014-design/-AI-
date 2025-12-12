@@ -400,7 +400,7 @@
 
                 const data = await response.json();
 
-                if (data.status === 'success') {
+                if (data.content && data.engagement_prediction) {
                     displayResults(data);
                 } else {
                     alert('콘텐츠 생성에 실패했습니다.');
@@ -439,25 +439,44 @@
             document.getElementById('resultHashtags').textContent = content.hashtags.join(' ');
 
             // 형식
-            document.getElementById('resultFormat').innerHTML = `
-                <strong>${content.recommended_format}</strong><br>
-                최적 길이: ${content.optimal_length}
-            `;
+            if (content.format && content.format.format) {
+                document.getElementById('resultFormat').innerHTML = `
+                    <strong>${content.format.format}</strong><br>
+                    최적 길이: ${content.format.optimal_length}
+                `;
+            } else {
+                document.getElementById('resultFormat').innerHTML = `
+                    <strong>${content.recommended_format || '일반 콘텐츠'}</strong><br>
+                    최적 길이: ${content.optimal_length || '자유'}
+                `;
+            }
 
             // 참여도 예측
+            const engagementRate = typeof engagement.engagement_rate === 'string' 
+                ? parseFloat(engagement.engagement_rate) 
+                : engagement.engagement_rate * 100;
+            
             document.getElementById('resultEngagement').innerHTML = `
                 <span class="metric-badge">신뢰도 ${Math.round(engagement.confidence * 100)}%</span>
-                <span class="metric-badge">참여율 ${Math.round(engagement.engagement_rate * 100)}%</span>
+                <span class="metric-badge">참여율 ${Math.round(engagementRate)}%</span>
                 <span class="metric-badge">예상 좋아요 ${engagement.predicted_likes}</span>
                 <span class="metric-badge">예상 댓글 ${engagement.predicted_comments}</span>
                 <span class="metric-badge">예상 공유 ${engagement.predicted_shares}</span>
             `;
 
             // 발행 시간
-            document.getElementById('resultTiming').innerHTML = `
-                <strong>${engagement.optimal_posting_time}</strong><br>
-                💡 팁: ${engagement.tips}
-            `;
+            const postingTime = data.optimal_posting_time || engagement.optimal_posting_time;
+            if (typeof postingTime === 'object') {
+                document.getElementById('resultTiming').innerHTML = `
+                    <strong>${postingTime.next_best_time || '오늘 저녁 8시'}</strong><br>
+                    💡 팁: ${postingTime.tip || '일관된 게시 시간을 유지하세요'}
+                `;
+            } else {
+                document.getElementById('resultTiming').innerHTML = `
+                    <strong>${postingTime || '오늘 저녁 8시'}</strong><br>
+                    💡 팁: ${engagement.tips || '일관된 게시 시간을 유지하세요'}
+                `;
+            }
 
             // 결과 섹션 표시
             document.getElementById('resultSection').classList.add('active');

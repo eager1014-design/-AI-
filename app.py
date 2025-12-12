@@ -2421,8 +2421,8 @@ def realtime_emotion():
 def generate_personalized_content(user_data):
     """사용자 데이터 기반 개인화 콘텐츠 생성"""
     
-    # 사용자 관심사 파악
-    interests = user_data.get('interests', ['일반'])
+    # 사용자 관심사 파악 (user_interests 또는 interests 키 모두 지원)
+    interests = user_data.get('user_interests', user_data.get('interests', ['일반']))
     platform = user_data.get('platform', 'instagram')
     target_audience = user_data.get('target_audience', '일반 대중')
     
