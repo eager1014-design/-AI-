@@ -559,25 +559,6 @@ function openModal(prompt) {
     const isLoggedIn = AuthManager && typeof AuthManager.isLoggedIn === 'function' && AuthManager.isLoggedIn();
     const currentUser = AuthManager && typeof AuthManager.getUser === 'function' ? AuthManager.getUser() : null;
     
-    // 무료 프롬프트도 회원가입 필요! (전체 내용 보려면 로그인 필수)
-    if (!isLoggedIn) {
-        let message = '';
-        if (prompt.isFree) {
-            message = '🎁 무료 프롬프트 전체 보기\n\n회원가입하고 AI 활용 능력 진단 프롬프트 전체 내용을 확인하세요!\n\n✨ 무료 회원가입 혜택:\n🎁 무료 AI 진단 프롬프트 전체 공개\n🎉 가입 후 3시간 동안 모든 프롬프트 5,000원\n💎 이후에도 회원 전용 50% 할인\n\n지금 가입하시겠습니까?';
-        } else {
-            message = '💎 회원가입 후 모든 프롬프트를 이용하세요!\n\n🎉 가입 후 3시간 동안 모든 프롬프트 5,000원\n✨ 이후에도 회원 전용 50% 할인\n🎁 무료 AI 진단 프롬프트 제공\n\n지금 가입하시겠습니까?';
-        }
-        
-        if (confirm(message)) {
-            if (typeof showRegisterModal === 'function') {
-                showRegisterModal();
-            } else {
-                alert('회원가입 페이지로 이동할 수 없습니다.');
-            }
-        }
-        return;
-    }
-    
     // 3시간 특별가 확인
     const inWelcomePeriod = currentUser && currentUser.in_welcome_period === true;
     
@@ -655,6 +636,7 @@ function openModal(prompt) {
         promptCode.classList.remove('blurred');
         copyBtn.disabled = false;
         copyBtn.style.display = 'flex';
+        copyBtn.textContent = '📋 복사하기';
         
         if (prompt.isFree) {
             purchaseBtn.style.display = 'none';
@@ -662,22 +644,48 @@ function openModal(prompt) {
             purchaseBtn.style.display = 'none';
         }
     } else {
-        // 미구매: 일부만 미리보기 + 흐림 효과
-        const previewLength = 150; // 150자만 미리보기
-        const preview = prompt.fullPrompt.substring(0, previewLength) + '\n\n[... 이하 생략 ...]\n\n━━━━━━━━━━━━━━━━━━━━\n\n💡 이 프롬프트는 실제로 ' + prompt.fullPrompt.length + '자의 상세한 내용을 포함하고 있습니다.\n\n✨ 곧 구매 가능합니다! 조금만 기다려주세요 😊';
+        // 미구매 또는 비로그인: 일부만 미리보기 + 흐림 효과
+        const previewLength = 200; // 200자만 미리보기
+        let previewMessage = '';
+        
+        if (prompt.isFree) {
+            // 무료 프롬프트 - 회원가입 유도
+            previewMessage = '\n\n━━━━━━━━━━━━━━━━━━━━\n\n🔐 전체 내용을 보시려면 회원가입이 필요합니다.\n\n✨ 회원가입 혜택:\n🎁 무료 AI 진단 프롬프트 전체 공개\n🎉 가입 후 3시간 동안 모든 프롬프트 5,000원\n💎 이후에도 회원 전용 50% 할인\n\n[회원가입하고 무료로 전체 보기] 👆';
+        } else {
+            // 유료 프롬프트
+            previewMessage = '\n\n━━━━━━━━━━━━━━━━━━━━\n\n🔐 전체 내용을 보시려면 구매가 필요합니다.\n\n💡 이 프롬프트는 실제로 ' + prompt.fullPrompt.length + '자의 상세한 내용을 포함하고 있습니다.\n\n✨ 회원가입 후 특별가로 구매하세요!';
+        }
+        
+        const preview = prompt.fullPrompt.substring(0, previewLength) + '\n\n[... 이하 생략 ...]' + previewMessage;
         promptCode.textContent = preview;
         promptCode.classList.add('blurred');
         copyBtn.disabled = true;
         copyBtn.style.display = 'flex';
-        copyBtn.textContent = '🔒 구매 후 복사 가능';
+        copyBtn.textContent = '🔒 로그인 후 복사 가능';
         
-        // 결제 시스템 준비중 - 버튼 비활성화
-        purchaseBtn.style.display = 'block';
-        purchaseBtn.textContent = '🔧 결제 시스템 준비중';
-        purchaseBtn.disabled = true;
-        purchaseBtn.style.opacity = '0.6';
-        purchaseBtn.style.cursor = 'not-allowed';
-        purchaseBtn.setAttribute('data-prompt-id', prompt.id);
+        if (prompt.isFree) {
+            // 무료 프롬프트 - 회원가입 버튼
+            purchaseBtn.style.display = 'block';
+            purchaseBtn.textContent = '🎁 회원가입하고 무료로 보기';
+            purchaseBtn.disabled = false;
+            purchaseBtn.style.opacity = '1';
+            purchaseBtn.style.cursor = 'pointer';
+            purchaseBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            purchaseBtn.onclick = () => {
+                closeModal();
+                if (typeof showRegisterModal === 'function') {
+                    showRegisterModal();
+                }
+            };
+        } else {
+            // 유료 프롬프트 - 결제 시스템 준비중
+            purchaseBtn.style.display = 'block';
+            purchaseBtn.textContent = '🔧 결제 시스템 준비중';
+            purchaseBtn.disabled = true;
+            purchaseBtn.style.opacity = '0.6';
+            purchaseBtn.style.cursor = 'not-allowed';
+            purchaseBtn.setAttribute('data-prompt-id', prompt.id);
+        }
     }
     
     promptModal.classList.add('active');
