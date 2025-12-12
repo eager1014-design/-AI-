@@ -680,11 +680,18 @@ function renderPrompts() {
         }
         
         // 뱃지 HTML
-        const badgeHtml = prompt.badge ? `
-            <div class="card-badge" style="background: ${prompt.badgeColor || '#6b7280'}">
-                ${prompt.badge}
-            </div>
-        ` : '';
+        let badgeHtml = '';
+        if (prompt.isFree) {
+            // 무료 프롬프트에는 로그인 필요 배지
+            const isLoggedIn = AuthManager && typeof AuthManager.isLoggedIn === 'function' && AuthManager.isLoggedIn();
+            if (isLoggedIn) {
+                badgeHtml = `<div class="card-badge" style="background: #10b981">${prompt.badge || '🎁 무료'}</div>`;
+            } else {
+                badgeHtml = `<div class="card-badge" style="background: #2563eb">🔐 로그인 필요</div>`;
+            }
+        } else if (prompt.badge) {
+            badgeHtml = `<div class="card-badge" style="background: ${prompt.badgeColor || '#6b7280'}">${prompt.badge}</div>`;
+        }
         
         // 할인율 표시
         const discountHtml = prompt.discount && !prompt.isFree ? `
@@ -725,6 +732,16 @@ function renderPrompts() {
 
 // 모달 열기
 function openModal(prompt) {
+    // 무료 프롬프트는 로그인 필수
+    if (prompt.isFree && (!AuthManager || typeof AuthManager.isLoggedIn !== 'function' || !AuthManager.isLoggedIn())) {
+        alert('⚠️ 로그인이 필요합니다\n\n무료 AI 진단 프롬프트는 회원가입 후 이용 가능합니다.\n지금 바로 가입하고 무료로 체험해보세요! 🎁');
+        
+        if (confirm('로그인 페이지로 이동하시겠습니까?')) {
+            window.location.href = '/login.html';
+        }
+        return;
+    }
+    
     const price = isMember ? prompt.memberPrice : prompt.nonMemberPrice;
     const originalPrice = prompt.originalPrice;
     
@@ -877,6 +894,17 @@ function setupEventListeners() {
     
     // 무료 진단 버튼
     freeDiagnosisBtn.addEventListener('click', () => {
+        // 로그인 확인
+        if (!AuthManager || typeof AuthManager.isLoggedIn !== 'function' || !AuthManager.isLoggedIn()) {
+            alert('⚠️ 로그인이 필요합니다\n\n무료 AI 진단 프롬프트는 회원가입 후 이용 가능합니다.\n지금 바로 가입하고 무료로 체험해보세요! 🎁');
+            
+            // 로그인 페이지로 이동할지 물어보기
+            if (confirm('로그인 페이지로 이동하시겠습니까?')) {
+                window.location.href = '/login.html';
+            }
+            return;
+        }
+        
         const freePrompt = promptsDatabase.find(p => p.isFree);
         if (freePrompt) {
             openModal(freePrompt);
