@@ -777,15 +777,19 @@ function openModal(prompt) {
     } else {
         // 미구매: 일부만 미리보기 + 흐림 효과
         const previewLength = 150; // 150자만 미리보기
-        const preview = prompt.fullPrompt.substring(0, previewLength) + '\n\n[... 이하 생략 ...]\n\n━━━━━━━━━━━━━━━━━━━━\n\n💡 이 프롬프트는 실제로 ' + prompt.fullPrompt.length + '자의 상세한 내용을 포함하고 있습니다.\n\n✨ 구매하시면 전체 프롬프트를 즉시 확인하고 복사할 수 있습니다!';
+        const preview = prompt.fullPrompt.substring(0, previewLength) + '\n\n[... 이하 생략 ...]\n\n━━━━━━━━━━━━━━━━━━━━\n\n💡 이 프롬프트는 실제로 ' + prompt.fullPrompt.length + '자의 상세한 내용을 포함하고 있습니다.\n\n✨ 곧 구매 가능합니다! 조금만 기다려주세요 😊';
         promptCode.textContent = preview;
         promptCode.classList.add('blurred');
         copyBtn.disabled = true;
         copyBtn.style.display = 'flex';
         copyBtn.textContent = '🔒 구매 후 복사 가능';
         
+        // 결제 시스템 준비중 - 버튼 비활성화
         purchaseBtn.style.display = 'block';
-        purchaseBtn.textContent = prompt.isSubscription ? '구독 시작하기' : '구매하기';
+        purchaseBtn.textContent = '🔧 결제 시스템 준비중';
+        purchaseBtn.disabled = true;
+        purchaseBtn.style.opacity = '0.6';
+        purchaseBtn.style.cursor = 'not-allowed';
         purchaseBtn.setAttribute('data-prompt-id', prompt.id);
     }
     
@@ -836,6 +840,11 @@ function copyPrompt() {
 
 // 구매 처리
 function handlePurchase() {
+    // 결제 시스템 준비중 메시지
+    alert('🔧 결제 시스템 준비중입니다\n\n현재 사업자 등록 및 PG사 계약 진행 중입니다.\n곧 이용 가능하니 조금만 기다려주세요! 😊\n\n📧 문의: eager1014@gmail.com');
+    return;
+    
+    /* 결제 시스템 준비 완료 후 활성화할 코드
     const promptTitle = modalTitle.textContent;
     const priceText = modalPrice.textContent;
     
@@ -854,6 +863,7 @@ function handlePurchase() {
     } else {
         alert('⚠️ 구매 시스템을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
     }
+    */
 }
 
 // 이벤트 리스너 설정
