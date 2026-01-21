@@ -137,36 +137,324 @@ const AuthManager = {
     }
 };
 
-// API 요청 헬퍼
+// ==================== 로컬스토리지 기반 가짜 인증 시스템 ====================
+
+// 사용자 데이터베이스 (localStorage)
+const FakeAuthDB = {
+    USERS_KEY: 'fake_users_db',
+    
+    // 초기 관리자 계정 생성
+    initializeAdmin() {
+        const users = this.getAllUsers();
+        const adminExists = users.some(u => u.is_admin);
+        
+        if (!adminExists) {
+            const adminUser = {
+                id: 1,
+                username: '관리자',
+                email: 'admin@jinbubu.com',
+                phone: '010-0000-0000',
+                birthdate: '1990-01-01',
+                password: 'admin1234',
+                is_member: true,
+                is_admin: true,
+                in_welcome_period: false,
+                created_at: new Date().toISOString()
+            };
+            users.push(adminUser);
+            localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+            console.log('✅ 관리자 계정 생성 완료!');
+            console.log('📧 이메일: admin@jinbubu.com');
+            console.log('🔑 비밀번호: admin1234');
+        }
+    },
+    
+    // 모든 사용자 가져오기
+    getAllUsers() {
+        const usersStr = localStorage.getItem(this.USERS_KEY);
+        return usersStr ? JSON.parse(usersStr) : [];
+    },
+    
+    // 사용자 저장
+    saveUser(user) {
+        const users = this.getAllUsers();
+        users.push(user);
+        localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+    },
+    
+    // 이메일로 사용자 찾기
+    findUserByEmail(email) {
+        const users = this.getAllUsers();
+        return users.find(u => u.email === email);
+    },
+    
+    // 사용자 정보 업데이트
+    updateUser(email, updates) {
+        const users = this.getAllUsers();
+        const index = users.findIndex(u => u.email === email);
+        if (index !== -1) {
+            users[index] = { ...users[index], ...updates };
+            localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+            return users[index];
+        }
+        return null;
+    },
+    
+    // 사용자 삭제
+    deleteUser(email) {
+        const users = this.getAllUsers();
+        const filtered = users.filter(u => u.email !== email);
+        localStorage.setItem(this.USERS_KEY, JSON.stringify(filtered));
+    }
+};
+
+// 페이지 로드 시 관리자 계정 초기화
+FakeAuthDB.initializeAdmin();
+
+// API 요청 헬퍼 (로컬스토리지 기반)
 async function apiRequest(endpoint, method = 'GET', body = null) {
-    const headers = {
-        'Content-Type': 'application/json',
-    };
+    console.log('API 요청:', endpoint, method, body);
     
-    const token = AuthManager.getToken();
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-    
-    const options = {
-        method,
-        headers,
-        credentials: 'include'
-    };
-    
-    if (body && method !== 'GET') {
-        options.body = JSON.stringify(body);
-    }
+    // 가짜 API 지연 시뮬레이션 (200ms)
+    await new Promise(resolve => setTimeout(resolve, 200));
     
     try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.message || '요청 실패');
+        // 회원가입
+        if (endpoint === '/api/register' && method === 'POST') {
+            // 이메일 중복 체크
+            if (FakeAuthDB.findUserByEmail(body.email)) {
+                throw new Error('이미 가입된 이메일입니다.');
+            }
+            
+            // 새 사용자 생성
+            const newUser = {
+                id: Date.now(),
+                username: body.username,
+                email: body.email,
+                phone: body.phone,
+                birthdate: body.birthdate,
+                password: body.password, // 실제로는 해시해야 하지만 데모용
+                is_member: body.is_member || false,
+                is_admin: false,
+                in_welcome_period: true,
+                created_at: new Date().toISOString()
+            };
+            
+            FakeAuthDB.saveUser(newUser);
+            
+            // 토큰 생성 (단순 Base64 인코딩)
+            const token = btoa(JSON.stringify({ email: newUser.email, id: newUser.id }));
+            
+            return {
+                success: true,
+                message: '회원가입이 완료되었습니다!',
+                token: token,
+                user: { ...newUser, password: undefined } // 비밀번호 제외
+            };
         }
         
-        return data;
+        // 로그인
+        if (endpoint === '/api/login' && method === 'POST') {
+            const user = FakeAuthDB.findUserByEmail(body.email);
+            
+            if (!user) {
+                throw new Error('존재하지 않는 이메일입니다.');
+            }
+            
+            if (user.password !== body.password) {
+                throw new Error('비밀번호가 일치하지 않습니다.');
+            }
+            
+            // 토큰 생성
+            const token = btoa(JSON.stringify({ email: user.email, id: user.id }));
+            
+            return {
+                success: true,
+                message: '로그인 성공!',
+                token: token,
+                user: { ...user, password: undefined }
+            };
+        }
+        
+        // 사용자 정보 조회
+        if (endpoint === '/api/user/me' && method === 'GET') {
+            const token = AuthManager.getToken();
+            if (!token) {
+                throw new Error('로그인이 필요합니다.');
+            }
+            
+            const decoded = JSON.parse(atob(token));
+            const user = FakeAuthDB.findUserByEmail(decoded.email);
+            
+            if (!user) {
+                throw new Error('사용자를 찾을 수 없습니다.');
+            }
+            
+            // 구매 내역 조회
+            const purchases = JSON.parse(localStorage.getItem('user_purchases') || '[]');
+            
+            return {
+                user: { ...user, password: undefined },
+                purchases: purchases
+            };
+        }
+        
+        // 사용자 정보 수정
+        if (endpoint === '/api/user/update' && method === 'PUT') {
+            const token = AuthManager.getToken();
+            if (!token) {
+                throw new Error('로그인이 필요합니다.');
+            }
+            
+            const decoded = JSON.parse(atob(token));
+            const user = FakeAuthDB.findUserByEmail(decoded.email);
+            
+            if (!user) {
+                throw new Error('사용자를 찾을 수 없습니다.');
+            }
+            
+            // 비밀번호 변경 체크
+            if (body.current_password) {
+                if (user.password !== body.current_password) {
+                    throw new Error('현재 비밀번호가 일치하지 않습니다.');
+                }
+                if (body.new_password) {
+                    body.password = body.new_password;
+                }
+                delete body.current_password;
+                delete body.new_password;
+            }
+            
+            // 사용자 정보 업데이트
+            const updatedUser = FakeAuthDB.updateUser(decoded.email, body);
+            
+            return {
+                success: true,
+                message: '회원정보가 수정되었습니다!',
+                user: { ...updatedUser, password: undefined }
+            };
+        }
+        
+        // 회원 탈퇴
+        if (endpoint === '/api/user/delete' && method === 'DELETE') {
+            const token = AuthManager.getToken();
+            if (!token) {
+                throw new Error('로그인이 필요합니다.');
+            }
+            
+            const decoded = JSON.parse(atob(token));
+            const user = FakeAuthDB.findUserByEmail(decoded.email);
+            
+            if (!user) {
+                throw new Error('사용자를 찾을 수 없습니다.');
+            }
+            
+            if (user.password !== body.password) {
+                throw new Error('비밀번호가 일치하지 않습니다.');
+            }
+            
+            FakeAuthDB.deleteUser(decoded.email);
+            
+            return {
+                success: true,
+                message: '회원 탈퇴가 완료되었습니다.'
+            };
+        }
+        
+        // 비밀번호 찾기 요청
+        if (endpoint === '/api/password/reset-request' && method === 'POST') {
+            const user = FakeAuthDB.findUserByEmail(body.email);
+            
+            if (!user) {
+                throw new Error('존재하지 않는 이메일입니다.');
+            }
+            
+            if (user.phone !== body.phone) {
+                throw new Error('전화번호가 일치하지 않습니다.');
+            }
+            
+            // 리셋 토큰 생성
+            const resetToken = btoa(JSON.stringify({ 
+                email: body.email, 
+                timestamp: Date.now() 
+            }));
+            
+            return {
+                success: true,
+                message: '본인 인증이 완료되었습니다. 새 비밀번호를 설정해주세요.',
+                reset_token: resetToken,
+                email: body.email
+            };
+        }
+        
+        // 비밀번호 재설정
+        if (endpoint === '/api/password/reset' && method === 'POST') {
+            const decoded = JSON.parse(atob(body.reset_token));
+            
+            // 15분 만료 체크
+            const fifteenMinutes = 15 * 60 * 1000;
+            if (Date.now() - decoded.timestamp > fifteenMinutes) {
+                throw new Error('링크가 만료되었습니다. 다시 시도해주세요.');
+            }
+            
+            const user = FakeAuthDB.findUserByEmail(decoded.email);
+            
+            if (!user) {
+                throw new Error('사용자를 찾을 수 없습니다.');
+            }
+            
+            // 비밀번호 업데이트
+            FakeAuthDB.updateUser(decoded.email, { password: body.new_password });
+            
+            return {
+                success: true,
+                message: '비밀번호가 변경되었습니다!'
+            };
+        }
+        
+        // 세션 갱신 (자동 로그인)
+        if (endpoint === '/api/auth/refresh' && method === 'POST') {
+            const token = AuthManager.getToken();
+            if (!token) {
+                throw new Error('로그인이 필요합니다.');
+            }
+            
+            const decoded = JSON.parse(atob(token));
+            const user = FakeAuthDB.findUserByEmail(decoded.email);
+            
+            if (!user) {
+                throw new Error('사용자를 찾을 수 없습니다.');
+            }
+            
+            // 새 토큰 생성
+            const newToken = btoa(JSON.stringify({ 
+                email: user.email, 
+                id: user.id,
+                refreshed_at: Date.now()
+            }));
+            
+            return {
+                success: true,
+                token: newToken,
+                user: { ...user, password: undefined }
+            };
+        }
+        
+        // 프롬프트 구매
+        if (endpoint === '/api/purchase' && method === 'POST') {
+            const token = AuthManager.getToken();
+            if (!token) {
+                throw new Error('로그인이 필요합니다.');
+            }
+            
+            return {
+                success: true,
+                message: '프롬프트 구매가 완료되었습니다!'
+            };
+        }
+        
+        throw new Error('알 수 없는 API 엔드포인트: ' + endpoint);
+        
     } catch (error) {
         console.error('API 요청 실패:', error);
         throw error;
@@ -184,6 +472,23 @@ function showRegisterModal() {
                 <h2 class="auth-modal-title">🎉 회원가입</h2>
                 <p class="auth-modal-subtitle">회원가입하고 50% 할인받으세요!</p>
                 
+                <div style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 4px solid #3b82f6;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                        <span style="font-size: 1.5rem;">📋</span>
+                        <strong style="color: #1e40af; font-size: 1rem;">회원제 가입 안내</strong>
+                    </div>
+                    <p style="color: #1e3a8a; font-size: 0.875rem; margin: 0.5rem 0 0.75rem 0; line-height: 1.5;">
+                        회원가입 방법과 혜택이 궁금하신가요?<br>
+                        자세한 가입 절차와 프롬프트 사용법을 확인하세요!
+                    </p>
+                    <a href="/membership-guide.html" target="_blank" 
+                       style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: transform 0.2s;">
+                        <span>📖</span>
+                        <span>회원제 가입 안내 보기</span>
+                        <span>→</span>
+                    </a>
+                </div>
+                
                 <form id="registerForm" onsubmit="handleRegister(event)">
                     <div class="form-group">
                         <label>이름 *</label>
@@ -195,8 +500,8 @@ function showRegisterModal() {
                     </div>
                     <div class="form-group">
                         <label>전화번호 *</label>
-                        <input type="tel" name="phone" placeholder="010-1234-5678" pattern="[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}" required>
-                        <small style="color: #6b7280; font-size: 0.875rem;">형식: 010-1234-5678</small>
+                        <input type="tel" id="registerPhone" name="phone" placeholder="01012345678" maxlength="13" required oninput="autoHyphenPhone(this)">
+                        <small style="color: #6b7280; font-size: 0.875rem;">숫자만 입력하면 자동으로 하이픈이 추가됩니다</small>
                     </div>
                     <div class="form-group">
                         <label>생년월일 *</label>
@@ -264,12 +569,22 @@ async function handleRegister(event) {
         closeAuthModal();
         updateUIForLoggedInUser(response.user);
         
-        // 페이지 새로고침하여 프롬프트 가격 업데이트
-        setTimeout(() => {
-            location.reload();
-        }, 1000);
+        // returnUrl이 있으면 해당 페이지로, 없으면 새로고침
+        const returnUrl = localStorage.getItem('returnUrl');
+        if (returnUrl) {
+            localStorage.removeItem('returnUrl');
+            setTimeout(() => {
+                window.location.href = returnUrl;
+            }, 1000);
+        } else {
+            // 페이지 새로고침하여 프롬프트 가격 업데이트
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
     } catch (error) {
-        alert('❌ ' + error.message);
+        console.error('회원가입 에러 상세:', error);
+        alert('❌ 회원가입 실패\n\n' + error.message + '\n\n콘솔을 확인해주세요.');
     }
 }
 
@@ -283,6 +598,23 @@ function showLoginModal() {
                 <button class="auth-modal-close" onclick="closeAuthModal()">&times;</button>
                 <h2 class="auth-modal-title">👋 로그인</h2>
                 <p class="auth-modal-subtitle">찐부부 AI 프롬프트에 오신 것을 환영합니다!</p>
+                
+                <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 4px solid #f59e0b;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                        <span style="font-size: 1.5rem;">💡</span>
+                        <strong style="color: #92400e; font-size: 1rem;">처음 방문하셨나요?</strong>
+                    </div>
+                    <p style="color: #78350f; font-size: 0.875rem; margin: 0.5rem 0 0.75rem 0; line-height: 1.5;">
+                        회원제 가입 안내를 먼저 확인하시면<br>
+                        더 쉽고 빠르게 가입하실 수 있습니다!
+                    </p>
+                    <a href="/membership-guide.html" target="_blank" 
+                       style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: transform 0.2s;">
+                        <span>📖</span>
+                        <span>회원제 가입 안내 보기</span>
+                        <span>→</span>
+                    </a>
+                </div>
                 
                 <form id="loginForm" onsubmit="handleLogin(event)">
                     <div class="form-group">
@@ -357,7 +689,8 @@ async function handleLogin(event) {
             location.reload();
         }, 1000);
     } catch (error) {
-        alert('❌ ' + error.message);
+        console.error('로그인 에러 상세:', error);
+        alert('❌ 로그인 실패\n\n' + error.message + '\n\n📧 관리자 계정\n이메일: admin@jinbubu.com\n비밀번호: admin1234');
     }
 }
 
@@ -368,45 +701,7 @@ function closeAuthModal() {
     modals.forEach(modal => modal.remove());
 }
 
-function updateUIForLoggedInUser(user) {
-    // 관리자 버튼 표시/숨김
-    const adminBtn = document.getElementById('adminBtn');
-    if (adminBtn && user.is_admin) {
-        adminBtn.style.display = 'flex';
-    }
-    
-    // 헤더에 사용자 정보 표시
-    const nav = document.querySelector('.nav');
-    if (nav) {
-        const memberToggle = nav.querySelector('.membership-toggle');
-        if (memberToggle) {
-            memberToggle.innerHTML = `
-                <div class="user-menu">
-                    <span class="user-greeting">👋 ${user.username}님</span>
-                    <button class="user-btn" onclick="showUserDashboard()">내 정보</button>
-                    <button class="user-btn logout" onclick="AuthManager.logout()">로그아웃</button>
-                </div>
-            `;
-        }
-    }
-    
-    // 회원/비회원 가격 자동 설정
-    if (user.is_member) {
-        isMember = true;
-        const memberSwitch = document.getElementById('memberSwitch');
-        if (memberSwitch) {
-            memberSwitch.checked = false;
-        }
-    } else {
-        isMember = false;
-        const memberSwitch = document.getElementById('memberSwitch');
-        if (memberSwitch) {
-            memberSwitch.checked = true;
-        }
-    }
-    
-    updatePrices();
-}
+// 이 함수는 902번 라인에 통합되었으므로 삭제됨
 
 // ==================== 사용자 대시보드 ====================
 
@@ -523,28 +818,7 @@ async function purchasePrompt(promptId, promptTitle, price) {
 
 // ==================== 페이지 로드 시 초기화 ====================
 
-document.addEventListener('DOMContentLoaded', function() {
-    // 로그인 상태 확인
-    const user = AuthManager.getUser();
-    if (user) {
-        updateUIForLoggedInUser(user);
-    } else {
-        // 로그인/회원가입 버튼 추가
-        const nav = document.querySelector('.nav');
-        if (nav) {
-            const memberToggle = nav.querySelector('.membership-toggle');
-            if (memberToggle) {
-                const authButtons = document.createElement('div');
-                authButtons.className = 'auth-buttons';
-                authButtons.innerHTML = `
-                    <button class="auth-btn login-btn" onclick="showLoginModal()">로그인</button>
-                    <button class="auth-btn register-btn" onclick="showRegisterModal()">회원가입</button>
-                `;
-                memberToggle.parentNode.insertBefore(authButtons, memberToggle);
-            }
-        }
-    }
-});
+// 첫 번째 DOMContentLoaded는 840번 라인에 통합됨
 
 // ==================== 회원정보 수정 ====================
 
@@ -577,8 +851,8 @@ function showEditProfileModal() {
                         
                         <div class="form-group">
                             <label>전화번호</label>
-                            <input type="tel" name="phone" value="${data.user.phone || ''}" pattern="[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}" required>
-                            <small style="color: #6b7280; font-size: 0.875rem;">형식: 010-1234-5678</small>
+                            <input type="tel" id="editPhone" name="phone" value="${data.user.phone || ''}" maxlength="13" required oninput="autoHyphenPhone(this)">
+                            <small style="color: #6b7280; font-size: 0.875rem;">숫자만 입력하면 자동으로 하이픈이 추가됩니다</small>
                         </div>
                         
                         <div class="form-group">
@@ -772,7 +1046,7 @@ function showPasswordResetModal() {
                     
                     <div class="form-group">
                         <label>전화번호</label>
-                        <input type="tel" name="phone" placeholder="010-1234-5678" pattern="[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}" required>
+                        <input type="tel" id="resetPhone" name="phone" placeholder="01012345678" maxlength="13" required oninput="autoHyphenPhone(this)">
                         <small style="color: #6b7280; font-size: 0.875rem;">가입 시 등록한 전화번호를 입력해주세요</small>
                     </div>
                     
@@ -890,23 +1164,53 @@ async function handlePasswordReset(event, resetToken) {
 
 // DOMContentLoaded 이벤트에서 자동 로그인 체크
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('자동 로그인 체크 시작...');
+    console.log('페이지 초기화 시작...');
     
-    // 자동 로그인 체크 및 세션 갱신
+    // 1. 자동 로그인 체크 및 세션 갱신
     await AuthManager.checkAndRefreshSession();
     
-    // UI 업데이트
+    // 2. UI 업데이트
     const currentUser = AuthManager.getUser();
     if (currentUser) {
         updateUIForLoggedInUser(currentUser);
+        console.log('로그인 상태:', currentUser.email);
     } else {
         updateUIForLoggedInUser(null);
+        console.log('비로그인 상태');
     }
     
-    // 세션 타이머 시작 (로그인 만료 10분 전 알림)
+    // 3. 세션 타이머 시작 (로그인 만료 10분 전 알림)
     if (AuthManager.isLoggedIn()) {
         AuthManager.startSessionTimer();
         console.log('세션 타이머 시작 완료');
+    }
+    
+    // 4. 사용자 메뉴 드롭다운 이벤트 설정
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdown = document.getElementById('userDropdown');
+    
+    if (userMenuBtn) {
+        userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.style.display = userDropdown.style.display === 'none' ? 'block' : 'none';
+        });
+    }
+    
+    // 5. 외부 클릭 시 드롭다운 닫기
+    document.addEventListener('click', () => {
+        if (userDropdown) {
+            userDropdown.style.display = 'none';
+        }
+    });
+    
+    console.log('페이지 초기화 완료');
+    
+    // 6. 프롬프트 렌더링 트리거 (script.js의 renderPrompts 호출)
+    if (typeof renderPrompts === 'function') {
+        console.log('프롬프트 렌더링 시작...');
+        renderPrompts();
+    } else {
+        console.warn('renderPrompts 함수를 찾을 수 없습니다. script.js가 로드되었는지 확인하세요.');
     }
 });
 
@@ -916,27 +1220,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 function updateUIForLoggedInUser(user) {
     console.log('UI 업데이트:', user);
     
+    // DOM 요소 존재 여부 확인
+    const authButtons = document.getElementById('authButtons');
+    const userMenu = document.getElementById('userMenu');
+    const extendLoginBtn = document.getElementById('extendLoginBtn');
+    const adminBtn = document.getElementById('adminBtn');
+    const userNameDisplay = document.getElementById('userNameDisplay');
+    
     if (!user || !user.id) {
         // 비로그인 상태
-        document.getElementById('authButtons').style.display = 'flex';
-        document.getElementById('userMenu').style.display = 'none';
-        document.getElementById('extendLoginBtn').style.display = 'none';
-        document.getElementById('adminBtn').style.display = 'none';
+        if (authButtons) authButtons.style.display = 'flex';
+        if (userMenu) userMenu.style.display = 'none';
+        if (extendLoginBtn) extendLoginBtn.style.display = 'none';
+        if (adminBtn) adminBtn.style.display = 'none';
         return;
     }
     
     // 로그인 상태
-    document.getElementById('authButtons').style.display = 'none';
-    document.getElementById('userMenu').style.display = 'block';
-    document.getElementById('extendLoginBtn').style.display = 'inline-flex';
+    if (authButtons) authButtons.style.display = 'none';
+    if (userMenu) userMenu.style.display = 'block';
+    if (extendLoginBtn) extendLoginBtn.style.display = 'inline-flex';
     
     // 사용자 이름 표시
     const userName = user.username || user.email.split('@')[0];
-    document.getElementById('userNameDisplay').textContent = `👤 ${userName}`;
+    if (userNameDisplay) userNameDisplay.textContent = `👤 ${userName}`;
     
     // 관리자인 경우 관리자 버튼 표시
-    if (user.is_admin) {
-        document.getElementById('adminBtn').style.display = 'inline-flex';
+    if (user.is_admin && adminBtn) {
+        adminBtn.style.display = 'inline-flex';
     }
     
     // 3시간 특별가 배너 표시
@@ -963,24 +1274,7 @@ function updateUIForLoggedInUser(user) {
 }
 
 // 사용자 메뉴 토글
-document.addEventListener('DOMContentLoaded', () => {
-    const userMenuBtn = document.getElementById('userMenuBtn');
-    const userDropdown = document.getElementById('userDropdown');
-    
-    if (userMenuBtn) {
-        userMenuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            userDropdown.style.display = userDropdown.style.display === 'none' ? 'block' : 'none';
-        });
-    }
-    
-    // 외부 클릭 시 드롭다운 닫기
-    document.addEventListener('click', () => {
-        if (userDropdown) {
-            userDropdown.style.display = 'none';
-        }
-    });
-});
+// 세 번째 DOMContentLoaded도 840번 라인에 통합됨
 
 // 로그인 연장 함수
 async function extendLoginSession() {
@@ -1180,5 +1474,35 @@ function stopWelcomeTimer() {
     if (welcomeTimerDisplay) {
         welcomeTimerDisplay.style.display = 'none';
     }
+}
+
+// ==================== 전화번호 자동 하이픈 ====================
+
+function autoHyphenPhone(input) {
+    // 숫자만 추출
+    let value = input.value.replace(/[^0-9]/g, '');
+    
+    // 최대 11자리까지만
+    if (value.length > 11) {
+        value = value.substring(0, 11);
+    }
+    
+    // 하이픈 자동 추가
+    let formattedValue = '';
+    
+    if (value.length <= 3) {
+        formattedValue = value;
+    } else if (value.length <= 7) {
+        // 010-1234
+        formattedValue = value.substring(0, 3) + '-' + value.substring(3);
+    } else if (value.length <= 10) {
+        // 010-123-4567 (10자리)
+        formattedValue = value.substring(0, 3) + '-' + value.substring(3, 6) + '-' + value.substring(6);
+    } else {
+        // 010-1234-5678 (11자리)
+        formattedValue = value.substring(0, 3) + '-' + value.substring(3, 7) + '-' + value.substring(7);
+    }
+    
+    input.value = formattedValue;
 }
 

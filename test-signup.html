@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 테스트</title>
+    <style>
+        body { font-family: Arial; padding: 40px; background: #f0f0f0; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        h1 { color: #333; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        button { width: 100%; padding: 15px; background: #667eea; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #5568d3; }
+        .status { margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px; }
+        .users-list { margin-top: 30px; }
+        .user-item { padding: 10px; border-bottom: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 회원가입 테스트</h1>
+        
+        <form id="testForm">
+            <div class="form-group">
+                <label>이름</label>
+                <input type="text" id="name" value="테스트유저" required>
+            </div>
+            <div class="form-group">
+                <label>이메일</label>
+                <input type="email" id="email" value="test@example.com" required>
+            </div>
+            <div class="form-group">
+                <label>비밀번호</label>
+                <input type="password" id="password" value="test1234" required>
+            </div>
+            <div class="form-group">
+                <label>출생년도</label>
+                <input type="number" id="birthYear" value="1990" required>
+            </div>
+            <div class="form-group">
+                <label>전화번호</label>
+                <input type="text" id="phone" value="010-1234-5678" required>
+            </div>
+            <button type="submit">회원가입 테스트</button>
+        </form>
+
+        <div class="status" id="status">
+            <strong>현재 저장된 회원 수:</strong> <span id="userCount">0</span>명
+        </div>
+
+        <div class="users-list">
+            <h3>저장된 회원 목록</h3>
+            <div id="usersList"></div>
+        </div>
+    </div>
+
+    <script>
+        function showUsers() {
+            const users = JSON.parse(localStorage.getItem('all_users') || '[]');
+            document.getElementById('userCount').textContent = users.length;
+            
+            const usersList = document.getElementById('usersList');
+            if (users.length === 0) {
+                usersList.innerHTML = '<p style="color: #999;">저장된 회원이 없습니다.</p>';
+            } else {
+                usersList.innerHTML = users.map((user, index) => `
+                    <div class="user-item">
+                        <strong>${index + 1}. ${user.name}</strong> (${user.email})<br>
+                        <small>등급: ${user.gradeLabel || '대기자'} | 가입일: ${new Date(user.createdAt).toLocaleString('ko-KR')}</small>
+                    </div>
+                `).join('');
+            }
+        }
+
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const birthYear = parseInt(document.getElementById('birthYear').value);
+            const phone = document.getElementById('phone').value.trim();
+            
+            const currentYear = new Date().getFullYear();
+            const age = currentYear - birthYear;
+            
+            const existingUsers = JSON.parse(localStorage.getItem('all_users') || '[]');
+            
+            if (existingUsers.some(u => u.email === email)) {
+                alert('이미 사용 중인 이메일입니다. 다른 이메일을 입력하세요.');
+                return;
+            }
+            
+            const user = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                password: btoa(password),
+                age: age,
+                birthYear: birthYear,
+                phone: phone,
+                createdAt: new Date().toISOString(),
+                hasFullAccess: true,
+                somoimVerified: true,
+                memberGrade: 'waitlist',
+                gradeLabel: '대기자',
+                isVIP: false
+            };
+            
+            existingUsers.push(user);
+            localStorage.setItem('all_users', JSON.stringify(existingUsers));
+            
+            alert(`✅ ${name}님 회원가입 완료!\n\nall_users에 저장되었습니다.`);
+            
+            showUsers();
+            
+            // 이메일 자동 증가
+            const emailNum = parseInt(email.match(/\d+/) || '0');
+            document.getElementById('email').value = `test${emailNum + 1}@example.com`;
+        });
+
+        // 페이지 로드 시 회원 목록 표시
+        showUsers();
+    </script>
+</body>
+</html>

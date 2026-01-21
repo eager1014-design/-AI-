@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소모임 회원 전용 입장</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .entry-container {
+            background: white;
+            border-radius: 24px;
+            padding: 60px 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde047 100%);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            text-align: left;
+            border-left: 4px solid #fbbf24;
+        }
+        
+        .info-title {
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .info-list {
+            color: #78350f;
+            font-size: 0.95rem;
+            line-height: 1.9;
+            padding-left: 20px;
+        }
+        
+        .btn-enter {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+            margin-bottom: 15px;
+        }
+        
+        .btn-enter:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+        }
+        
+        .somoim-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .somoim-link:hover {
+            text-decoration: underline;
+            transform: translateY(-2px);
+        }
+        
+        .divider {
+            margin: 30px 0;
+            text-align: center;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            position: relative;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #e2e8f0;
+        }
+        
+        .divider::before {
+            left: 0;
+        }
+        
+        .divider::after {
+            right: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .entry-container {
+                padding: 40px 25px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="entry-container">
+        <div class="logo">🎓</div>
+        <h1>JINBUBU AI Market</h1>
+        <p class="subtitle">
+            소모임 회원을 위한 프리미엄 AI 프롬프트 마켓<br>
+            소모임 인증 후 입장하세요
+        </p>
+        
+        <div class="info-box">
+            <div class="info-title">✨ 소모임 회원 혜택</div>
+            <ul class="info-list">
+                <li>500+ 프리미엄 프롬프트 100% 무료</li>
+                <li>AI 진단 및 맞춤 컨설팅</li>
+                <li>카카오톡 소모임 커뮤니티</li>
+                <li>정기 업데이트 및 신규 프롬프트</li>
+            </ul>
+        </div>
+        
+        <button class="btn-enter" onclick="enterWithAuth()">
+            🔐 소모임 인증하고 입장하기
+        </button>
+        
+        <div class="divider">또는</div>
+        
+        <a href="https://www.somoim.co.kr/8cafe332-cbff-11ef-b613-0a50aa12fbb11" target="_blank" class="somoim-link">
+            소모임이 처음이신가요? 가입하러 가기 →
+        </a>
+    </div>
+    
+    <script>
+        function enterWithAuth() {
+            // 소모임 인증 파라미터와 함께 메인 페이지로 리다이렉트
+            const somoimId = 'somoim_' + Date.now();
+            window.location.href = `/?ref=somoim&somoim_id=${somoimId}`;
+        }
+        
+        // URL 파라미터로 직접 진입한 경우 자동 리다이렉트
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('auto') === 'true') {
+            setTimeout(() => {
+                enterWithAuth();
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

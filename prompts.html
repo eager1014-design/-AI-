@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소모임 전용 프롬프트 - AI BUSAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Header */
+        header {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .logo img { height: 50px; width: 50px; border-radius: 50%; }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .nav-links a.active {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+        .btn-kakao {
+            padding: 12px 24px;
+            background: rgba(251, 191, 36, 0.9);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .btn-kakao:hover {
+            background: rgba(251, 191, 36, 1);
+            transform: translateY(-2px);
+        }
+        
+        /* Access Denied */
+        .access-denied {
+            text-align: center;
+            padding: 100px 20px;
+            color: white;
+        }
+        .access-denied h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .access-denied p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        .btn-join {
+            display: inline-block;
+            padding: 18px 40px;
+            background: #fbbf24;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+        .btn-join:hover {
+            background: #f59e0b;
+            transform: translateY(-3px);
+        }
+        
+        /* Welcome */
+        .welcome {
+            text-align: center;
+            padding: 60px 20px 40px;
+            color: white;
+        }
+        .welcome h1 { font-size: 2.5rem; margin-bottom: 15px; }
+        .welcome p { font-size: 1.2rem; opacity: 0.9; }
+        
+        /* Prompts */
+        .prompts-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px 0 40px;
+        }
+        .prompts-section h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+            color: #333;
+        }
+        .prompts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .prompt-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .prompt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+        .prompt-icon { font-size: 3rem; margin-bottom: 15px; }
+        .prompt-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        .prompt-desc {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            margin: 20px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+        .modal-header h2 { font-size: 1.8rem; color: #333; }
+        .modal-close {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+        .modal-close:hover { color: #333; }
+        .prompt-content {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            margin: 20px 0;
+        }
+        .btn-copy {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-copy:hover { opacity: 0.9; }
+        
+        /* CTA */
+        .kakao-cta {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin: 40px 0;
+            color: white;
+        }
+        .kakao-cta h2 { font-size: 2rem; margin-bottom: 15px; }
+        .kakao-cta p { font-size: 1.1rem; margin-bottom: 25px; opacity: 0.95; }
+        .btn-kakao {
+            display: inline-block;
+            padding: 18px 40px;
+            background: white;
+            color: #f59e0b;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+        .btn-kakao:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .welcome h1 { font-size: 2rem; }
+            .prompts-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">
+                    <img src="/ai-busan-logo-round.png" alt="AI BUSAN">
+                    <span>AI BUSAN</span>
+                </a>
+                <div class="nav-links">
+                    <a href="/">홈</a>
+                    <a href="/prompts.html?from=somoim" class="active">프롬프트</a>
+                    <a href="/membership-guide.html">VIP 실험체 신청</a>
+                    <a href="https://open.kakao.com/o/phw90nci" target="_blank" class="btn-kakao">
+                        💬 오픈채팅
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Access Denied (기본 숨김) -->
+    <div id="accessDenied" class="access-denied" style="display: none;">
+        <div class="container">
+            <h1>🔒 소모임 회원 전용</h1>
+            <p>이 페이지는 소모임 회원만 접근할 수 있습니다.</p>
+            <a href="https://www.somoim.co.kr/8cafe332-cbff-11ef-b613-0a50aa12fbb11" target="_blank" class="btn-join">
+                소모임 가입하기 →
+            </a>
+        </div>
+    </div>
+
+    <!-- Content (기본 숨김) -->
+    <div id="mainContent" style="display: none;">
+        <section class="welcome">
+            <div class="container">
+                <h1>🎯 AI 프롬프트 마켓</h1>
+                <p>생산성을 10배 높이는 전문가급 프롬프트</p>
+            </div>
+        </section>
+
+        <div class="container">
+            <section class="prompts-section">
+                <h2>📚 프롬프트 라이브러리</h2>
+                <div class="prompts-grid" id="promptsGrid"></div>
+            </section>
+
+            <div class="kakao-cta">
+                <h2>💬 커뮤니티에 참여하세요</h2>
+                <p>실시간 Q&A, 프롬프트 공유, 1:1 컨설팅까지!</p>
+                <a href="https://open.kakao.com/o/phw90nci" target="_blank" class="btn-kakao">
+                    오픈채팅방 입장하기 →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="promptModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">프롬프트 제목</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        const prompts = [
+            {
+                id: 1,
+                icon: '📝',
+                title: '콘텐츠 기획 마스터',
+                description: '블로그, SNS 콘텐츠를 한 번에 기획하세요',
+                content: `당신은 전문 콘텐츠 기획자입니다.
+
+주제: [여기에 주제 입력]
+
+다음을 작성해주세요:
+1. 매력적인 제목 3가지
+2. 목차 구성 (서론/본론/결론)
+3. 핵심 메시지
+4. SEO 키워드 5개
+5. 독자 타겟 분석
+
+스타일: 친근하고 전문적인 톤으로 작성해주세요.`
+            },
+            {
+                id: 2,
+                icon: '💼',
+                title: '비즈니스 제안서 작성',
+                description: '설득력 있는 제안서를 빠르게 작성하세요',
+                content: `당신은 비즈니스 제안 전문가입니다.
+
+프로젝트: [프로젝트명]
+고객사: [고객사명]
+예산: [예산 범위]
+
+다음 구조로 제안서를 작성하세요:
+1. 요약 (Executive Summary)
+2. 문제 정의 및 현황 분석
+3. 제안 솔루션 상세
+4. 기대 효과 및 ROI
+5. 타임라인 (Gantt Chart 형식)
+6. 비용 산정 및 근거
+7. 팀 소개 및 레퍼런스`
+            },
+            {
+                id: 3,
+                icon: '📊',
+                title: '데이터 분석 리포트',
+                description: '데이터를 인사이트로 전환하세요',
+                content: `당신은 데이터 분석 전문가입니다.
+
+데이터: [데이터 설명 또는 CSV 데이터 붙여넣기]
+
+다음을 수행하세요:
+1. 데이터 요약 통계 (평균, 중앙값, 표준편차)
+2. 주요 트렌드 분석 (시간별 패턴, 계절성)
+3. 이상치(Outlier) 탐지
+4. 상관관계 분석
+5. 핵심 인사이트 도출 (3-5개)
+6. 실행 가능한 권장사항
+7. 시각화 방안 제시`
+            },
+            {
+                id: 4,
+                icon: '🎨',
+                title: '크리에이티브 브리프',
+                description: '창의적인 캠페인 기획안을 만드세요',
+                content: `당신은 크리에이티브 디렉터입니다.
+
+브랜드: [브랜드명]
+캠페인 목표: [목표 설명]
+타겟: [타겟 오디언스]
+
+다음을 기획하세요:
+1. 빅 아이디어 (핵심 메시지, 크리에이티브 컨셉)
+2. 타겟 오디언스 분석 (페르소나 3가지)
+3. 채널 전략 (온라인/오프라인 믹스)
+4. 콘텐츠 기획 (비주얼 방향, 카피 톤앤매너)
+5. 측정 지표 (KPI)`
+            },
+            {
+                id: 5,
+                icon: '💎',
+                title: '전략 컨설팅 프레임워크',
+                description: '비즈니스 전략을 체계적으로 수립하세요',
+                content: `당신은 전략 컨설턴트입니다.
+
+기업: [기업명]
+산업: [산업명]
+
+다음 프레임워크로 전략을 수립하세요:
+1. 외부 환경 분석 (PESTEL)
+2. 산업 분석 (Porter's 5 Forces)
+3. 내부 역량 분석 (VRIO)
+4. SWOT 분석
+5. 전략 옵션 도출 (3가지)
+6. 실행 로드맵 (분기별)`
+            },
+            {
+                id: 6,
+                icon: '🎯',
+                title: '마케팅 캠페인 설계',
+                description: '통합 마케팅 캠페인을 체계적으로 기획하세요',
+                content: `당신은 마케팅 전략 책임자입니다.
+
+제품/서비스: [제품명]
+타겟 시장: [시장 설명]
+
+다음 캠페인 계획을 수립하세요:
+1. 시장 분석 및 포지셔닝
+2. 타겟 페르소나 (3가지)
+3. 4P 전략 (Product, Price, Place, Promotion)
+4. 통합 채널 전략
+5. 콘텐츠 캘린더 (3개월)
+6. KPI 및 성과 측정
+7. 예산 배분`
+            },
+            {
+                id: 7,
+                icon: '🚀',
+                title: '스타트업 피칭 덱',
+                description: '투자자를 사로잡는 피칭 자료를 만드세요',
+                content: `당신은 스타트업 IR 전문가입니다.
+
+스타트업: [회사명]
+분야: [비즈니스 분야]
+
+다음 구조로 피칭 덱을 작성하세요:
+1. 문제 정의 (Problem)
+2. 솔루션 (Solution)
+3. 시장 기회 (TAM, SAM, SOM)
+4. 비즈니스 모델
+5. 경쟁 우위
+6. 트랙션 (주요 성과)
+7. 팀 소개
+8. 재무 계획 (3년 예상)
+9. 투자 제안`
+            },
+            {
+                id: 8,
+                icon: '✍️',
+                title: '카피라이팅 마스터',
+                description: '클릭을 부르는 광고 카피를 작성하세요',
+                content: `당신은 전문 카피라이터입니다.
+
+제품/서비스: [제품명]
+타겟: [타겟 고객]
+채널: [광고 채널]
+
+다음을 작성해주세요:
+1. 헤드라인 (5가지 버전)
+2. 바디 카피
+3. CTA 문구 (3가지)
+4. A/B 테스트 변형안
+5. 카피 최적화 팁
+
+AIDA 모델 활용:
+- Attention (주목)
+- Interest (흥미)
+- Desire (욕구)
+- Action (행동)`
+            },
+            {
+                id: 9,
+                icon: '🎬',
+                title: '채널 전략 파트너',
+                description: '당신의 채널을 이해하는 전담 콘텐츠 전략가',
+                content: `너는 이제부터 [채널명 입력] 채널의 전담 콘텐츠 전략 파트너야.
+
+[내 채널 정체성]
+- 채널명: [채널명 입력]
+- 주제: [주제/장르 입력]
+- 정체성: [나를 한 문장으로 표현한 것 입력]
+
+[콘텐츠 철학]
+내가 가장 중요하게 생각하는 가치는 [가치1], [가치2], [가치3]이야. 모든 콘텐츠 제안에서 이 가치들이 최우선으로 반영되어야 해.
+
+[타겟 시청자]
+- [시청자 나이대]의 [고민/관심사]를 가진 사람들
+- 내 영상을 보고 [얻어가길 바라는 것]를 얻어가길 원해
+
+[콘텐츠 스타일 가이드]
+- 톤앤매너: [톤앤매너 입력]
+- 편집 스타일: [편집 스타일 입력]
+- 절대 하지 말아야 할 것: [절대 하고 싶지 않은 것 입력]
+
+[제작 환경 고려사항]
+- 제작 방식: [제작 방식]
+- 월 [목표 개수]개 영상을 목표로 함
+- 특히 [가장 어려운 부분]에 대해 구체적인 가이드 필요
+
+너의 역할:
+1) 일상 경험이나 소재를 말하면, 위 정체성에 맞는 콘텐츠로 기획
+2) 모든 제안은 내 철학([가치1], [가치2], [가치3])에 부합
+3) [가장 어려운 부분]에 대해 더 구체적이고 실행 가능한 가이드 제공
+4) 제목/썸네일 제안 시 [절대 하고 싶지 않은 것]은 포함하지 않기
+
+응답 형식:
+요청 시마다 다음 구조로 제시해:
+• 핵심 메시지: 이 콘텐츠가 시청자에게 전달할 한 문장
+• [가치1] 반영: 이 가치가 어떻게 녹아있는지
+• [가치2] 반영: 이 가치가 어떻게 녹아있는지
+• [가치3] 반영: 이 가치가 어떻게 녹아있는지
+• 실행 가이드: [가장 어려운 부분]을 해결할 구체적 팁
+
+💡 이 프롬프트가 자기 자신을 직원한테 알려주는 좋은 프롬프트니까 저장해둬!`
+            }
+        ];
+
+        // 소모임 접근 체크
+        function checkAccess() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromSomoim = urlParams.get('from') === 'somoim';
+            const fromKakao = urlParams.get('from') === 'kakao';
+            const hasAccess = localStorage.getItem('somoim_access') === 'true';
+            
+            // 소모임이나 카카오에서 온 경우
+            if (fromSomoim || fromKakao) {
+                localStorage.setItem('somoim_access', 'true');
+                localStorage.setItem('access_time', Date.now());
+                return true;
+            }
+            
+            // 이미 접근 권한이 있는 경우 (7일 유지)
+            if (hasAccess) {
+                const accessTime = parseInt(localStorage.getItem('access_time') || '0');
+                const now = Date.now();
+                const daysPassed = (now - accessTime) / (1000 * 60 * 60 * 24);
+                
+                if (daysPassed < 7) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        function renderPrompts() {
+            const grid = document.getElementById('promptsGrid');
+            grid.innerHTML = prompts.map(prompt => `
+                <div class="prompt-card" onclick="openPrompt(${prompt.id})">
+                    <div class="prompt-icon">${prompt.icon}</div>
+                    <div class="prompt-title">${prompt.title}</div>
+                    <div class="prompt-desc">${prompt.description}</div>
+                </div>
+            `).join('');
+        }
+
+        function openPrompt(id) {
+            const prompt = prompts.find(p => p.id === id);
+            if (!prompt) return;
+
+            document.getElementById('modalTitle').textContent = prompt.icon + ' ' + prompt.title;
+            document.getElementById('modalBody').innerHTML = `
+                <p style="color: #666; margin-bottom: 20px;">${prompt.description}</p>
+                <div class="prompt-content">${prompt.content}</div>
+                <button class="btn-copy" onclick="copyPrompt(${id})">
+                    📋 프롬프트 복사하기
+                </button>
+            `;
+            
+            document.getElementById('promptModal').classList.add('active');
+        }
+
+        function copyPrompt(id) {
+            const prompt = prompts.find(p => p.id === id);
+            navigator.clipboard.writeText(prompt.content).then(() => {
+                alert('✅ 프롬프트가 복사되었습니다!');
+                closeModal();
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('promptModal').classList.remove('active');
+        }
+
+        document.getElementById('promptModal').addEventListener('click', (e) => {
+            if (e.target.id === 'promptModal') closeModal();
+        });
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', () => {
+            if (checkAccess()) {
+                document.getElementById('mainContent').style.display = 'block';
+                renderPrompts();
+            } else {
+                document.getElementById('accessDenied').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

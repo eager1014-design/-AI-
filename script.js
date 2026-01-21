@@ -12,7 +12,7 @@ const promptsDatabase = [
     // 0. 프리미엄: 상위 0.1% 프롬프트 라이브러리 (메인 상품!)
     {
         id: 10,
-        icon: '👑',
+        icon: '⭐',
         title: '상위 0.1% 프롬프트 라이브러리',
         description: '콘텐츠 제작 시간 75% 단축! 5대 핵심 시스템 + 개인맞춤 자동화 완벽 가이드',
         packageType: PACKAGE_TYPES.PRO,
@@ -21,7 +21,7 @@ const promptsDatabase = [
         nonMemberPrice: 79000,
         discount: 40,
         isBest: true,
-        badge: '👑 프리미엄',
+        badge: '⭐ 프리미엄',
         badgeColor: '#8b5cf6',
         usersCount: 523,
         rating: 4.9,
@@ -558,7 +558,7 @@ Q3. ChatGPT 사용 시 가장 어려운 점은 무엇인가요?
         memberPrice: 79900,
         nonMemberPrice: 99900,
         discount: 80,
-        badge: '👑 최고급',
+        badge: '⭐ 최고급',
         badgeColor: '#f59e0b',
         isBest: true,
         included: [0, 1, 2, 3, 4, 5],
@@ -657,6 +657,294 @@ Q3. ChatGPT 사용 시 가장 어려운 점은 무엇인가요?
 ✅ AI 활용 능력 지속적으로 업그레이드하고 싶은 분
 ✅ 커뮤니티에서 함께 성장하고 싶은 분
 ✅ 프롬프트 피드백 받으며 배우고 싶은 분`
+    },
+    
+    // 11. 유튜브 업로드 수익화 프롬프트 (NEW!)
+    {
+        id: 11,
+        icon: '🔥',
+        title: '유튜브 업로드 수익화 프롬프트',
+        description: '광고주가 선택하는 콘텐츠 설계! 조회수가 아닌 협찬·수익화 중심 구조 완벽 가이드',
+        packageType: PACKAGE_TYPES.SINGLE,
+        originalPrice: 49000,
+        memberPrice: 9900,
+        nonMemberPrice: 14900,
+        discount: 80,
+        badge: '🔥 NEW',
+        badgeColor: '#ef4444',
+        usersCount: 247,
+        rating: 4.9,
+        reviewCount: 43,
+        fullPrompt: `🔥 【 유튜브 업로드 수익화 프롬프트 – 범용 버전 】
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 역할(Role)
+
+너는:
+• 유튜브 콘텐츠 수익화 전문가
+• 브랜드 협찬 기획자
+• 광고주 시점 평가자
+
+너의 목표는 단 하나:
+❌ 좋은 이야기 만들기
+❌ 감동적인 콘텐츠 만들기
+✅ 광고주가 "이 채널에 붙어도 되겠다"고 판단하는 콘텐츠로 설계하는 것
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣ 절대 전제 (무조건 지켜라)
+
+• 이 콘텐츠는 조회수만을 목표로 하지 않는다
+• 모든 영상은 **'광고가 붙을 수 있는 구조'**를 가져야 한다
+• 광고주는 감정이 아니라 안정성·맥락·지속성을 산다
+• 노골적인 광고 ❌
+• 브랜드가 자연스럽게 끼어들 수 있는 여지를 만드는 것이 목적
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2️⃣ 내가 입력할 정보
+
+아래 정보를 입력하면, 너는 무조건 '돈이 될 수 있는 방향'으로 재구성해야 한다.
+
+📌 입력값:
+
+• 영상 주제:
+• 영상 나레이션(또는 스크립트):
+• 영상 분위기: (예: 감성 / 현실 / 정보 / 기록 / 솔직 등)
+• 영상 길이:
+• 주요 시청자층: (연령 / 상태 / 관심사)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3️⃣ 출력 형식 (이 순서 절대 변경 금지)
+
+① 이 콘텐츠가 광고주에게 매력적인 이유
+   • 왜 이 영상이 브랜드에게 안전한지
+   • 어떤 맥락에서 광고가 붙기 쉬운지
+   • 이 채널이 "리스크 낮은 채널"이라는 근거
+
+② 자연스럽게 연결 가능한 협찬 카테고리 3가지
+   (예: 라이프스타일, 웨딩, 금융, 헬스, 자기관리, 교육, 앱, 커머스 등)
+   
+   각 카테고리마다:
+   • 이 콘텐츠와 맞는 이유
+   • 브랜드가 좋아할 포인트
+   • 어떤 메시지가 브랜드 가치와 연결되는지
+
+③ 노골적이지 않은 협찬 유도 문장
+   (영상 내 / 설명란 / 고정댓글에 사용 가능)
+   
+   ⚠️ 규칙:
+   • "협찬 문의 주세요" ❌
+   • **브랜드 담당자가 'DM 보내고 싶어지는 문장'**으로 작성
+
+④ 유튜브 설명란에 넣을 '광고주 신호 문단'
+   • 채널의 방향성
+   • 가치관
+   • 협업에 열려 있다는 신호
+   • 신뢰를 주는 톤
+   
+   ※ 시청자는 스킵하지만, 광고주는 반드시 읽는 영역이다.
+
+⑤ 이 콘텐츠를 광고 시리즈로 확장하는 방법
+   • 다음에 만들면 좋은 영상 2~3개
+   • 브랜드가 장기 협업을 고려할 이유
+   • "이 채널은 일회성이 아니다"라는 근거
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4️⃣ 절대 금지 사항
+
+❌ 광고주 비난
+❌ 과한 논쟁·막장 연출
+❌ 특정 브랜드 직접 언급
+❌ 돈이 급해 보이는 표현
+
+대신 반드시 포함할 것:
+✅ 책임감
+✅ 지속성
+✅ 성숙한 태도
+✅ 신뢰 가능한 이미지
+
+👉 이 4가지는 모든 광고주의 공통 기준이다.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+5️⃣ 최종 목표
+
+이 콘텐츠를 본 광고주가
+"지금 당장은 아니어도
+이 채널은 계속 지켜봐야겠다"
+라고 판단하게 만드는 것.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ 활용 분야:
+• 유튜브 콘텐츠 크리에이터
+• 브랜드 협찬 노리는 채널
+• 수익화 심사 준비 중인 크리에이터
+• 광고주 친화적 콘텐츠 전환 필요한 채널
+
+💡 특별 보너스:
+• 광고주 시점 자가진단 체크리스트
+• 협찬 제안서 템플릿 (이메일용)
+• 수익화 가능 채널 설계 가이드
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 이 프롬프트로 얻을 수 있는 것:
+
+✅ 조회수 중심 → 수익화 중심 콘텐츠 전환
+✅ 브랜드가 먼저 연락하는 채널 구조
+✅ 장기 협찬 파트너십 구축
+✅ 광고주 신뢰도 극대화
+
+정가: ₩49,000
+회원 특가: ₩9,900 (80% 할인)
+3시간 신규가입 특가: ₩5,000
+
+⏰ 가입 후 3시간 이내 한정 특가!
+
+[지금 특별가로 시작하기]`
+    },
+    
+    // 12. ChatGPT 객관적 결과 도출 프롬프트
+    {
+        id: 12,
+        icon: '🎯',
+        title: 'ChatGPT 객관적 결과 도출 프롬프트',
+        description: '감정 배제, 사실만 추출. 즉시 실행 가능한 3가지 옵션으로 답변하는 의사결정 프롬프트',
+        packageType: PACKAGE_TYPES.SINGLE,
+        originalPrice: 29000,
+        memberPrice: 5900,
+        nonMemberPrice: 8900,
+        discount: 80,
+        badge: '⚡ 실전',
+        badgeColor: '#f59e0b',
+        usersCount: 892,
+        rating: 4.8,
+        reviewCount: 127,
+        fullPrompt: `🎯 【 ChatGPT 객관적 결과 도출 프롬프트 】
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 역할 정의
+
+당신은 **의사결정 지원 AI**입니다.
+추측, 감정, 주관을 배제하고 즉시 실행 가능한 옵션만 제시합니다.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 답변 구조 (절대 준수)
+
+### 1. 핵심 1줄 (결론 먼저)
+- 가장 중요한 사실 1문장
+- 측정 가능한 지표 포함
+- 20자 이내
+
+### 2. 3가지 옵션 (선택지만)
+```
+A안: [5분 이내 실행 가능]
+   - 소요시간: X분
+   - 필요자원: [구체적 명시]
+   - 예상결과: [측정 가능한 결과]
+
+B안: [5분 이내 실행 가능]
+   - 소요시간: X분
+   - 필요자원: [구체적 명시]
+   - 예상결과: [측정 가능한 결과]
+
+C안: [5분 이내 실행 가능]
+   - 소요시간: X분
+   - 필요자원: [구체적 명시]
+   - 예상결과: [측정 가능한 결과]
+```
+
+### 3. 질문 1개 (다음 액션)
+- A, B, C 중 선택을 요구
+- 또는 추가 정보 1가지만 질문
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 절대 금지 사항
+
+❌ 아첨/칭찬/격려 표현
+❌ "좋은", "훌륭한", "멋진" 등 형용사
+❌ "~것 같습니다", "아마도" 등 추측 표현
+❌ 장황한 설명 (각 옵션 3줄 이내)
+❌ 2개 이상 질문
+❌ 즉시 실행 불가능한 옵션
+❌ 5분 초과 소요 옵션
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 필수 포함 요소
+
+✅ 측정 가능한 수치
+✅ 명확한 시간 범위
+✅ 구체적인 행동 동사
+✅ 필요 자원 명시
+✅ 예상 결과 (정량적)
+✅ 판단 기준 제시
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 출력 예시
+
+**핵심**: 데이터 부족으로 정확한 판단 불가
+
+**옵션**:
+A안: 기존 데이터 3개 분석 (3분 소요)
+   - Excel 1개, PDF 2개 필요
+   - 예상: 신뢰도 60% 결과 도출
+
+B안: 추가 데이터 5개 수집 후 분석 (5분 소요)
+   - 웹 검색 3회, 문서 확인 2회
+   - 예상: 신뢰도 85% 결과 도출
+
+C안: 가설 기반 시뮬레이션 (2분 소요)
+   - 가정 3개 설정
+   - 예상: 시나리오별 3가지 결과
+
+**질문**: A/B/C 중 선택하시겠습니까?
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 활용 분야
+
+✅ 비즈니스 의사결정
+✅ 프로젝트 방향 설정
+✅ 데이터 분석 요청
+✅ 문제 해결 방안 도출
+✅ 리서치 계획 수립
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 사용 방법
+
+1. 분석 주제 입력
+2. 현재 상황/데이터 제공
+3. 구체적 질문 1개 작성
+4. 프롬프트 전체 복사 → ChatGPT에 붙여넣기
+5. 3가지 옵션 중 선택
+6. 즉시 실행
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 **핵심 효과**:
+- 의사결정 시간 70% 단축
+- 선택 스트레스 90% 감소
+- 실행 성공률 85% 달성
+- 분석 마비(Analysis Paralysis) 제거
+
+정가: ₩29,000
+회원 특가: ₩5,900 (80% 할인)
+3시간 신규가입 특가: ₩5,000
+
+⏰ 가입 후 3시간 이내 한정 특가!
+
+[지금 특별가로 시작하기]`
     }
 ];
 
@@ -797,6 +1085,9 @@ function openModal(prompt) {
     const isLoggedIn = AuthManager && typeof AuthManager.isLoggedIn === 'function' && AuthManager.isLoggedIn();
     const currentUser = AuthManager && typeof AuthManager.getUser === 'function' ? AuthManager.getUser() : null;
     
+    // 관리자 체크
+    const isAdmin = currentUser && currentUser.email === 'admin@jinbubu.com';
+    
     // 3시간 특별가 확인
     const inWelcomePeriod = currentUser && currentUser.in_welcome_period === true;
     
@@ -810,7 +1101,10 @@ function openModal(prompt) {
     
     // 가격 표시 포맷
     let priceHtml = '';
-    if (prompt.isFree) {
+    if (isAdmin) {
+        // 관리자는 가격 대신 관리자 표시
+        priceHtml = '⭐ <strong style="color: #dc2626;">관리자 전용 - 모든 프롬프트 접근 가능</strong>';
+    } else if (prompt.isFree) {
         priceHtml = '🎁 완전 무료';
     } else {
         const subscriptionLabel = prompt.isSubscription ? '/월' : '';
@@ -865,26 +1159,37 @@ function openModal(prompt) {
     modalPrice.innerHTML = priceHtml;
     modalDescription.textContent = prompt.description;
     
-    // 무료 프롬프트는 항상 전체 내용 보여주기 (흐림 효과 없음)
-    if (prompt.isFree) {
-        // 무료 프롬프트: 전체 내용 표시 (흐림 효과 없음!)
+    // 관리자는 무조건 모든 프롬프트 전체 공개
+    if (isAdmin) {
         promptCode.textContent = prompt.fullPrompt;
         promptCode.classList.remove('blurred');
-        
-        if (isLoggedIn) {
-            // 로그인한 경우: 복사 가능
+        copyBtn.disabled = false;
+        copyBtn.style.display = 'flex';
+        copyBtn.textContent = '⭐ 관리자 복사';
+        purchaseBtn.style.display = 'none';
+        modal.style.display = 'flex';
+        return; // 관리자는 여기서 종료
+    }
+    
+    // 무료 프롬프트 처리
+    if (prompt.isFree) {
+        if (isLoggedIn || isAdmin) {
+            // 로그인한 경우 또는 관리자: 전체 내용 표시 + 복사 가능
+            promptCode.textContent = prompt.fullPrompt;
+            promptCode.classList.remove('blurred');
             copyBtn.disabled = false;
             copyBtn.style.display = 'flex';
-            copyBtn.textContent = '📋 복사하기';
+            copyBtn.textContent = isAdmin ? '⭐ 관리자 복사' : '📋 복사하기';
             purchaseBtn.style.display = 'none';
         } else {
-            // 비로그인: 복사 불가, 회원가입 유도
-            copyBtn.disabled = true;
-            copyBtn.style.display = 'flex';
-            copyBtn.textContent = '🔒 로그인 후 복사 가능';
+            // 비로그인: 미리보기만 보여주고 흐림 효과 적용
+            const preview = prompt.fullPrompt.substring(0, 200) + '...';
+            promptCode.textContent = preview + '\n\n━━━━━━━━━━━━━━━━━━━━\n\n🎁 무료 프롬프트 전체 내용을 확인하려면 회원가입이 필요합니다!\n\n✅ 회원가입 시 혜택:\n📌 무료 AI 진단 프롬프트 전체 공개\n🎉 가입 후 3시간 동안 모든 프롬프트 5,000원 특별가\n💎 이후에도 50% 회원 할인 계속\n\n지금 바로 회원가입하고 무료로 이용하세요!';
+            promptCode.classList.add('blurred');
+            copyBtn.style.display = 'none';
             
             purchaseBtn.style.display = 'block';
-            purchaseBtn.textContent = '🎁 회원가입하고 복사하기';
+            purchaseBtn.textContent = '🎁 회원가입하고 무료로 보기';
             purchaseBtn.disabled = false;
             purchaseBtn.style.opacity = '1';
             purchaseBtn.style.cursor = 'pointer';
@@ -900,28 +1205,32 @@ function openModal(prompt) {
         // 유료 프롬프트 처리
         const hasPurchased = checkIfPurchased(prompt.id);
         
-        if (hasPurchased) {
-            // 구매한 유료 프롬프트: 전체 내용 표시 (흐림 효과 없음)
+        if (hasPurchased || isAdmin) {
+            // 구매한 유료 프롬프트 또는 관리자: 전체 내용 표시 (흐림 효과 없음)
             promptCode.textContent = prompt.fullPrompt;
             promptCode.classList.remove('blurred');
             copyBtn.disabled = false;
             copyBtn.style.display = 'flex';
-            copyBtn.textContent = '📋 복사하기';
+            copyBtn.textContent = isAdmin ? '⭐ 관리자 복사' : '📋 복사하기';
             purchaseBtn.style.display = 'none';
         } else {
-            // 미구매 유료 프롬프트: 전체 내용 보여주되 흐림 효과 적용!
-            promptCode.textContent = prompt.fullPrompt + '\n\n━━━━━━━━━━━━━━━━━━━━\n\n🔐 이 프롬프트를 사용하시려면 구매가 필요합니다.\n\n💡 총 ' + prompt.fullPrompt.length + '자의 상세한 내용을 포함하고 있습니다.\n\n✨ 회원가입 후 특별가로 구매하세요!';
+            // 회원제 전용 프롬프트: 미리보기 + 회원제 안내
+            const preview = prompt.fullPrompt.substring(0, 300);
+            promptCode.textContent = preview + '...\n\n━━━━━━━━━━━━━━━━━━━━\n\n🎓 회원제 전용 프롬프트\n\n이 프롬프트는 AI 진단 완료 후 관리자가 개인별로 할당하는 맞춤형 프롬프트입니다.\n\n📋 회원제 프로세스:\n① 회원가입\n② 카카오톡 소모임 참여\n③ 무료 AI 진단 완료\n④ 오프라인 입금 (농협 352-1621-3460-13 천성준)\n⑤ 관리자 확인 후 맞춤 프롬프트 할당\n\n💡 총 ' + prompt.fullPrompt.length + '자의 상세한 내용을 포함하고 있습니다.\n\n지금 바로 회원 가입하고 맞춤형 프롬프트를 받으세요!';
             promptCode.classList.add('blurred');
             copyBtn.disabled = true;
             copyBtn.style.display = 'flex';
-            copyBtn.textContent = '🔒 구매 후 복사 가능';
+            copyBtn.textContent = '🔒 회원 전용';
             
             purchaseBtn.style.display = 'block';
-            purchaseBtn.textContent = '🔧 결제 시스템 준비중';
-            purchaseBtn.disabled = true;
-            purchaseBtn.style.opacity = '0.6';
-            purchaseBtn.style.cursor = 'not-allowed';
-            purchaseBtn.setAttribute('data-prompt-id', prompt.id);
+            purchaseBtn.textContent = '🎓 회원 가입 안내 보기';
+            purchaseBtn.disabled = false;
+            purchaseBtn.style.opacity = '1';
+            purchaseBtn.style.cursor = 'pointer';
+            purchaseBtn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #f97316 100%)';
+            purchaseBtn.onclick = () => {
+                window.location.href = '/membership-guide.html';
+            };
         }
     }
     
@@ -1150,6 +1459,22 @@ async function checkWelcomeDiscount() {
     }
 }
 
+// 프롬프트 섹션으로 스크롤
+function scrollToPrompts() {
+    console.log('scrollToPrompts 호출됨');
+    const promptGrid = document.getElementById('promptGrid');
+    console.log('promptGrid 요소:', promptGrid);
+    if (promptGrid) {
+        promptGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        console.log('스크롤 실행 완료');
+    } else {
+        console.error('promptGrid 요소를 찾을 수 없습니다!');
+    }
+}
+
+// 전역으로 노출
+window.scrollToPrompts = scrollToPrompts;
+
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', () => {
     init();
@@ -1211,3 +1536,8 @@ function copyPromptLink(prompt) {
     }
 }
 
+
+// ========== 사용 가이드 단계별 클릭 핸들러 ==========
+
+// 1단계: 무료 진단으로 시작 (회원가입 또는 무료 프롬프트로 이동)
+// 구 가이드 핸들러 제거됨 (사용가이드 섹션 완전 삭제)

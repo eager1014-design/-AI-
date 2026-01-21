@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Test</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div style="padding: 2rem;">
+        <h1>인증 시스템 테스트</h1>
+        <button onclick="showRegisterModal()" style="padding: 1rem 2rem; font-size: 1rem; margin: 1rem;">회원가입 테스트</button>
+        <button onclick="showLoginModal()" style="padding: 1rem 2rem; font-size: 1rem; margin: 1rem;">로그인 테스트</button>
+        
+        <div id="console-log" style="margin-top: 2rem; background: #f0f0f0; padding: 1rem; border-radius: 8px;">
+            <h3>Console Log:</h3>
+            <pre id="log-content"></pre>
+        </div>
+    </div>
+    
+    <script src="auth.js"></script>
+    <script>
+        // Console log capture
+        const logContent = document.getElementById('log-content');
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            logContent.textContent += '[LOG] ' + args.join(' ') + '\n';
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            logContent.textContent += '[ERROR] ' + args.join(' ') + '\n';
+            originalError.apply(console, args);
+        };
+        
+        console.log('테스트 페이지 로드 완료');
+        console.log('FakeAuthDB:', typeof FakeAuthDB);
+        console.log('apiRequest:', typeof apiRequest);
+        console.log('showRegisterModal:', typeof showRegisterModal);
+        console.log('showLoginModal:', typeof showLoginModal);
+    </script>
+</body>
+</html>

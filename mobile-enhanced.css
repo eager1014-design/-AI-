@@ -15,34 +15,37 @@
     
     /* ===== 헤더 - 글래스모피즘 & 입체감 ===== */
     .header {
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border-bottom: 1px solid rgba(217, 119, 6, 0.1);
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+        padding: 4px 0 !important;
     }
     
     .header-content {
         flex-direction: row !important;
         justify-content: space-between;
-        padding: 12px 0;
+        padding: 2px 0 !important;
         gap: 0;
+        min-height: auto !important;
     }
     
-    /* 로고 아담하게 */
+    /* 로고 미니 */
     .logo {
-        gap: 8px;
+        gap: 4px !important;
+        padding: 2px 0 !important;
     }
     
     .logo-emoji {
-        font-size: 1.75rem !important;
+        font-size: 1.25rem !important;
         animation: none; /* 모바일에서는 애니메이션 제거 */
     }
     
     .logo-text {
-        font-size: 1rem;
+        font-size: 0.75rem !important;
         font-weight: 700;
-        background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -268,8 +271,9 @@
     }
     
     .youtube-btn {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        color: white;
+        background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+        color: #1f2937;
+        border: 2px solid #e5e7eb !important;
     }
     
     .instagram-btn {

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입/로그인 자동 테스트</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #test-results {
+            margin: 2rem;
+            padding: 1rem;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+        .test-pass { color: green; font-weight: bold; }
+        .test-fail { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div style="padding: 2rem;">
+        <h1>회원가입/로그인 자동 테스트</h1>
+        <button onclick="runTests()" style="padding: 1rem 2rem; font-size: 1.2rem; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer;">
+            🧪 테스트 실행
+        </button>
+        
+        <div id="test-results"></div>
+    </div>
+    
+    <script src="auth.js"></script>
+    <script>
+        const resultsDiv = document.getElementById('test-results');
+        
+        function log(message, isPass = true) {
+            const p = document.createElement('p');
+            p.className = isPass ? 'test-pass' : 'test-fail';
+            p.textContent = (isPass ? '✅ ' : '❌ ') + message;
+            resultsDiv.appendChild(p);
+            console.log(message);
+        }
+        
+        async function runTests() {
+            resultsDiv.innerHTML = '<h2>테스트 실행 중...</h2>';
+            
+            try {
+                // 1. FakeAuthDB 테스트
+                log('1. FakeAuthDB 존재 확인');
+                if (typeof FakeAuthDB === 'undefined') {
+                    throw new Error('FakeAuthDB가 정의되지 않았습니다');
+                }
+                
+                // 2. apiRequest 함수 테스트
+                log('2. apiRequest 함수 존재 확인');
+                if (typeof apiRequest !== 'function') {
+                    throw new Error('apiRequest가 정의되지 않았습니다');
+                }
+                
+                // 3. 기존 사용자 데이터 초기화
+                log('3. localStorage 초기화');
+                localStorage.clear();
+                
+                // 4. 회원가입 테스트
+                log('4. 회원가입 테스트 시작');
+                const registerData = {
+                    username: '테스트유저',
+                    email: 'test@example.com',
+                    phone: '010-1234-5678',
+                    birthdate: '2000-01-01',
+                    password: '12345678',
+                    is_member: true
+                };
+                
+                const registerResponse = await apiRequest('/api/register', 'POST', registerData);
+                log('5. 회원가입 성공: ' + JSON.stringify(registerResponse));
+                
+                if (!registerResponse.token) {
+                    throw new Error('토큰이 반환되지 않았습니다');
+                }
+                log('6. 토큰 발급 확인: ' + registerResponse.token.substring(0, 20) + '...');
+                
+                // 5. 로그아웃
+                log('7. 로그아웃');
+                AuthManager.removeToken();
+                AuthManager.removeUser();
+                
+                // 6. 로그인 테스트
+                log('8. 로그인 테스트 시작');
+                const loginData = {
+                    email: 'test@example.com',
+                    password: '12345678'
+                };
+                
+                const loginResponse = await apiRequest('/api/login', 'POST', loginData);
+                log('9. 로그인 성공: ' + JSON.stringify(loginResponse));
+                
+                if (!loginResponse.token) {
+                    throw new Error('로그인 토큰이 반환되지 않았습니다');
+                }
+                log('10. 로그인 토큰 발급 확인');
+                
+                // 7. 토큰 저장 테스트
+                log('11. 토큰 저장 테스트');
+                AuthManager.setToken(loginResponse.token, true);
+                
+                if (!AuthManager.isLoggedIn()) {
+                    throw new Error('로그인 상태가 유지되지 않았습니다');
+                }
+                log('12. 로그인 상태 유지 확인');
+                
+                // 8. 사용자 정보 조회 테스트
+                log('13. 사용자 정보 조회 테스트');
+                const userInfo = await apiRequest('/api/user/me', 'GET');
+                log('14. 사용자 정보: ' + JSON.stringify(userInfo));
+                
+                // 9. 최종 결과
+                resultsDiv.innerHTML += '<h2 class="test-pass">🎉 모든 테스트 통과!</h2>';
+                log('✅✅✅ 모든 테스트가 성공적으로 완료되었습니다!');
+                
+            } catch (error) {
+                log('테스트 실패: ' + error.message, false);
+                console.error(error);
+                resultsDiv.innerHTML += '<h2 class="test-fail">❌ 테스트 실패</h2>';
+            }
+        }
+    </script>
+</body>
+</html>

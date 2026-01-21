@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>테스트 페이지</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: #0a0a0f;
+            color: white;
+            padding: 50px;
+            text-align: center;
+        }
+        .success {
+            color: #10b981;
+            font-size: 2rem;
+            margin: 20px 0;
+        }
+        .info {
+            color: #667eea;
+            margin: 10px 0;
+        }
+        video {
+            max-width: 600px;
+            width: 100%;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+        a {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            margin: 20px 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="success">✅ 테스트 페이지 정상 작동</h1>
+    
+    <div class="info">파일 경로 확인:</div>
+    <ul style="list-style: none; padding: 0;">
+        <li>✓ index.html 존재</li>
+        <li>✓ style.css 존재</li>
+        <li>✓ script.js 존재</li>
+        <li>✓ 0104.mov 존재</li>
+    </ul>
+    
+    <h2>영상 테스트</h2>
+    <video controls>
+        <source src="0104.mov" type="video/mp4">
+        <source src="0104.mov" type="video/quicktime">
+    </video>
+    
+    <div>
+        <a href="index.html">메인 페이지로 이동</a>
+        <a href="../membership-guide.html">회원제 안내</a>
+    </div>
+    
+    <script>
+        console.log('✅ JavaScript 정상 작동');
+        console.log('현재 경로:', window.location.href);
+    </script>
+</body>
+</html>

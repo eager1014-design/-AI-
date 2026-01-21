@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR 코드 생성기 - AI BUSAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1rem;
+        }
+        
+        .url-list {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .url-item {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .url-item:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .url-item.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+        
+        .url-icon {
+            font-size: 1.5rem;
+            min-width: 30px;
+        }
+        
+        .url-content {
+            flex: 1;
+        }
+        
+        .url-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .url-link {
+            color: #667eea;
+            font-size: 0.85rem;
+            word-break: break-all;
+        }
+        
+        .qr-container {
+            text-align: center;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #qrcode {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .qr-placeholder {
+            color: #999;
+            font-size: 1.2rem;
+        }
+        
+        .btn-download {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-download:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-download:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .current-url {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            color: #667eea;
+            font-weight: 600;
+            word-break: break-all;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .url-item {
+                padding: 12px 15px;
+            }
+            
+            .url-title {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 QR 코드 생성기</h1>
+        <p class="subtitle">생성하고 싶은 페이지를 선택하세요</p>
+        
+        <div class="url-list">
+            <div class="url-item" data-url="https://8003-ieqskqqgv5heqsrwn2d81-18e660f9.sandbox.novita.ai/?from=somoim" data-title="메인 페이지">
+                <div class="url-icon">🏠</div>
+                <div class="url-content">
+                    <div class="url-title">메인 페이지 (소모임 접근)</div>
+                    <div class="url-link">/?from=somoim</div>
+                </div>
+            </div>
+            
+            <div class="url-item" data-url="https://8003-ieqskqqgv5heqsrwn2d81-18e660f9.sandbox.novita.ai/?from=kakao" data-title="메인 페이지 (카카오)">
+                <div class="url-icon">💬</div>
+                <div class="url-content">
+                    <div class="url-title">메인 페이지 (카카오 접근)</div>
+                    <div class="url-link">/?from=kakao</div>
+                </div>
+            </div>
+            
+            <div class="url-item" data-url="https://8003-ieqskqqgv5heqsrwn2d81-18e660f9.sandbox.novita.ai/membership-guide.html" data-title="VIP 실험체 신청">
+                <div class="url-icon">🌟</div>
+                <div class="url-content">
+                    <div class="url-title">VIP 실험체 신청 페이지</div>
+                    <div class="url-link">/membership-guide.html</div>
+                </div>
+            </div>
+            
+            <div class="url-item" data-url="https://8003-ieqskqqgv5heqsrwn2d81-18e660f9.sandbox.novita.ai/prompts.html?from=somoim" data-title="프롬프트 마켓">
+                <div class="url-icon">📦</div>
+                <div class="url-content">
+                    <div class="url-title">프롬프트 마켓</div>
+                    <div class="url-link">/prompts.html?from=somoim</div>
+                </div>
+            </div>
+            
+            <div class="url-item" data-url="https://open.kakao.com/o/phw90nci" data-title="오픈채팅">
+                <div class="url-icon">💭</div>
+                <div class="url-content">
+                    <div class="url-title">오픈채팅방</div>
+                    <div class="url-link">카카오 오픈채팅</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="current-url" id="currentUrl" style="display: none;"></div>
+        
+        <div class="qr-container">
+            <div class="qr-placeholder" id="placeholder">
+                ☝️ 위에서 페이지를 선택해주세요
+            </div>
+            <div id="qrcode"></div>
+        </div>
+        
+        <button class="btn-download" id="downloadBtn" disabled>
+            📥 QR 코드 다운로드 (PNG)
+        </button>
+    </div>
+
+    <script>
+        let currentQR = null;
+        let currentURL = '';
+        let currentTitle = '';
+        
+        // URL 아이템 클릭
+        document.querySelectorAll('.url-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 활성화 상태 변경
+                document.querySelectorAll('.url-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // URL과 타이틀 가져오기
+                currentURL = this.dataset.url;
+                currentTitle = this.dataset.title;
+                
+                // 현재 URL 표시
+                document.getElementById('currentUrl').style.display = 'block';
+                document.getElementById('currentUrl').textContent = `생성 중: ${currentTitle}`;
+                
+                // QR 코드 생성
+                generateQR(currentURL);
+            });
+        });
+        
+        function generateQR(url) {
+            // 기존 QR 코드 제거
+            const qrcodeContainer = document.getElementById('qrcode');
+            qrcodeContainer.innerHTML = '';
+            
+            // Placeholder 숨기기
+            document.getElementById('placeholder').style.display = 'none';
+            
+            // 새 QR 코드 생성
+            currentQR = new QRCode(qrcodeContainer, {
+                text: url,
+                width: 256,
+                height: 256,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // 다운로드 버튼 활성화
+            document.getElementById('downloadBtn').disabled = false;
+        }
+        
+        // 다운로드 버튼
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            if (!currentQR) return;
+            
+            // QR 코드 이미지 가져오기
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) {
+                alert('QR 코드를 먼저 생성해주세요!');
+                return;
+            }
+            
+            // Canvas를 이미지로 변환
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `QR_${currentTitle.replace(/\s+/g, '_')}_${Date.now()}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        });
+    </script>
+</body>
+</html>

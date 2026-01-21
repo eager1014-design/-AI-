@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실패를 데이터로 해독하는 실험실</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+            cursor: none;
+        }
+        
+        /* 커스텀 커서 */
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00ff88;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.1s ease;
+            mix-blend-mode: difference;
+        }
+        
+        .cursor-follower {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transition: all 0.3s ease;
+        }
+        
+        /* 히어로 섹션 */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.1) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+        
+        .hero-slogan {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 900;
+            text-align: center;
+            line-height: 1.2;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+        }
+        
+        .hero-slogan .highlight {
+            color: #00ff88;
+            display: block;
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+        
+        /* 영상 섹션 */
+        .video-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+        
+        .video-container {
+            max-width: 1200px;
+            width: 100%;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 255, 136, 0.3);
+        }
+        
+        .video-container video {
+            width: 100%;
+            display: block;
+        }
+        
+        .video-caption {
+            max-width: 800px;
+            margin: 3rem auto 0;
+            text-align: center;
+        }
+        
+        .video-caption h2 {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+        
+        .video-caption p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+        }
+        
+        /* 실험 구조 섹션 */
+        .experiment-structure {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            background: linear-gradient(180deg, #0a0a0a 0%, #0f1419 100%);
+        }
+        
+        .structure-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .structure-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .structure-card:hover {
+            transform: translateY(-10px);
+            border-color: #00ff88;
+            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.2);
+        }
+        
+        .structure-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #00ff88;
+        }
+        
+        .structure-card p {
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* CTA 섹션 */
+        .cta-section {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        
+        .cta-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 3rem;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+        
+        .cta-btn {
+            padding: 1.5rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: transparent;
+            border: 2px solid #00ff88;
+            color: #00ff88;
+            border-radius: 50px;
+            cursor: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .cta-btn:hover {
+            background: #00ff88;
+            color: #0a0a0a;
+            transform: scale(1.05);
+        }
+        
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        /* 인터랙티브 배경 */
+        .interactive-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00ff88;
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <!-- 커스텀 커서 -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    
+    <!-- 인터랙티브 배경 -->
+    <div class="interactive-bg" id="interactiveBg"></div>
+    
+    <!-- 히어로 섹션 -->
+    <section class="hero">
+        <h1 class="hero-slogan">
+            당신의 실패는<br>
+            <span class="highlight">아직 데이터가 되지 못했다</span>
+        </h1>
+        <div class="scroll-indicator">↓ 스크롤하여 실험 시작</div>
+    </section>
+    
+    <!-- 영상 섹션 -->
+    <section class="video-section">
+        <div class="video-container">
+            <video controls autoplay muted loop playsinline>
+                <source src="/home/user/uploaded_files/0104(1).mov" type="video/quicktime">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        
+        <div class="video-caption">
+            <h2>이것은 강의가 아니다.<br>구조를 바꾸는 실험이다.</h2>
+            <p>
+                3년간 278번의 실패를 데이터화한 결과,<br>
+                우리는 '노력'이 아니라 '구조'를 바꿀 때 채널이 성장한다는 것을 발견했다.
+            </p>
+            <p>
+                지금 당신에게 필요한 것은 동기부여가 아니라,<br>
+                실패를 해독하고 구조를 재설계하는 실험이다.
+            </p>
+        </div>
+    </section>
+    
+    <!-- 실험 구조 섹션 -->
+    <section class="experiment-structure">
+        <h2 class="section-title">실험실 구조</h2>
+        
+        <div class="structure-grid">
+            <div class="structure-card">
+                <h3>01. 실패 데이터 수집</h3>
+                <p>당신의 채널이 멈춘 지점을 구조적으로 해독한다. 감정이 아니라 데이터로.</p>
+            </div>
+            
+            <div class="structure-card">
+                <h3>02. 가설 재설계</h3>
+                <p>왜 안 되는지가 아니라, 어떤 구조를 바꿀 것인지 재설계한다.</p>
+            </div>
+            
+            <div class="structure-card">
+                <h3>03. 실험 실행</h3>
+                <p>이론을 배우지 않는다. 직접 구조를 바꾸고 결과를 측정한다.</p>
+            </div>
+            
+            <div class="structure-card">
+                <h3>04. 피드백 루프</h3>
+                <p>실험 결과를 다시 데이터화하여 구조를 지속적으로 개선한다.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA 섹션 -->
+    <section class="cta-section">
+        <h2 class="cta-title">지금 실험에 참여하다</h2>
+        
+        <div class="cta-buttons">
+            <a href="#" class="cta-btn">실패 데이터 업로드하기</a>
+            <a href="#" class="cta-btn">구조 재설계 시작하기</a>
+            <a href="#" class="cta-btn">실험실 입장하기</a>
+        </div>
+    </section>
+    
+    <script>
+        // 커스텀 커서
+        const cursor = document.querySelector('.cursor');
+        const follower = document.querySelector('.cursor-follower');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                follower.style.left = e.clientX + 'px';
+                follower.style.top = e.clientY + 'px';
+            }, 100);
+        });
+        
+        // 인터랙티브 배경
+        const bg = document.getElementById('interactiveBg');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animation = `float ${5 + Math.random() * 10}s ease-in-out infinite`;
+            bg.appendChild(particle);
+        }
+        
+        // 파티클 애니메이션
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0%, 100% { transform: translateY(0) translateX(0); }
+                50% { transform: translateY(-20px) translateX(10px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // 마우스 따라다니는 효과
+        document.addEventListener('mousemove', (e) => {
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach((particle, index) => {
+                const speed = (index + 1) * 0.0001;
+                const x = (e.clientX * speed);
+                const y = (e.clientY * speed);
+                particle.style.transform = `translate(${x}px, ${y}px)`;
+            });
+        });
+    </script>
+</body>
+</html>

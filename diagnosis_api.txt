@@ -1,0 +1,57 @@
+
+# ==================== AI 진단 결과 API ====================
+
+@app.route('/api/user/save-diagnosis', methods=['POST'])
+@token_required
+def save_diagnosis_result(current_user):
+    """사용자: AI 진단 결과 저장"""
+    try:
+        data = request.get_json()
+        diagnosis_text = data.get('diagnosis_result')
+        
+        if not diagnosis_text:
+            return jsonify({'error': '진단 결과가 없습니다.'}), 400
+        
+        current_user.diagnosis_result = diagnosis_text
+        current_user.diagnosis_completed_at = datetime.utcnow()
+        db.session.commit()
+        
+        return jsonify({
+            'message': '진단 결과가 저장되었습니다.',
+            'completed_at': current_user.diagnosis_completed_at.isoformat()
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/users-with-diagnosis', methods=['GET'])
+@admin_required
+def get_users_with_diagnosis(current_user):
+    """관리자: 진단 완료한 사용자 목록"""
+    try:
+        users = User.query.filter(
+            User.diagnosis_completed_at.isnot(None)
+        ).order_by(User.diagnosis_completed_at.desc()).all()
+        
+        result = []
+        for user in users:
+            # 할당된 프롬프트 개수
+            prompt_count = UserPromptAccess.query.filter_by(user_id=user.id).count()
+            
+            result.append({
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'diagnosis_result': user.diagnosis_result,
+                'diagnosis_completed_at': user.diagnosis_completed_at.isoformat() if user.diagnosis_completed_at else None,
+                'assigned_prompts_count': prompt_count,
+                'subscription_status': user.subscription_status,
+                'created_at': user.created_at.isoformat() if user.created_at else None
+            })
+        
+        return jsonify({'users': result}), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+

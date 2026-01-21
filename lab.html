@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>찐부부 실험실 - 실패를 데이터로 해독하는 실험실</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #8b5cf6;
+            --secondary: #ec4899;
+            --accent: #f59e0b;
+            --dark: #0f172a;
+            --gray: #64748b;
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--dark);
+            color: white;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* 커스텀 커서 */
+        #cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transition: all 0.1s ease;
+            mix-blend-mode: difference;
+        }
+
+        #cursor-follower {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.3s ease;
+        }
+
+        /* 섹션 공통 스타일 */
+        section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        /* 1. HERO - 영상 + 슬로건 */
+        .hero-section {
+            flex-direction: column;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            animation: fadeInDown 1s ease;
+        }
+
+        .hero-slogan {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.2;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .hero-slogan .highlight {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .video-container video {
+            width: 100%;
+            display: block;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.8) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* 2. 공감 - 메인 카피 */
+        .empathy-section {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .empathy-content {
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .empathy-title {
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            line-height: 1.4;
+        }
+
+        .empathy-text {
+            font-size: 1.2rem;
+            line-height: 2;
+            color: #cbd5e1;
+            margin-bottom: 1.5rem;
+        }
+
+        .empathy-highlight {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* 3. 해독 - 4가지 실험 카드 */
+        .decode-section {
+            background: var(--dark);
+        }
+
+        .decode-container {
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        .decode-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .experiments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .experiment-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .experiment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+
+        .experiment-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .experiment-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3);
+            border-color: var(--primary);
+        }
+
+        .experiment-card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .experiment-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .experiment-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .experiment-desc {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .experiment-action {
+            display: inline-block;
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .experiment-action:hover {
+            color: var(--secondary);
+            transform: translateX(5px);
+        }
+
+        /* 4. 질문 - 진단 섹션 */
+        .question-section {
+            background: linear-gradient(135deg, #1e293b 0%, #312e81 100%);
+        }
+
+        .question-content {
+            max-width: 700px;
+            text-align: center;
+        }
+
+        .question-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #cbd5e1;
+            margin-bottom: 3rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6);
+        }
+
+        /* 5. 참여 - 최종 전환 */
+        .participate-section {
+            background: var(--dark);
+        }
+
+        .participate-content {
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .participate-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .participate-subtitle {
+            font-size: 1.3rem;
+            color: #cbd5e1;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cta-secondary:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            section {
+                padding: 3rem 1.5rem;
+            }
+
+            .hero-slogan {
+                font-size: 2rem;
+            }
+
+            .experiments-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .cta-primary,
+            .cta-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* 스크롤 진행 바 */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            width: 0%;
+            z-index: 9998;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- 커스텀 커서 -->
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
+
+    <!-- 스크롤 진행 바 -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- 1. HERO - 영상 + 슬로건 -->
+    <section class="hero-section">
+        <div class="hero-badge">⚡ 찐부부 실험실</div>
+        <h1 class="hero-slogan">
+            <span class="highlight">실패를 데이터로 해독</span>하는<br>실험실
+        </h1>
+        <div class="video-container">
+            <video autoplay muted loop playsinline>
+                <source src="0104.mov" type="video/mp4">
+                영상을 재생할 수 없습니다.
+            </video>
+            <div class="video-overlay"></div>
+        </div>
+    </section>
+
+    <!-- 2. 공감 - 메인 카피 -->
+    <section class="empathy-section">
+        <div class="empathy-content">
+            <h2 class="empathy-title">실패는 끝이 아니라 데이터입니다</h2>
+            <p class="empathy-text">
+                당신의 콘텐츠가 안 되는 이유는 <span class="empathy-highlight">재능이 없어서가 아닙니다.</span>
+            </p>
+            <p class="empathy-text">
+                <span class="empathy-highlight">구조가 없어서입니다.</span>
+            </p>
+            <p class="empathy-text">
+                찐부부 실험실은 300번의 실패를 해독하고,<br>
+                5,000명의 구독자를 만든 <span class="empathy-highlight">구조를 공개합니다.</span>
+            </p>
+            <p class="empathy-text" style="margin-top: 2rem; font-weight: 600; font-size: 1.4rem;">
+                이곳에서는 배우지 않습니다. 직접 바꿉니다.
+            </p>
+        </div>
+    </section>
+
+    <!-- 3. 해독 - 4가지 실험 카드 -->
+    <section class="decode-section">
+        <div class="decode-container">
+            <h2 class="decode-title">🔬 4가지 핵심 실험</h2>
+            <div class="experiments-grid">
+                <!-- 1. 소모임 -->
+                <div class="experiment-card" onclick="window.open('https://www.somoim.co.kr/8cafe332-cbff-11ef-b613-0a50aa12fbb11', '_blank')">
+                    <div class="experiment-card-content">
+                        <span class="experiment-icon">👥</span>
+                        <h3 class="experiment-title">AI 소모임</h3>
+                        <p class="experiment-desc">
+                            함께 실험하고 데이터를 공유합니다.<br>
+                            혼자가 아닌 동료와 구조를 바꿉니다.
+                        </p>
+                        <span class="experiment-action">참여하기 →</span>
+                    </div>
+                </div>
+
+                <!-- 2. 프롬프트 -->
+                <div class="experiment-card" onclick="location.href='/prompts.html'">
+                    <div class="experiment-card-content">
+                        <span class="experiment-icon">🎯</span>
+                        <h3 class="experiment-title">검증된 프롬프트</h3>
+                        <p class="experiment-desc">
+                            300번의 실패에서 뽑아낸 14개 프롬프트.<br>
+                            2시간을 30분으로 바꾼 구조.
+                        </p>
+                        <span class="experiment-action">확인하기 →</span>
+                    </div>
+                </div>
+
+                <!-- 3. 유튜브 -->
+                <div class="experiment-card" onclick="window.open('https://www.youtube.com/@찐부부9499', '_blank')">
+                    <div class="experiment-card-content">
+                        <span class="experiment-icon">📺</span>
+                        <h3 class="experiment-title">유튜브 채널</h3>
+                        <p class="experiment-desc">
+                            실시간으로 실험 과정을 공개합니다.<br>
+                            실패와 성공의 모든 데이터.
+                        </p>
+                        <span class="experiment-action">구독하기 →</span>
+                    </div>
+                </div>
+
+                <!-- 4. 회원제 -->
+                <div class="experiment-card" onclick="location.href='/membership-guide.html'">
+                    <div class="experiment-card-content">
+                        <span class="experiment-icon">💎</span>
+                        <h3 class="experiment-title">맞춤형 회원제</h3>
+                        <p class="experiment-desc">
+                            당신의 구조에 맞춘 1:1 프롬프트.<br>
+                            개인 진단과 맞춤 솔루션.
+                        </p>
+                        <span class="experiment-action">가입하기 →</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 질문 - 진단 섹션 -->
+    <section class="question-section">
+        <div class="question-content">
+            <h2 class="question-title">당신의 콘텐츠 구조는<br>지금 어디에 있나요?</h2>
+            <p class="question-text">
+                300번의 실패를 해독한 진단 프롬프트로<br>
+                당신의 현재 구조를 분석하고<br>
+                다음 실험을 설계합니다.
+            </p>
+            <a href="/membership-guide.html" class="cta-button">🔬 내 구조 진단하기</a>
+        </div>
+    </section>
+
+    <!-- 5. 참여 - 최종 전환 -->
+    <section class="participate-section">
+        <div class="participate-content">
+            <h2 class="participate-title">실험실에 참여하세요</h2>
+            <p class="participate-subtitle">
+                여기서는 배우지 않습니다.<br>
+                직접 실험하고, 데이터를 해독하고, 구조를 바꿉니다.<br>
+                <strong>300번의 실패가 증명한 방법으로.</strong>
+            </p>
+            <div class="cta-group">
+                <a href="/membership-guide.html" class="cta-primary">
+                    🧪 실험 참여하기
+                </a>
+                <a href="https://open.kakao.com/o/phw90nci" target="_blank" class="cta-secondary">
+                    💬 오픈카톡 입장
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // 커스텀 커서
+        const cursor = document.getElementById('cursor');
+        const follower = document.getElementById('cursor-follower');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                follower.style.left = e.clientX + 'px';
+                follower.style.top = e.clientY + 'px';
+            }, 100);
+        });
+
+        // 클릭 가능한 요소에 호버 시 커서 확대
+        document.querySelectorAll('a, button, .experiment-card').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'scale(1.5)';
+                cursor.style.borderColor = '#ec4899';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'scale(1)';
+                cursor.style.borderColor = '#8b5cf6';
+            });
+        });
+
+        // 스크롤 진행 바
+        window.addEventListener('scroll', () => {
+            const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (window.scrollY / windowHeight) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+
+        // 스크롤 애니메이션
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.empathy-content, .decode-container, .question-content, .participate-content').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(50px)';
+            el.style.transition = 'all 1s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

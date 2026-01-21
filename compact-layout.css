@@ -1,0 +1,329 @@
+/* ==================== 네이버 스타일 컴팩트 레이아웃 ==================== */
+
+/* 전체 컨테이너 최대 너비 축소 */
+.container {
+    max-width: 1200px !important;
+    padding: 0 1rem !important;
+}
+
+/* 히어로 섹션 컴팩트화 */
+.hero {
+    padding: 2rem 0 !important;
+    min-height: auto !important;
+}
+
+.hero-content h1 {
+    font-size: 1.75rem !important;
+    margin-bottom: 0.75rem !important;
+}
+
+.hero-content p {
+    font-size: 0.9rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.cta-buttons {
+    gap: 0.75rem !important;
+}
+
+.cta-button {
+    padding: 0.6rem 1.2rem !important;
+    font-size: 0.875rem !important;
+}
+
+/* 추천 프롬프트 캐러셀 - 세로 그리드 레이아웃 */
+.featured-carousel {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    gap: 1rem !important;
+    padding: 1rem !important;
+    overflow: visible !important;
+}
+
+.carousel-container {
+    display: contents !important;
+}
+
+.carousel-item {
+    position: static !important;
+    transform: none !important;
+    min-width: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 1rem !important;
+    background: white !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    transition: all 0.3s !important;
+}
+
+.carousel-item:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
+.carousel-item-icon {
+    font-size: 2rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.carousel-item-title {
+    font-size: 1rem !important;
+    margin-bottom: 0.5rem !important;
+    font-weight: 700 !important;
+}
+
+.carousel-item-description {
+    font-size: 0.75rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 0.75rem !important;
+}
+
+.carousel-item-stats {
+    display: flex !important;
+    justify-content: space-around !important;
+    gap: 0.5rem !important;
+    margin-top: 0.75rem !important;
+}
+
+.carousel-stat-number {
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+}
+
+.carousel-stat-label {
+    font-size: 0.7rem !important;
+}
+
+/* 캐러셀 버튼 숨기기 (그리드 레이아웃이므로 불필요) */
+.carousel-btn {
+    display: none !important;
+}
+
+/* 섹션 간격 축소 */
+section {
+    padding: 2rem 0 !important;
+}
+
+.section-title {
+    font-size: 1.5rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.section-subtitle {
+    font-size: 0.875rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+/* 솔루션 카드 컴팩트화 */
+.solutions-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+    gap: 1rem !important;
+}
+
+.solution-card {
+    padding: 1.25rem !important;
+}
+
+.solution-icon {
+    font-size: 2rem !important;
+    margin-bottom: 0.75rem !important;
+}
+
+.solution-card h3 {
+    font-size: 1rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.solution-card p {
+    font-size: 0.8rem !important;
+}
+
+/* 퀵 스타트 가이드 컴팩트화 */
+.quick-start-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    gap: 1rem !important;
+}
+
+.quick-start-card {
+    padding: 1rem !important;
+}
+
+.step-number {
+    font-size: 1.25rem !important;
+    width: 2rem !important;
+    height: 2rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.quick-start-card h4 {
+    font-size: 0.9rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.quick-start-card p {
+    font-size: 0.75rem !important;
+}
+
+/* 소모임 배너 컴팩트화 */
+.somoim-banner {
+    padding: 1.5rem !important;
+    margin: 2rem 0 !important;
+}
+
+.somoim-banner h3 {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.somoim-banner p {
+    font-size: 0.8rem !important;
+    margin-bottom: 1rem !important;
+}
+
+/* 커뮤니티 섹션 컴팩트화 */
+#communityPosts {
+    gap: 0.75rem !important;
+}
+
+.post-card {
+    padding: 1rem !important;
+}
+
+.post-card h3 {
+    font-size: 0.95rem !important;
+}
+
+.post-card p {
+    font-size: 0.75rem !important;
+}
+
+/* 보증 배지 컴팩트화 */
+.guarantee-badge {
+    padding: 1rem !important;
+}
+
+.badge-icon {
+    font-size: 2rem !important;
+}
+
+.badge-title {
+    font-size: 0.9rem !important;
+}
+
+.badge-description {
+    font-size: 0.75rem !important;
+}
+
+/* 푸터 컴팩트화 */
+.footer {
+    padding: 2rem 0 1rem !important;
+}
+
+.footer-content {
+    gap: 1.5rem !important;
+}
+
+.footer-section h3 {
+    font-size: 1rem !important;
+    margin-bottom: 0.75rem !important;
+}
+
+.footer-section p,
+.footer-section a {
+    font-size: 0.8rem !important;
+}
+
+/* ==================== 모바일 최적화 ==================== */
+@media (max-width: 768px) {
+    /* 히어로 섹션 */
+    .hero {
+        padding: 1.5rem 0 !important;
+    }
+    
+    .hero-content h1 {
+        font-size: 1.4rem !important;
+    }
+    
+    .hero-content p {
+        font-size: 0.8rem !important;
+    }
+    
+    /* 캐러셀 그리드 - 모바일에서 1열 */
+    .featured-carousel {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+        padding: 0.75rem !important;
+    }
+    
+    .carousel-item {
+        padding: 0.875rem !important;
+    }
+    
+    .carousel-item-icon {
+        font-size: 1.75rem !important;
+    }
+    
+    .carousel-item-title {
+        font-size: 0.9rem !important;
+    }
+    
+    .carousel-item-description {
+        font-size: 0.7rem !important;
+    }
+    
+    /* 섹션 간격 */
+    section {
+        padding: 1.5rem 0 !important;
+    }
+    
+    .section-title {
+        font-size: 1.25rem !important;
+    }
+    
+    .section-subtitle {
+        font-size: 0.75rem !important;
+    }
+    
+    /* 솔루션 그리드 */
+    .solutions-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+    
+    .solution-card {
+        padding: 1rem !important;
+    }
+    
+    /* 퀵 스타트 */
+    .quick-start-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* 커뮤니티 */
+    .post-card {
+        padding: 0.875rem !important;
+    }
+}
+
+/* ==================== 데스크톱 2열 레이아웃 (네이버 스타일) ==================== */
+@media (min-width: 769px) and (max-width: 1200px) {
+    .featured-carousel {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .solutions-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* ==================== 큰 화면 3-4열 레이아웃 ==================== */
+@media (min-width: 1201px) {
+    .featured-carousel {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    
+    .solutions-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}

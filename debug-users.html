@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 데이터 디버그</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f9fafb;
+        }
+        h1 {
+            color: #667eea;
+        }
+        .info-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .user-card {
+            background: #f3f4f6;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-right: 1rem;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .danger {
+            background: #ef4444;
+        }
+        .danger:hover {
+            background: #dc2626;
+        }
+        pre {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 회원 데이터 디버그</h1>
+    
+    <div class="info-box">
+        <h2>저장된 회원 수: <span id="userCount">0</span>명</h2>
+        <button onclick="loadAndDisplay()">🔄 새로고침</button>
+        <button onclick="showRawData()">📄 원본 데이터 보기</button>
+        <button onclick="clearAllUsers()" class="danger">🗑️ 모든 회원 삭제</button>
+    </div>
+
+    <div class="info-box">
+        <h2>회원 목록</h2>
+        <div id="usersList"></div>
+    </div>
+
+    <div class="info-box" id="rawDataBox" style="display: none;">
+        <h2>원본 JSON 데이터</h2>
+        <pre id="rawData"></pre>
+    </div>
+
+    <script>
+        function loadAndDisplay() {
+            const allUsers = JSON.parse(localStorage.getItem('all_users') || '[]');
+            document.getElementById('userCount').textContent = allUsers.length;
+            
+            const usersList = document.getElementById('usersList');
+            
+            if (allUsers.length === 0) {
+                usersList.innerHTML = '<p style="color: #6b7280;">저장된 회원이 없습니다.</p>';
+                return;
+            }
+            
+            usersList.innerHTML = allUsers.map((user, index) => `
+                <div class="user-card">
+                    <strong>${index + 1}. ${user.name || '이름 없음'}</strong><br>
+                    이메일: ${user.email || '없음'}<br>
+                    전화번호: ${user.phone || '없음'}<br>
+                    등급: ${user.gradeLabel || user.memberGrade || '없음'}<br>
+                    가입일: ${user.createdAt ? new Date(user.createdAt).toLocaleString('ko-KR') : '없음'}<br>
+                    ID: ${user.id}
+                </div>
+            `).join('');
+        }
+        
+        function showRawData() {
+            const rawDataBox = document.getElementById('rawDataBox');
+            const allUsers = JSON.parse(localStorage.getItem('all_users') || '[]');
+            
+            document.getElementById('rawData').textContent = JSON.stringify(allUsers, null, 2);
+            rawDataBox.style.display = 'block';
+        }
+        
+        function clearAllUsers() {
+            if (confirm('⚠️ 정말로 모든 회원 데이터를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다!')) {
+                localStorage.removeItem('all_users');
+                alert('✅ 모든 회원 데이터가 삭제되었습니다.');
+                loadAndDisplay();
+            }
+        }
+        
+        // 페이지 로드 시 자동 표시
+        loadAndDisplay();
+    </script>
+</body>
+</html>

@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JINBUBU AI Market - AI 프롬프트로 당신의 시간을 가치있게</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lab/style.css">
+    <style>
+        /* PC 최적화 */
+        .container-pc {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 0 80px;
+        }
+        
+        @media (max-width: 1400px) {
+            .container-pc {
+                padding: 0 40px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container-pc {
+                padding: 0 20px;
+            }
+        }
+        
+        /* 네비게이션 인증 버튼 스타일 */
+        .nav-auth {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .btn-nav-secondary {
+            padding: 12px 28px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-nav-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .btn-nav-primary {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+        }
+        
+        .btn-nav-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(240, 147, 251, 0.6);
+        }
+        
+        .btn-nav-user {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-nav-user:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* 사용자 드롭다운 */
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            min-width: 280px;
+            z-index: 1000;
+            animation: dropdownFadeIn 0.3s ease;
+            overflow: hidden;
+        }
+        
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .user-dropdown-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .user-dropdown-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+        
+        .user-dropdown-email {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .user-dropdown-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-dropdown-item {
+            display: block;
+            padding: 15px 20px;
+            color: #334155;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+        
+        .user-dropdown-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+        
+        .user-dropdown-logout {
+            color: #ef4444;
+        }
+        
+        .user-dropdown-logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+        
+        /* 로고 애니메이션 */
+        .logo-animated {
+            animation: logoFloat 3s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+        
+        .logo-animated:hover {
+            animation-play-state: paused;
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        @keyframes logoFloat {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-5px) rotate(2deg);
+            }
+        }
+        
+        /* 실적 대시보드 */
+        .stats-dashboard {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(240, 147, 251, 0.1) 100%);
+            padding: 80px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stat-value {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+        
+        /* 파트너 로고 */
+        .partners-section {
+            background: var(--darker);
+            padding: 60px 20px;
+        }
+        
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 40px auto 0;
+        }
+        
+        .partner-logo {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 120px;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+        
+        .partner-logo:hover {
+            opacity: 1;
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        /* 케이스 스터디 */
+        .case-study-card {
+            background: rgba(102, 126, 234, 0.05);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 30px;
+            transition: all 0.5s ease;
+        }
+        
+        .case-study-card:hover {
+            transform: translateX(10px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.3);
+        }
+        
+        .case-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            background: var(--gradient-2);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .case-result {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10b981;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        /* 회원가입/로그인 모달 */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .auth-modal.active {
+            display: flex;
+        }
+        
+        .auth-modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+            position: relative;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .auth-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #94a3b8;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-modal-close:hover {
+            background: rgba(148, 163, 184, 0.1);
+            color: #667eea;
+            transform: rotate(90deg);
+        }
+        
+        .auth-modal-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .auth-modal-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+        
+        .auth-modal-title {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .auth-modal-subtitle {
+            color: #64748b;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .auth-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .auth-form-label {
+            font-weight: 700;
+            color: #334155;
+            font-size: 0.95rem;
+        }
+        
+        .auth-form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+        }
+        
+        .auth-form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .auth-form-input::placeholder {
+            color: #cbd5e1;
+        }
+        
+        .auth-form-hint {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+        
+        .auth-benefits {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde047 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #fbbf24;
+        }
+        
+        .auth-benefits-title {
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .auth-benefits-list {
+            color: #78350f;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .auth-submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+        
+        .auth-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+        }
+        
+        .auth-submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .nav-auth {
+                margin-left: auto;
+            }
+            
+            .btn-nav-secondary,
+            .btn-nav-primary,
+            .btn-nav-user {
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+            
+            .auth-modal-content {
+                padding: 25px 20px;
+                max-width: 95%;
+                max-height: 85vh;
+            }
+            
+            .auth-modal-title {
+                font-size: 1.4rem;
+            }
+            
+            .auth-modal-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+            }
+            
+            .auth-form-input {
+                padding: 12px 16px;
+                font-size: 0.95rem;
+            }
+            
+            .auth-submit-btn {
+                padding: 15px;
+                font-size: 1rem;
+            }
+            
+            .user-dropdown {
+                min-width: 240px;
+            }
+        }
+        
+        /* 4개 서비스 그리드 */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin: 80px 0;
+        }
+        
+        @media (max-width: 1200px) {
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            /* Hero CTA 버튼 모바일 최적화 */
+            .hero-cta-group {
+                flex-direction: column !important;
+                gap: 15px !important;
+                padding: 0 20px;
+            }
+            
+            .btn-hero-primary, .btn-hero-kakao {
+                width: 100% !important;
+                padding: 16px 30px !important;
+                font-size: 1rem !important;
+                text-align: center;
+            }
+        }
+        
+        .service-card-luxury {
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 30px;
+            padding: 50px;
+            text-align: center;
+            transition: all 0.5s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-card-luxury::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 0;
+        }
+        
+        .service-card-luxury:hover::before {
+            opacity: 0.1;
+        }
+        
+        .service-card-luxury:hover {
+            transform: translateY(-15px) scale(1.05);
+            border-color: var(--primary);
+            box-shadow: 0 25px 60px rgba(102, 126, 234, 0.4);
+        }
+        
+        .service-card-luxury > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-icon-big {
+            font-size: 5rem;
+            margin-bottom: 30px;
+            display: block;
+        }
+        
+        .service-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .service-desc {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        
+        .service-link {
+            display: inline-block;
+            padding: 15px 40px;
+            background: var(--gradient-1);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        
+        .service-link:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+        
+        /* 프롬프트 갤러리 */
+        .prompts-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+        
+        .prompt-card-modern {
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 25px;
+            padding: 40px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+        
+        .prompt-card-modern:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.3);
+        }
+        
+        .prompt-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .prompt-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+        
+        .prompt-desc {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .prompt-price {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        
+        .prompt-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--gradient-2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .prompt-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Hero CTA 버튼 호버 효과 */
+        .btn-hero-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6) !important;
+        }
+        
+        .btn-hero-kakao:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(254, 229, 0, 0.6) !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cursor Effects -->
+    <div class="cursor-follower"></div>
+    <div class="cursor-glow"></div>
+    
+    <!-- Particle Canvas -->
+    <canvas id="particleCanvas"></canvas>
+    
+    <!-- Navigation -->
+    <nav class="luxury-nav">
+        <div class="nav-logo" style="display: flex; align-items: center; gap: 12px;">
+            <img src="/ai-busan-logo-round.png" alt="AI BUSAN" class="logo-animated" style="height: 60px; width: 60px; border-radius: 50%; object-fit: cover;">
+            <span style="font-weight: 900; font-size: 1.3rem;">AI BUSAN</span>
+        </div>
+        <div class="nav-menu">
+            <a href="#hero">홈</a>
+            <a href="#services">서비스</a>
+            <a href="#prompts">프롬프트</a>
+            <a href="#membership">VIP 실험체</a>
+        </div>
+        
+        <!-- 인증 버튼 -->
+        <div class="nav-auth">
+            <!-- 비로그인 시 -->
+            <div id="authButtons" style="display: flex; gap: 15px; align-items: center;">
+                <button onclick="showLoginModal()" class="btn-nav-secondary">
+                    로그인
+                </button>
+                <button onclick="showRegisterModal()" class="btn-nav-primary">
+                    일반 회원가입
+                </button>
+            </div>
+            
+            <!-- 로그인 시 -->
+            <div id="userMenu" style="display: none; position: relative;">
+                <button id="userMenuBtn" class="btn-nav-user">
+                    <span>👤</span>
+                    <span id="userNameDisplay">사용자</span>
+                    <span style="margin-left: 5px;">▼</span>
+                </button>
+                <div id="userDropdown" class="user-dropdown" style="display: none;">
+                    <div class="user-dropdown-header">
+                        <div class="user-avatar">👤</div>
+                        <div>
+                            <div class="user-dropdown-name" id="userDropdownName">사용자</div>
+                            <div class="user-dropdown-email" id="userDropdownEmail">user@email.com</div>
+                        </div>
+                    </div>
+                    <div class="user-dropdown-divider"></div>
+                    <a href="/prompts.html" class="user-dropdown-item">
+                        📚 프롬프트 마켓
+                    </a>
+                    <a href="/membership-guide.html" class="user-dropdown-item">
+                        🎓 VIP 실험체 안내
+                    </a>
+                    <a href="https://open.kakao.com/o/gw6HE99g" target="_blank" class="user-dropdown-item" style="background: linear-gradient(135deg, #FEE500 0%, #FFD700 100%); color: #3C1E1E; font-weight: 700;">
+                        💬 오픈채팅방 입장
+                    </a>
+                    <!-- 관리자 전용 메뉴 -->
+                    <div id="adminMenuItems" style="display: none;">
+                        <div class="user-dropdown-divider"></div>
+                        <a href="/admin.html" class="user-dropdown-item" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 700;">
+                            🔐 관리자 대시보드
+                        </a>
+                    </div>
+                    <div class="user-dropdown-divider"></div>
+                    <button onclick="handleLogout()" class="user-dropdown-item user-dropdown-logout">
+                        🚪 로그아웃
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="badge-luxury" data-aos="fade-down">
+                <span class="pulse-ring"></span>
+                ⚡ AI 마케팅 프롬프트 전문 연구소
+            </div>
+            
+            <h1 class="hero-title" data-aos="fade-up" data-aos-delay="200">
+                마케팅 성과를<br>
+                <span class="gradient-text-animated">10배 빠르게</span>
+            </h1>
+            
+            <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="400">
+                AI BUSAN PROMPT LAB과 함께<br>
+                마케팅 자동화를 시작하세요 🚀
+            </p>
+            
+            <!-- CTA 버튼 그룹 -->
+            <div class="hero-cta-group" style="display: flex; gap: 20px; justify-content: center; margin: 40px 0;" data-aos="fade-up" data-aos-delay="500">
+                <a href="/prompts.html" class="btn-hero-primary" style="padding: 18px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px; font-weight: 700; font-size: 1.1rem; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);">
+                    📚 프롬프트 보러가기
+                </a>
+                <button onclick="checkLoginAndOpenKakao()" class="btn-hero-kakao" style="padding: 18px 40px; background: linear-gradient(135deg, #FEE500 0%, #FFD700 100%); color: #3C1E1E; border-radius: 15px; font-weight: 700; font-size: 1.1rem; border: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(254, 229, 0, 0.4);">
+                    💬 오픈채팅방 입장
+                </button>
+            </div>
+            
+            <!-- 통계 -->
+            <div class="proof-grid" style="max-width: 1000px; margin: 60px auto;" data-aos="fade-up" data-aos-delay="600">
+                <div class="proof-card">
+                    <div class="proof-icon">⏱️</div>
+                    <div class="proof-number" data-count="75">0</div>
+                    <div class="proof-suffix">%</div>
+                    <div class="proof-label">제작 시간 단축</div>
+                </div>
+                
+                <div class="proof-card">
+                    <div class="proof-icon">📈</div>
+                    <div class="proof-number" data-count="400">0</div>
+                    <div class="proof-suffix">%</div>
+                    <div class="proof-label">참여율 증가</div>
+                </div>
+                
+                <div class="proof-card">
+                    <div class="proof-icon">✅</div>
+                    <div class="proof-number" data-count="95">0</div>
+                    <div class="proof-suffix">%</div>
+                    <div class="proof-label">일관성 달성</div>
+                </div>
+            </div>
+            
+            <div class="scroll-indicator" data-aos="fade-up" data-aos-delay="800">
+                <div class="mouse-icon">
+                    <div class="mouse-wheel"></div>
+                </div>
+                <span>스크롤하여 자세히 보기</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- FREE PROMPTS BANNER -->
+    <section class="free-prompts-banner" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px 20px; position: relative; overflow: hidden;">
+        <div class="banner-glow" style="position: absolute; top: 50%; left: 50%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%); transform: translate(-50%, -50%); pointer-events: none;"></div>
+        <div class="container-pc" style="max-width: 1400px; margin: 0 auto; text-align: center; position: relative; z-index: 2;">
+            <div class="banner-content" data-aos="zoom-in">
+                <div class="banner-icon" style="font-size: 3.5rem; margin-bottom: 15px; animation: bounce 2s infinite;">🎁</div>
+                <h2 class="banner-title" style="font-size: 2.2rem; font-weight: 900; color: white; margin-bottom: 12px; text-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                    회원 가입만 하면 모든 프롬프트 100% 무료!
+                </h2>
+                <p class="banner-subtitle" style="font-size: 1.1rem; color: rgba(255,255,255,0.95); margin-bottom: 25px; font-weight: 500;">
+                    3가지 정보만 입력하면 즉시 수백 개의 프리미엄 프롬프트를 무제한으로 사용할 수 있습니다
+                </p>
+                <div class="banner-actions" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <a href="/prompts.html" class="btn-banner-primary" style="background: white; color: #059669; padding: 15px 40px; border-radius: 50px; font-weight: 700; font-size: 1rem; text-decoration: none; box-shadow: 0 8px 25px rgba(0,0,0,0.2); transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px;">
+                        <span>프롬프트 보러가기</span>
+                        <span style="font-size: 1.2rem;">→</span>
+                    </a>
+                    <button onclick="openRegisterModal()" class="btn-banner-secondary" style="background: rgba(255,255,255,0.2); color: white; padding: 15px 40px; border-radius: 50px; font-weight: 700; font-size: 1rem; border: 2px solid white; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px;">
+                        <span>지금 무료 가입</span>
+                        <span style="font-size: 1.2rem;">✨</span>
+                    </button>
+                </div>
+                <div class="banner-stats" style="margin-top: 30px; display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
+                    <div class="stat-item" style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 900; color: white;">500+</div>
+                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.9);">프리미엄 프롬프트</div>
+                    </div>
+                    <div class="stat-item" style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 900; color: white;">100%</div>
+                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.9);">무료 제공</div>
+                    </div>
+                    <div class="stat-item" style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 900; color: white;">즉시</div>
+                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.9);">가입 후 이용</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .btn-banner-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.3);
+            background: #f0fdf4;
+        }
+        
+        .btn-banner-secondary:hover {
+            background: white;
+            color: #059669;
+            transform: translateY(-3px);
+        }
+        
+        @media (max-width: 768px) {
+            .free-prompts-banner {
+                padding: 30px 15px !important;
+            }
+            
+            .banner-title {
+                font-size: 1.6rem !important;
+            }
+            
+            .banner-subtitle {
+                font-size: 0.95rem !important;
+            }
+            
+            .banner-actions {
+                flex-direction: column;
+            }
+            
+            .btn-banner-primary,
+            .btn-banner-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .banner-stats {
+                gap: 20px !important;
+            }
+            
+            .banner-icon {
+                font-size: 2.5rem !important;
+            }
+        }
+    </style>
+
+    <!-- STATS DASHBOARD -->
+    <section class="stats-dashboard">
+        <div class="container-luxury">
+            <div class="section-header" data-aos="fade-up">
+                <div class="section-badge">📊 PERFORMANCE METRICS</div>
+                <h2 class="section-title">
+                    검증된<br>
+                    <span class="gradient-text">성과 지표</span>
+                </h2>
+                <p class="section-subtitle">
+                    실제 사용자들이 달성한 마케팅 성과
+                </p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 60px;">
+                <div class="stat-card" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="stat-value" id="stat1">0</div>
+                    <div class="stat-label">평균 시간 절감</div>
+                </div>
+                <div class="stat-card" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="stat-value"><span id="stat2">0</span>+</div>
+                    <div class="stat-label">활성 사용자</div>
+                </div>
+                <div class="stat-card" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="stat-value"><span id="stat3">0</span>%</div>
+                    <div class="stat-label">고객 만족도</div>
+                </div>
+                <div class="stat-card" data-aos="zoom-in" data-aos-delay="400">
+                    <div class="stat-value"><span id="stat4">0</span>배</div>
+                    <div class="stat-label">ROI 증가율</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES SECTION -->
+    <section id="services" class="membership-section">
+        <div class="container-pc">
+            <div class="section-header" data-aos="fade-up">
+                <div class="section-badge">🚀 OUR SERVICES</div>
+                <h2 class="section-title">
+                    4가지 핵심<br>
+                    <span class="gradient-text">서비스</span>
+                </h2>
+                <p class="section-subtitle">
+                    찐부부 AI 마켓의 모든 서비스를 한눈에
+                </p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card-luxury" data-aos="zoom-in" data-aos-delay="100">
+                    <span class="service-icon-big">🤖</span>
+                    <h3 class="service-title">AI 소모임</h3>
+                    <p class="service-desc">
+                        AI와 프롬프트를 함께 배우고<br>
+                        성장하는 커뮤니티
+                    </p>
+                    <a href="https://www.somoim.co.kr/8cafe332-cbff-11ef-b613-0a50aa12fbb11" target="_blank" class="service-link">
+                        지금 가입하기
+                    </a>
+                </div>
+                
+                <div class="service-card-luxury" data-aos="zoom-in" data-aos-delay="200">
+                    <span class="service-icon-big">🎯</span>
+                    <h3 class="service-title">VIP 실험체 회원</h3>
+                    <p class="service-desc">
+                        맞춤형 AI 프롬프트와<br>
+                        1:1 컨설팅 제공
+                    </p>
+                    <a href="/membership-guide.html" class="service-link">
+                        가입 안내 보기
+                    </a>
+                </div>
+                
+                <div class="service-card-luxury" data-aos="zoom-in" data-aos-delay="300">
+                    <span class="service-icon-big">🎯</span>
+                    <h3 class="service-title">마케팅 자동화</h3>
+                    <p class="service-desc">
+                        AI 기반 마케팅 워크플로우<br>
+                        완전 자동화 시스템
+                    </p>
+                    <a href="/prompts.html" class="service-link">
+                        자세히 보기
+                    </a>
+                </div>
+                
+                <div class="service-card-luxury" data-aos="zoom-in" data-aos-delay="400">
+                    <span class="service-icon-big">💡</span>
+                    <h3 class="service-title">프롬프트 마켓</h3>
+                    <p class="service-desc">
+                        검증된 프롬프트로<br>
+                        즉시 생산성 향상
+                    </p>
+                    <a href="/prompts.html" class="service-link">
+                        둘러보기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PARTNERS SECTION -->
+    <section class="partners-section">
+        <div class="container-luxury">
+            <div class="section-header" data-aos="fade-up">
+                <div class="section-badge">🤝 TRUSTED BY</div>
+                <h2 class="section-title">
+                    파트너사 &<br>
+                    <span class="gradient-text">협력 기업</span>
+                </h2>
+                <p class="section-subtitle">
+                    신뢰할 수 있는 기업들과 함께합니다
+                </p>
+            </div>
+            
+            <div class="partners-grid">
+                <div class="partner-logo" data-aos="fade-up" data-aos-delay="100">
+                    <span style="font-size: 2rem; font-weight: 900; color: #667eea;">GOOGLE</span>
+                </div>
+                <div class="partner-logo" data-aos="fade-up" data-aos-delay="200">
+                    <span style="font-size: 2rem; font-weight: 900; color: #667eea;">OPENAI</span>
+                </div>
+                <div class="partner-logo" data-aos="fade-up" data-aos-delay="300">
+                    <span style="font-size: 2rem; font-weight: 900; color: #667eea;">MICROSOFT</span>
+                </div>
+                <div class="partner-logo" data-aos="fade-up" data-aos-delay="400">
+                    <span style="font-size: 2rem; font-weight: 900; color: #667eea;">META</span>
+                </div>
+                <div class="partner-logo" data-aos="fade-up" data-aos-delay="500">
+                    <span style="font-size: 2rem; font-weight: 900; color: #667eea;">AWS</span>
+                </div>
+                <div class="partner-logo" data-aos="fade-up" data-aos-delay="600">
+                    <span style="font-size: 2rem; font-weight: 900; color: #667eea;">KAKAO</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROMPTS PREVIEW SECTION -->
+    <section id="prompts" class="experiment-section">
+        <div class="container-pc">
+            <div class="section-header" data-aos="fade-up">
+                <div class="section-badge">💡 PREMIUM PROMPTS</div>
+                <h2 class="section-title">
+                    인기 프롬프트<br>
+                    <span class="gradient-text">미리보기</span>
+                </h2>
+                <p class="section-subtitle">
+                    💎 일반 회원 → VIP 실험체로 업그레이드 가능
+                </p>
+            </div>
+            
+            <div class="prompts-gallery">
+                <div class="prompt-card-modern" data-aos="fade-up" data-aos-delay="100">
+                    <div class="prompt-icon">📸</div>
+                    <h3 class="prompt-title">SNS 콘텐츠 기획</h3>
+                    <p class="prompt-desc">
+                        인스타그램, 유튜브 숏폼 콘텐츠를<br>
+                        AI로 자동 기획하는 프롬프트
+                    </p>
+                    <div class="prompt-price">회원 전용</div>
+                    <a href="/prompts.html" class="prompt-btn">자세히 보기</a>
+                </div>
+                
+                <div class="prompt-card-modern" data-aos="fade-up" data-aos-delay="200">
+                    <div class="prompt-icon">📝</div>
+                    <h3 class="prompt-title">블로그 글쓰기</h3>
+                    <p class="prompt-desc">
+                        SEO 최적화된 블로그 포스트를<br>
+                        10분 만에 완성
+                    </p>
+                    <div class="prompt-price">회원 전용</div>
+                    <a href="/prompts.html" class="prompt-btn">자세히 보기</a>
+                </div>
+                
+                <div class="prompt-card-modern" data-aos="fade-up" data-aos-delay="300">
+                    <div class="prompt-icon">🎨</div>
+                    <h3 class="prompt-title">썸네일 디자인</h3>
+                    <p class="prompt-desc">
+                        클릭률 높은 썸네일을<br>
+                        AI로 디자인
+                    </p>
+                    <div class="prompt-price">회원 전용</div>
+                    <a href="/prompts.html" class="prompt-btn">자세히 보기</a>
+                </div>
+                
+                <div class="prompt-card-modern" data-aos="fade-up" data-aos-delay="400">
+                    <div class="prompt-icon">📊</div>
+                    <h3 class="prompt-title">데이터 분석</h3>
+                    <p class="prompt-desc">
+                        채널 성과를 분석하고<br>
+                        개선 방향 제시
+                    </p>
+                    <div class="prompt-price">회원 전용</div>
+                    <a href="/prompts.html" class="prompt-btn">자세히 보기</a>
+                </div>
+                
+                <div class="prompt-card-modern" data-aos="fade-up" data-aos-delay="500">
+                    <div class="prompt-icon">💬</div>
+                    <h3 class="prompt-title">댓글 응답</h3>
+                    <p class="prompt-desc">
+                        댓글에 대한 센스있는<br>
+                        응답 자동 생성
+                    </p>
+                    <div class="prompt-price">회원 전용</div>
+                    <a href="/prompts.html" class="prompt-btn">자세히 보기</a>
+                </div>
+                
+                <div class="prompt-card-modern" data-aos="fade-up" data-aos-delay="600">
+                    <div class="prompt-icon">🎬</div>
+                    <h3 class="prompt-title">영상 스크립트</h3>
+                    <p class="prompt-desc">
+                        바이럴 영상 스크립트를<br>
+                        AI가 작성
+                    </p>
+                    <div class="prompt-price">회원 전용</div>
+                    <a href="/prompts.html" class="prompt-btn">자세히 보기</a>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 60px;" data-aos="fade-up">
+                <a href="/prompts.html" class="btn-luxury-primary">
+                    <span class="btn-icon">💡</span>
+                    <span class="btn-text">전체 프롬프트 보기</span>
+                    <span class="btn-shine"></span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- MEMBERSHIP CTA SECTION -->
+    <section id="membership" class="proof-section">
+        <div class="container-pc">
+            <div class="cta-final-box" data-aos="zoom-in">
+                <h2>🚀 4주 수익형 채널 실험실</h2>
+                <p style="font-size: 1.3rem; margin: 30px 0; line-height: 1.8;">
+                    단순한 강의가 아닙니다.<br>
+                    4주 동안 내 채널의 구조를 실제로 바꾸는 실전 실험 모임입니다.
+                </p>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; border-radius: 20px; padding: 30px; margin: 40px 0;">
+                    <h3 style="color: #10b981; font-size: 1.8rem; margin-bottom: 20px;">✅ 1기 성공적 마감!</h3>
+                    <p style="font-size: 1.2rem; color: var(--text-light);">
+                        1기 참여자 평균 <strong style="color: #10b981;">조회수 300% 증가</strong> 달성<br>
+                        2기 오픈 시 가장 먼저 알림받고 싶다면 오픈카톡에 참여하세요!
+                    </p>
+                </div>
+                
+                <div class="final-cta-buttons">
+                    <a href="/membership-guide.html" class="btn-luxury-glow">
+                        <span>📋</span> 프로그램 자세히 보기
+                    </a>
+                    <a href="https://open.kakao.com/o/pJGO9L9h" target="_blank" class="btn-luxury-outline">
+                        <span>💬</span> 2기 대기자 신청 (오픈카톡)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EXPERIMENT LAB CTA -->
+    <section class="experiment-section">
+        <div class="container-pc">
+            <div class="solution-box" data-aos="zoom-in">
+                <h3 style="font-size: 2.5rem; margin-bottom: 30px;">
+                    🔥 당신의 AI 활용은<br>
+                    <span class="gradient-text">수익인가, 비용인가?</span>
+                </h3>
+                <p class="solution-text" style="font-size: 1.3rem;">
+                    잔인한 진단으로 당신의 AI 구조를 직시하고,<br>
+                    진짜 수익이 나는 워크플로우를 설계합니다.
+                </p>
+                
+                <div style="margin-top: 50px;">
+                    <a href="/membership-guide.html" class="btn-luxury-primary" style="font-size: 1.4rem; padding: 25px 60px;">
+                        <span class="btn-icon">🔥</span>
+                        <span class="btn-text">잔인한 AI 진단 받기</span>
+                        <span class="btn-shine"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CASE STUDIES SECTION -->
+    <section class="membership-section">
+        <div class="container-luxury">
+            <div class="section-header" data-aos="fade-up">
+                <div class="section-badge">📈 SUCCESS STORIES</div>
+                <h2 class="section-title">
+                    성공<br>
+                    <span class="gradient-text">케이스 스터디</span>
+                </h2>
+                <p class="section-subtitle">
+                    AI BUSAN과 함께한 기업들의 실제 성과
+                </p>
+            </div>
+            
+            <div style="max-width: 1200px; margin: 60px auto 0;">
+                <div class="case-study-card" data-aos="fade-right" data-aos-delay="100">
+                    <div class="case-badge">🏢 이커머스 스타트업 A사</div>
+                    <h3 style="font-size: 1.8rem; font-weight: 900; margin-bottom: 15px; color: var(--text-light);">
+                        마케팅 콘텐츠 제작 시간 80% 단축
+                    </h3>
+                    <p style="color: var(--text-muted); line-height: 1.8; margin-bottom: 20px;">
+                        AI 프롬프트 자동화로 인스타그램, 블로그, 이메일 마케팅 콘텐츠를 동시에 생성. 
+                        기존 주 20시간 소요되던 작업을 4시간으로 단축하여 마케팅 팀 효율성을 극대화했습니다.
+                    </p>
+                    <div class="case-result">
+                        <strong style="color: #10b981; font-size: 1.1rem;">✅ 성과:</strong>
+                        <span style="color: var(--text-light);"> 제작 시간 80% ↓ | 콘텐츠 일관성 95% ↑ | ROI 350% 증가</span>
+                    </div>
+                </div>
+                
+                <div class="case-study-card" data-aos="fade-right" data-aos-delay="200">
+                    <div class="case-badge">💼 디지털 마케팅 에이전시 B사</div>
+                    <h3 style="font-size: 1.8rem; font-weight: 900; margin-bottom: 15px; color: var(--text-light);">
+                        클라이언트 프로젝트 수 3배 증가
+                    </h3>
+                    <p style="color: var(--text-muted); line-height: 1.8; margin-bottom: 20px;">
+                        AI 프롬프트 라이브러리를 활용하여 광고 카피, 랜딩 페이지 콘텐츠, SNS 캠페인을 빠르게 기획 및 실행. 
+                        동일한 인력으로 월 10개 프로젝트에서 30개 프로젝트 수행 가능해졌습니다.
+                    </p>
+                    <div class="case-result">
+                        <strong style="color: #10b981; font-size: 1.1rem;">✅ 성과:</strong>
+                        <span style="color: var(--text-light);"> 프로젝트 수 300% ↑ | 고객 만족도 98% | 매출 450% 증가</span>
+                    </div>
+                </div>
+                
+                <div class="case-study-card" data-aos="fade-right" data-aos-delay="300">
+                    <div class="case-badge">📱 1인 크리에이터 C씨</div>
+                    <h3 style="font-size: 1.8rem; font-weight: 900; margin-bottom: 15px; color: var(--text-light);">
+                        월 수익 500만원 돌파
+                    </h3>
+                    <p style="color: var(--text-muted); line-height: 1.8; margin-bottom: 20px;">
+                        유튜브 쇼츠, 인스타 릴스, 블로그 콘텐츠를 AI 자동화로 대량 생산. 
+                        하루 2시간 작업으로 월 100개 이상의 고품질 콘텐츠를 제작하여 수익을 5배 증가시켰습니다.
+                    </p>
+                    <div class="case-result">
+                        <strong style="color: #10b981; font-size: 1.1rem;">✅ 성과:</strong>
+                        <span style="color: var(--text-light);"> 월 수익 500% ↑ | 작업 시간 70% ↓ | 구독자 1000% 증가</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="luxury-footer">
+        <div class="footer-content">
+            <div class="footer-logo" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px;">
+                <img src="/ai-busan-logo-round.png" alt="AI BUSAN" style="height: 70px; width: 70px; border-radius: 50%; object-fit: cover;">
+                <span style="font-weight: 900; font-size: 1.5rem;">AI BUSAN</span>
+            </div>
+            <p>AI 마케팅 프롬프트 연구소</p>
+            <div class="footer-links">
+                <a href="/membership-guide.html">VIP 실험체 안내</a>
+                <a href="/prompts.html">프롬프트</a>
+                <a href="https://open.kakao.com/o/gw6HE99g" target="_blank">커뮤니티</a>
+            </div>
+            <p class="copyright">© 2026 AI BUSAN PROMPT LAB. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- 🎯 회원가입 모달 -->
+    <div id="registerModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <button onclick="closeRegisterModal()" class="auth-modal-close">×</button>
+            
+            <div class="auth-modal-header">
+                <div class="auth-modal-icon">🤖</div>
+                <h2 class="auth-modal-title">AI BUSAN 가입</h2>
+                <p class="auth-modal-subtitle">
+                    간단한 정보 입력 후 <strong>모든 프롬프트 무료</strong>로 사용하세요!
+                </p>
+            </div>
+
+            <form id="registerForm" onsubmit="handleRegister(event)" class="auth-form">
+                <div class="auth-form-group">
+                    <label class="auth-form-label">👤 이름</label>
+                    <input type="text" id="registerName" class="auth-form-input" placeholder="홍길동" required>
+                </div>
+
+                <div class="auth-form-group">
+                    <label class="auth-form-label">📧 이메일</label>
+                    <input type="email" id="registerEmail" class="auth-form-input" placeholder="your@email.com" required>
+                </div>
+
+                <div class="auth-form-group">
+                    <label class="auth-form-label">🔒 비밀번호</label>
+                    <input type="password" id="registerPassword" class="auth-form-input" placeholder="8자 이상 입력" minlength="8" required>
+                    <div class="auth-form-hint">최소 8자 이상 (영문, 숫자 조합 권장)</div>
+                </div>
+
+                <div class="auth-form-group">
+                    <label class="auth-form-label">🔒 비밀번호 확인</label>
+                    <input type="password" id="registerPasswordConfirm" class="auth-form-input" placeholder="비밀번호 재입력" minlength="8" required>
+                </div>
+
+                <div class="auth-form-group">
+                    <label class="auth-form-label">📅 출생년도</label>
+                    <input type="number" id="registerAge" class="auth-form-input" placeholder="1990" min="1900" max="2024" required>
+                    <div class="auth-form-hint">예: 1990</div>
+                </div>
+
+                <div class="auth-form-group">
+                    <label class="auth-form-label">📞 전화번호</label>
+                    <input 
+                        type="tel" 
+                        id="registerPhone" 
+                        class="auth-form-input" 
+                        placeholder="010-1234-5678" 
+                        maxlength="13" 
+                        inputmode="numeric"
+                        oninput="formatPhoneNumber(this)"
+                        onpaste="setTimeout(() => formatPhoneNumber(this), 10)"
+                        required>
+                    <div class="auth-form-hint">숫자만 입력하세요 (자동으로 - 추가됩니다)</div>
+                </div>
+
+                <div class="auth-benefits">
+                    <div class="auth-benefits-title">🎁 일반 회원 혜택</div>
+                    <ul class="auth-benefits-list">
+                        <li>전체 프롬프트 무제한 무료 열람</li>
+                        <li>AI 진단 및 맞춤 컨설팅</li>
+                        <li>오픈 채팅방 커뮤니티 참여</li>
+                    </ul>
+                    <div style="margin-top: 15px; padding: 12px; background: rgba(102, 126, 234, 0.1); border-radius: 8px; border-left: 3px solid var(--primary);">
+                        <strong style="color: var(--primary); font-size: 0.9rem;">🔥 VIP 실험체 회원 혜택</strong>
+                        <p style="color: #64748b; font-size: 0.85rem; margin: 8px 0 0 0;">
+                            오픈 채팅방에서 VIP 실험체로 업그레이드하고<br>
+                            더 많은 특별 혜택을 받으세요!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 소모임 인증 안내 -->
+                <div id="somoimNotice" style="display: none; background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%); padding: 15px 20px; border-radius: 12px; border-left: 4px solid #f97316; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span style="font-size: 1.5rem;">🔐</span>
+                        <strong style="color: #9a3412; font-size: 0.95rem;">소모임 회원 전용</strong>
+                    </div>
+                    <p style="color: #7c2d12; font-size: 0.85rem; margin: 0; line-height: 1.6;">
+                        소모임에 가입한 회원만 이용할 수 있습니다.<br>
+                        <a href="https://www.somoim.co.kr/8cafe332-cbff-11ef-b613-0a50aa12fbb11" target="_blank" style="color: #ea580c; font-weight: 700; text-decoration: underline;">
+                            소모임 가입하기 →
+                        </a>
+                    </p>
+                </div>
+
+                <button type="submit" class="auth-submit-btn">
+                    ✨ 가입하고 무료로 시작하기
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 🔑 로그인 모달 -->
+    <div id="loginModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <button onclick="closeLoginModal()" class="auth-modal-close">×</button>
+            
+            <div class="auth-modal-header">
+                <div class="auth-modal-icon">🔑</div>
+                <h2 class="auth-modal-title">로그인</h2>
+                <p class="auth-modal-subtitle">
+                    AI BUSAN에 오신 것을 환영합니다!
+                </p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)" class="auth-form">
+                <div class="auth-form-group">
+                    <label class="auth-form-label">📧 이메일</label>
+                    <input type="email" id="loginEmail" class="auth-form-input" placeholder="your@email.com" required>
+                </div>
+
+                <div class="auth-form-group">
+                    <label class="auth-form-label">🔒 비밀번호</label>
+                    <input type="password" id="loginPassword" class="auth-form-input" placeholder="비밀번호를 입력하세요" required>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="rememberMe" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="color: #64748b; font-size: 0.9rem;">로그인 상태 유지</span>
+                    </label>
+                    <button type="button" onclick="openForgotPassword()" style="background: none; border: none; color: #667eea; font-size: 0.9rem; cursor: pointer; text-decoration: underline;">
+                        비밀번호 찾기
+                    </button>
+                </div>
+
+                <button type="submit" class="auth-submit-btn">
+                    🔑 로그인
+                </button>
+
+                <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                    <p style="color: #64748b; font-size: 0.95rem;">
+                        계정이 없으신가요?
+                        <button type="button" onclick="switchToRegister()" style="background: none; border: none; color: #667eea; font-weight: 700; cursor: pointer; text-decoration: underline;">
+                            회원가입하기
+                        </button>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 🔍 비밀번호 찾기 모달 -->
+    <div id="forgotPasswordModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <button onclick="closeForgotPassword()" class="auth-modal-close">×</button>
+            
+            <div class="auth-modal-header">
+                <div class="auth-modal-icon">🔍</div>
+                <h2 class="auth-modal-title">비밀번호 찾기</h2>
+                <p class="auth-modal-subtitle">
+                    가입 시 사용한 전화번호를 입력하세요
+                </p>
+            </div>
+
+            <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)" class="auth-form">
+                <div class="auth-form-group">
+                    <label class="auth-form-label">📞 전화번호</label>
+                    <input 
+                        type="tel" 
+                        id="forgotPhone" 
+                        class="auth-form-input" 
+                        placeholder="010-1234-5678" 
+                        maxlength="13" 
+                        inputmode="numeric"
+                        oninput="formatPhoneNumber(this)"
+                        onpaste="setTimeout(() => formatPhoneNumber(this), 10)"
+                        required>
+                    <div class="auth-form-hint">가입 시 등록한 전화번호를 입력하세요</div>
+                </div>
+
+                <div id="resetResult" style="display: none; margin-bottom: 20px;"></div>
+
+                <button type="submit" class="auth-submit-btn">
+                    🔍 계정 찾기
+                </button>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="button" onclick="switchToLogin()" style="background: none; border: none; color: #667eea; font-size: 0.95rem; cursor: pointer; text-decoration: underline;">
+                        ← 로그인으로 돌아가기
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 인증 JavaScript -->
+    <script>
+        // 🎯 회원가입 모달 열기/닫기
+        function openRegisterModal() {
+            // 소모임 인증 확인
+            const isVerified = checkSomoimAuth();
+            const somoimNotice = document.getElementById('somoimNotice');
+            
+            if (somoimNotice) {
+                somoimNotice.style.display = isVerified ? 'none' : 'block';
+            }
+            
+            showRegisterModal();
+        }
+        
+        function showRegisterModal() {
+            document.getElementById('registerModal').classList.add('active');
+        }
+
+        function closeRegisterModal() {
+            document.getElementById('registerModal').classList.remove('active');
+            document.getElementById('registerForm').reset();
+        }
+
+        // 🔑 로그인 모달 열기/닫기
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+        }
+
+        // 로그인 → 회원가입 전환
+        function switchToRegister() {
+            closeLoginModal();
+            openRegisterModal();
+        }
+
+        // 🔑 소모임 인증 확인
+        function checkSomoimAuth() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const somoimRef = urlParams.get('ref');
+            const somoimId = urlParams.get('somoim_id');
+            
+            // 소모임에서 온 경우 세션에 저장
+            if (somoimRef === 'somoim' || somoimId) {
+                sessionStorage.setItem('somoim_verified', 'true');
+                sessionStorage.setItem('somoim_id', somoimId || 'direct');
+                sessionStorage.setItem('somoim_timestamp', Date.now());
+                
+                // URL 파라미터 제거 (깔끔한 URL)
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+            
+            // 인증 상태 확인 (24시간 유효)
+            const verified = sessionStorage.getItem('somoim_verified');
+            const timestamp = parseInt(sessionStorage.getItem('somoim_timestamp') || '0');
+            const now = Date.now();
+            const validDuration = 24 * 60 * 60 * 1000; // 24시간
+            
+            if (verified === 'true' && (now - timestamp < validDuration)) {
+                return true;
+            }
+            
+            return false;
+        }
+
+        // 🎯 회원가입 처리
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            // 소모임 인증 확인
+            if (!checkSomoimAuth()) {
+                const confirmResult = confirm(
+                    '⚠️ 소모임 회원 전용 서비스입니다.\n\n' +
+                    '소모임에 가입하시겠습니까?\n\n' +
+                    '[확인]을 누르면 소모임 페이지로 이동합니다.'
+                );
+                
+                if (confirmResult) {
+                    window.open('https://www.somoim.co.kr/8cafe332-cbff-11ef-b613-0a50aa12fbb11', '_blank');
+                }
+                
+                closeRegisterModal();
+                return;
+            }
+            
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+            const birthYear = document.getElementById('registerAge').value.trim();
+            const phone = document.getElementById('registerPhone').value.trim();
+            
+            // 입력 검증
+            if (!name || !email || !password || !passwordConfirm || !birthYear || !phone) {
+                alert('모든 항목을 입력해주세요.');
+                return;
+            }
+
+            // 출생년도 유효성 검증
+            const currentYear = new Date().getFullYear();
+            const birthYearNum = parseInt(birthYear);
+            if (birthYearNum < 1900 || birthYearNum > currentYear) {
+                alert(`출생년도는 1900년부터 ${currentYear}년 사이여야 합니다.`);
+                return;
+            }
+
+            // 출생년도로 나이 계산
+            const age = currentYear - birthYearNum;
+
+            // 비밀번호 일치 확인
+            if (password !== passwordConfirm) {
+                alert('비밀번호가 일치하지 않습니다.');
+                return;
+            }
+
+            // 비밀번호 강도 확인
+            if (password.length < 8) {
+                alert('비밀번호는 최소 8자 이상이어야 합니다.');
+                return;
+            }
+
+            // 전화번호 형식 검증
+            const phoneRegex = /^[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}$/;
+            if (!phoneRegex.test(phone)) {
+                alert('전화번호 형식이 올바르지 않습니다.\n예시: 010-1234-5678');
+                return;
+            }
+
+            // 이메일 중복 확인 (LocalStorage)
+            const existingUsers = JSON.parse(localStorage.getItem('all_users') || '[]');
+            if (existingUsers.some(u => u.email === email)) {
+                alert('이미 사용 중인 이메일입니다.');
+                return;
+            }
+
+            // 사용자 정보 생성 (소모임 정보 포함)
+            const somoimId = sessionStorage.getItem('somoim_id');
+            const user = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                password: btoa(password), // Base64 인코딩 (실제로는 해시 사용 권장)
+                age: parseInt(age),
+                birthYear: parseInt(birthYear),
+                phone: phone,
+                createdAt: new Date().toISOString(),
+                hasFullAccess: true,
+                somoimVerified: true,
+                somoimId: somoimId,
+                // 회원 등급 시스템
+                memberGrade: 'waitlist',  // 'waitlist'(대기자), 'experimenter'(실험체), 'graduate'(졸업생)
+                gradeLabel: '대기자',
+                isVIP: false
+            };
+
+            // 전체 사용자 목록에 추가
+            existingUsers.push(user);
+            localStorage.setItem('all_users', JSON.stringify(existingUsers));
+
+            // 현재 사용자로 로그인
+            localStorage.setItem('auth_token', `token_${user.id}`);
+            localStorage.setItem('user_info', JSON.stringify(user));
+            
+            // 📊 활동 추적: 회원가입
+            trackActivity('registration', { userId: user.id, userName: user.name });
+            
+            // 모달 닫기 및 UI 업데이트
+            closeRegisterModal();
+            updateAuthUI();
+            
+            // 성공 알림 및 오픈 채팅방 안내
+            const goToKakao = confirm(
+                `🎉 환영합니다, ${name}님!\n\n` +
+                `✅ 대기자로 가입되었습니다.\n` +
+                `✅ 대기자용 프롬프트를 사용하실 수 있습니다.\n\n` +
+                `🔥 VIP 실험체로 업그레이드하시겠습니까?\n\n` +
+                `[확인] 클릭 시 오픈 채팅방으로 이동합니다.\n` +
+                `오픈 채팅방에서 추가 혜택과 커뮤니티에 참여하세요!`
+            );
+            
+            if (goToKakao) {
+                // 새 탭에서 오픈 채팅방 열기
+                window.open('https://open.kakao.com/o/gw6HE99g', '_blank');
+                // 📊 활동 추적: 카카오톡 입장
+                trackActivity('kakao_join', { userId: user.id, userName: user.name });
+            }
+        }
+
+        // 🔑 로그인 처리
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            // 사용자 찾기
+            const existingUsers = JSON.parse(localStorage.getItem('all_users') || '[]');
+            const user = existingUsers.find(u => u.email === email);
+            
+            if (!user) {
+                alert('등록되지 않은 이메일입니다.');
+                return;
+            }
+            
+            // 비밀번호 확인
+            if (atob(user.password) !== password) {
+                alert('비밀번호가 올바르지 않습니다.');
+                return;
+            }
+            
+            // 로그인 처리
+            localStorage.setItem('auth_token', `token_${user.id}`);
+            localStorage.setItem('user_info', JSON.stringify(user));
+            
+            // 마지막 활동 시간 업데이트
+            user.lastActivity = Date.now();
+            const userIndex = existingUsers.findIndex(u => u.email === email);
+            if (userIndex !== -1) {
+                existingUsers[userIndex] = user;
+                localStorage.setItem('all_users', JSON.stringify(existingUsers));
+            }
+            
+            // 📊 활동 추적: 로그인
+            trackActivity('login', { userId: user.id, userName: user.name });
+            
+            if (rememberMe) {
+                localStorage.setItem('remember_me', 'true');
+            }
+            
+            closeLoginModal();
+            updateAuthUI();
+            
+            alert(`환영합니다, ${user.name}님!`);
+        }
+
+        // 🔍 비밀번호 찾기 처리
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            
+            const phone = document.getElementById('forgotPhone').value.trim();
+            const resultDiv = document.getElementById('resetResult');
+            
+            // 전화번호로 사용자 찾기
+            const existingUsers = JSON.parse(localStorage.getItem('all_users') || '[]');
+            const user = existingUsers.find(u => u.phone === phone);
+            
+            if (!user) {
+                resultDiv.style.display = 'block';
+                resultDiv.style.background = 'rgba(239, 68, 68, 0.1)';
+                resultDiv.style.color = '#dc2626';
+                resultDiv.style.padding = '15px';
+                resultDiv.style.borderRadius = '8px';
+                resultDiv.style.border = '1px solid #fca5a5';
+                resultDiv.textContent = '⚠️ 등록된 전화번호가 없습니다.';
+                return;
+            }
+            
+            // 비밀번호 복구 정보 표시
+            resultDiv.style.display = 'block';
+            resultDiv.style.background = 'rgba(16, 185, 129, 0.1)';
+            resultDiv.style.color = '#059669';
+            resultDiv.style.padding = '15px';
+            resultDiv.style.borderRadius = '8px';
+            resultDiv.style.border = '1px solid #6ee7b7';
+            resultDiv.innerHTML = `
+                <strong>✅ 계정을 찾았습니다!</strong><br><br>
+                <strong>이메일:</strong> ${user.email}<br>
+                <strong>이름:</strong> ${user.name}<br><br>
+                임시 비밀번호가 등록된 전화번호로 전송되었습니다.<br>
+                (데모 버전: 실제로는 SMS 발송)<br><br>
+                <button onclick="switchToLogin()" style="background: #059669; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700;">
+                    로그인하러 가기
+                </button>
+            `;
+        }
+
+        // ========================================
+        // 📊 성과지표 추적 시스템
+        // ========================================
+        
+        // 성과지표 초기화
+        function initializeMetrics() {
+            if (!localStorage.getItem('site_metrics')) {
+                const initialMetrics = {
+                    // 제작 시간 단축 (기본 75%)
+                    timeReduction: 75,
+                    // 참여율 증가 (기본 400%)
+                    engagementIncrease: 400,
+                    // 일관성 달성 (기본 95%)
+                    consistencyRate: 95,
+                    // 활동 데이터
+                    activities: {
+                        totalPromptViews: 0,      // 프롬프트 조회수
+                        totalPromptDownloads: 0,  // 프롬프트 다운로드 수
+                        totalPromptRatings: 0,    // 프롬프트 평가 수
+                        totalLoginCount: 0,       // 총 로그인 수
+                        totalRegistrations: 0,    // 총 회원가입 수
+                        kakaoJoins: 0,            // 카카오톡 입장 수
+                        activeUsers: 0            // 활성 사용자 수 (7일 기준)
+                    },
+                    lastUpdated: new Date().toISOString()
+                };
+                localStorage.setItem('site_metrics', JSON.stringify(initialMetrics));
+            }
+        }
+        
+        // 활동 추적 함수
+        function trackActivity(activityType, data = {}) {
+            const metrics = JSON.parse(localStorage.getItem('site_metrics') || '{}');
+            const activities = metrics.activities || {};
+            
+            // 활동에 따라 수치 업데이트
+            switch(activityType) {
+                case 'prompt_view':
+                    activities.totalPromptViews = (activities.totalPromptViews || 0) + 1;
+                    // 참여율 증가 계산 (조회 1회당 +0.5%)
+                    metrics.engagementIncrease = Math.min(500, (metrics.engagementIncrease || 400) + 0.5);
+                    break;
+                    
+                case 'prompt_download':
+                    activities.totalPromptDownloads = (activities.totalPromptDownloads || 0) + 1;
+                    // 제작 시간 단축 개선 (다운로드 1회당 +0.3%)
+                    metrics.timeReduction = Math.min(95, (metrics.timeReduction || 75) + 0.3);
+                    // 참여율 증가 (다운로드 1회당 +1%)
+                    metrics.engagementIncrease = Math.min(500, (metrics.engagementIncrease || 400) + 1);
+                    break;
+                    
+                case 'prompt_rating':
+                    activities.totalPromptRatings = (activities.totalPromptRatings || 0) + 1;
+                    // 일관성 달성 개선 (평가 1회당 +0.2%)
+                    metrics.consistencyRate = Math.min(99, (metrics.consistencyRate || 95) + 0.2);
+                    // 참여율 증가 (평가 1회당 +0.8%)
+                    metrics.engagementIncrease = Math.min(500, (metrics.engagementIncrease || 400) + 0.8);
+                    break;
+                    
+                case 'login':
+                    activities.totalLoginCount = (activities.totalLoginCount || 0) + 1;
+                    // 참여율 증가 (로그인 1회당 +0.3%)
+                    metrics.engagementIncrease = Math.min(500, (metrics.engagementIncrease || 400) + 0.3);
+                    break;
+                    
+                case 'registration':
+                    activities.totalRegistrations = (activities.totalRegistrations || 0) + 1;
+                    // 참여율 증가 (가입 1회당 +2%)
+                    metrics.engagementIncrease = Math.min(500, (metrics.engagementIncrease || 400) + 2);
+                    break;
+                    
+                case 'kakao_join':
+                    activities.kakaoJoins = (activities.kakaoJoins || 0) + 1;
+                    // 참여율 증가 (카카오톡 입장 1회당 +1.5%)
+                    metrics.engagementIncrease = Math.min(500, (metrics.engagementIncrease || 400) + 1.5);
+                    break;
+            }
+            
+            // 활성 사용자 계산 (7일 이내 활동한 사용자)
+            updateActiveUsers();
+            
+            // 업데이트 시간 기록
+            metrics.activities = activities;
+            metrics.lastUpdated = new Date().toISOString();
+            
+            // 저장
+            localStorage.setItem('site_metrics', JSON.stringify(metrics));
+            
+            // 화면에 즉시 반영
+            updateMetricsDisplay();
+        }
+        
+        // 활성 사용자 계산
+        function updateActiveUsers() {
+            const metrics = JSON.parse(localStorage.getItem('site_metrics') || '{}');
+            const allUsers = JSON.parse(localStorage.getItem('all_users') || '[]');
+            const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+            
+            // 7일 이내 활동한 사용자 수 계산
+            const activeCount = allUsers.filter(user => {
+                const lastActivity = user.lastActivity || user.createdAt || 0;
+                return lastActivity > sevenDaysAgo;
+            }).length;
+            
+            metrics.activities = metrics.activities || {};
+            metrics.activities.activeUsers = activeCount;
+            
+            localStorage.setItem('site_metrics', JSON.stringify(metrics));
+        }
+        
+        // 화면에 성과지표 업데이트
+        function updateMetricsDisplay() {
+            const metrics = JSON.parse(localStorage.getItem('site_metrics') || '{}');
+            
+            // 카운트업 애니메이션 없이 즉시 업데이트
+            const timeReductionEl = document.querySelector('[data-count="75"]');
+            const engagementEl = document.querySelector('[data-count="400"]');
+            const consistencyEl = document.querySelector('[data-count="95"]');
+            
+            if (timeReductionEl) {
+                timeReductionEl.textContent = Math.round(metrics.timeReduction || 75);
+                timeReductionEl.setAttribute('data-count', Math.round(metrics.timeReduction || 75));
+            }
+            if (engagementEl) {
+                engagementEl.textContent = Math.round(metrics.engagementIncrease || 400);
+                engagementEl.setAttribute('data-count', Math.round(metrics.engagementIncrease || 400));
+            }
+            if (consistencyEl) {
+                consistencyEl.textContent = Math.round(metrics.consistencyRate || 95);
+                consistencyEl.setAttribute('data-count', Math.round(metrics.consistencyRate || 95));
+            }
+        }
+        
+        // 전화번호 포맷팅 함수 (전역)
+        function formatPhoneNumber(input) {
+            // 숫자만 추출
+            let value = input.value.replace(/[^0-9]/g, '');
+            let formatted = '';
+            
+            // 포맷팅
+            if (value.length <= 3) {
+                formatted = value;
+            } else if (value.length <= 7) {
+                formatted = value.slice(0, 3) + '-' + value.slice(3);
+            } else if (value.length <= 11) {
+                formatted = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7);
+            } else {
+                // 11자리 초과 시 자르기
+                formatted = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 11);
+            }
+            
+            input.value = formatted;
+        }
+
+        // 로그인 확인 후 카카오톡 오픈채팅방 입장
+        function checkLoginAndOpenKakao() {
+            const token = localStorage.getItem('auth_token');
+            const user = localStorage.getItem('user_info');
+            
+            if (!token || !user) {
+                // 로그인되지 않은 경우
+                const shouldRegister = confirm(
+                    '💬 오픈채팅방 입장\n\n' +
+                    '⚠️ 회원 전용 서비스입니다.\n\n' +
+                    '오픈채팅방은 회원만 입장할 수 있습니다.\n' +
+                    '지금 회원가입하시겠습니까?\n\n' +
+                    '[확인] 클릭 시 회원가입 페이지로 이동합니다.'
+                );
+                
+                if (shouldRegister) {
+                    showRegisterModal();
+                }
+                return;
+            }
+            
+            // 로그인된 경우 - 오픈채팅방으로 이동
+            const userData = JSON.parse(user);
+            const goToKakao = confirm(
+                `👋 ${userData.name}님, 환영합니다!\n\n` +
+                `💬 VIP 실험체 오픈채팅방으로 이동하시겠습니까?\n\n` +
+                `✅ 커뮤니티 참여\n` +
+                `✅ 1:1 컨설팅\n` +
+                `✅ 특별 이벤트 참여\n\n` +
+                `[확인] 클릭 시 새 탭에서 오픈채팅방이 열립니다.`
+            );
+            
+            if (goToKakao) {
+                window.open('https://open.kakao.com/o/gw6HE99g', '_blank');
+                // 📊 활동 추적: 카카오톡 입장
+                trackActivity('kakao_join', { userId: userData.id, userName: userData.name });
+            }
+        }
+
+        // 모달 전환 함수들
+        function openForgotPassword() {
+            closeLoginModal();
+            document.getElementById('forgotPasswordModal').classList.add('active');
+        }
+
+        function closeForgotPassword() {
+            document.getElementById('forgotPasswordModal').classList.remove('active');
+            document.getElementById('forgotPasswordForm').reset();
+            document.getElementById('resetResult').style.display = 'none';
+        }
+
+        function switchToLogin() {
+            closeForgotPassword();
+            closeRegisterModal();
+            showLoginModal();
+        }
+
+        // 🚪 로그아웃 처리
+        function handleLogout() {
+            if (confirm('정말 로그아웃 하시겠습니까?')) {
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('user_info');
+                alert('로그아웃되었습니다.');
+                updateAuthUI();
+            }
+        }
+
+        // 🔄 UI 업데이트 (로그인 상태 반영)
+        function updateAuthUI() {
+            const token = localStorage.getItem('auth_token');
+            const userStr = localStorage.getItem('user_info');
+            const adminToken = localStorage.getItem('admin_token');
+            
+            const authButtons = document.getElementById('authButtons');
+            const userMenu = document.getElementById('userMenu');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const userDropdownName = document.getElementById('userDropdownName');
+            const userDropdownEmail = document.getElementById('userDropdownEmail');
+            const adminMenuItems = document.getElementById('adminMenuItems');
+            
+            if (token && userStr) {
+                // 로그인 상태
+                const user = JSON.parse(userStr);
+                authButtons.style.display = 'none';
+                userMenu.style.display = 'block';
+                userNameDisplay.textContent = user.name;
+                userDropdownName.textContent = user.name;
+                userDropdownEmail.textContent = user.email;
+                
+                // 관리자 메뉴 표시 여부
+                if (adminToken) {
+                    adminMenuItems.style.display = 'block';
+                } else {
+                    adminMenuItems.style.display = 'none';
+                }
+            } else if (adminToken) {
+                // 관리자만 로그인 상태
+                const adminUser = JSON.parse(localStorage.getItem('admin_user') || '{}');
+                authButtons.style.display = 'none';
+                userMenu.style.display = 'block';
+                userNameDisplay.textContent = adminUser.username || '관리자';
+                userDropdownName.textContent = adminUser.username || '관리자';
+                userDropdownEmail.textContent = '관리자 계정';
+                adminMenuItems.style.display = 'block';
+            } else {
+                // 비로그인 상태
+                authButtons.style.display = 'flex';
+                userMenu.style.display = 'none';
+            }
+        }
+
+        // 사용자 메뉴 드롭다운 토글
+        function setupUserMenu() {
+            const userMenuBtn = document.getElementById('userMenuBtn');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            if (userMenuBtn) {
+                userMenuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    userDropdown.style.display = userDropdown.style.display === 'none' ? 'block' : 'none';
+                });
+            }
+            
+            // 외부 클릭 시 닫기
+            document.addEventListener('click', () => {
+                if (userDropdown) {
+                    userDropdown.style.display = 'none';
+                }
+            });
+        }
+
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('registerModal').addEventListener('click', (e) => {
+            if (e.target.id === 'registerModal') {
+                closeRegisterModal();
+            }
+        });
+
+        document.getElementById('loginModal').addEventListener('click', (e) => {
+            if (e.target.id === 'loginModal') {
+                closeLoginModal();
+            }
+        });
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            // 성과지표 초기화 및 표시
+            initializeMetrics();
+            updateMetricsDisplay();
+            
+            // 소모임 인증 체크
+            checkSomoimAuth();
+            
+            // UI 초기화
+            updateAuthUI();
+            setupUserMenu();
+        });
+    </script>
+
+    <!-- Stats Counter Animation -->
+    <script>
+        function animateCounter(id, target, suffix = '') {
+            const element = document.getElementById(id);
+            const duration = 2000; // 2 seconds
+            const steps = 60;
+            const increment = target / steps;
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = Math.round(target) + suffix;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.round(current) + suffix;
+                }
+            }, duration / steps);
+        }
+        
+        // Intersection Observer for stats
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && entry.target.classList.contains('stats-dashboard')) {
+                    animateCounter('stat1', 75, '%');
+                    animateCounter('stat2', 1200);
+                    animateCounter('stat3', 98);
+                    animateCounter('stat4', 10);
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        
+        // Observe stats section
+        document.addEventListener('DOMContentLoaded', () => {
+            const statsSection = document.querySelector('.stats-dashboard');
+            if (statsSection) {
+                statsObserver.observe(statsSection);
+            }
+        });
+    </script>
+
+    <script src="lab/script.js"></script>
+</body>
+</html>

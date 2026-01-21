@@ -31,16 +31,28 @@ CORS(app, supports_credentials=True)
 # ==================== 데이터베이스 모델 ====================
 
 class User(db.Model):
+    __tablename__ = 'user'
+    
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     username = db.Column(db.String(80), nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
-    phone = db.Column(db.String(20), nullable=True)  # 전화번호
-    birthdate = db.Column(db.Date, nullable=True)  # 생년월일
+    phone = db.Column(db.String(20), nullable=True)
+    birthdate = db.Column(db.Date, nullable=True)
     is_member = db.Column(db.Boolean, default=False)
-    is_admin = db.Column(db.Boolean, default=False)  # 관리자 여부
-    referral_source = db.Column(db.String(50), nullable=True)  # 유입 경로 (somoim, direct 등)
-    somoim_id = db.Column(db.String(100), nullable=True)  # 소모임 고유 ID
+    is_admin = db.Column(db.Boolean, default=False)
+    referral_source = db.Column(db.String(50), nullable=True)
+    somoim_id = db.Column(db.String(100), nullable=True)
+    
+    # 구독 관련 필드
+    subscription_status = db.Column(db.String(20), default='free')
+    subscription_start = db.Column(db.DateTime, nullable=True)
+    subscription_end = db.Column(db.DateTime, nullable=True)
+    
+    # AI 진단 결과 (JSON 형식)
+    diagnosis_result = db.Column(db.Text, nullable=True)
+    diagnosis_completed_at = db.Column(db.DateTime, nullable=True)
+    
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     purchases = db.relationship('Purchase', backref='user', lazy=True)
 
@@ -207,6 +219,56 @@ class Review(db.Model):
     helpful_count = db.Column(db.Integer, default=0)  # 도움됨 수
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
+class Somoim(db.Model):
+    """모임(소모임) 관리"""
+    __tablename__ = 'somoim'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)  # 모임 이름
+    somoim_id = db.Column(db.String(100), unique=True, nullable=False)  # 모임 고유 ID
+    description = db.Column(db.Text)  # 모임 설명
+    kakao_link = db.Column(db.String(500))  # 카카오톡 오픈채팅 링크
+    membership_type = db.Column(db.String(20), default='free')  # free, monthly, annual
+    monthly_fee = db.Column(db.Integer, default=0)  # 월 회비
+    max_members = db.Column(db.Integer, default=0)  # 최대 인원 (0=무제한)
+    is_active = db.Column(db.Boolean, default=True)  # 활성 상태
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    members = db.relationship('SomoimMember', backref='somoim', lazy=True)
+
+class SomoimMember(db.Model):
+    """모임 회원 관리"""
+    __tablename__ = 'somoim_member'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    somoim_id = db.Column(db.Integer, db.ForeignKey('somoim.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    role = db.Column(db.String(20), default='member')  # admin, member
+    status = db.Column(db.String(20), default='active')  # active, inactive, pending
+    joined_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_payment_date = db.Column(db.DateTime)  # 마지막 회비 납부일
+    payment_status = db.Column(db.String(20), default='paid')  # paid, unpaid, exempt
+    
+class SomoimPromptAccess(db.Model):
+    """모임별 프롬프트 접근 권한"""
+    __tablename__ = 'somoim_prompt_access'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    somoim_id = db.Column(db.Integer, db.ForeignKey('somoim.id'), nullable=False)
+    prompt_id = db.Column(db.Integer, nullable=False)  # prompts-data.js의 prompt id
+    granted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    granted_by_admin_id = db.Column(db.Integer, nullable=True)
+
+class UserPromptAccess(db.Model):
+    """사용자별 프롬프트 접근 권한 관리"""
+    __tablename__ = 'user_prompt_access'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    prompt_id = db.Column(db.Integer, nullable=False)  # prompts-data.js의 prompt id (0~13)
+    granted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    granted_by_admin_id = db.Column(db.Integer, nullable=True)  # 할당한 관리자 ID (FK 제거)
+
 class EmailLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
@@ -1618,34 +1680,12 @@ def admin_dashboard(current_user):
 # ==================== 초기화 ====================
 
 def init_db():
-    with app.app_context():
-        db.create_all()
-        print("✅ 데이터베이스 테이블 생성 완료!")
-        
-        # 관리자 계정 초기화 (eager1014@gmail.com)
-        admin_email = 'eager1014@gmail.com'
-        admin = User.query.filter_by(email=admin_email).first()
-        
-        if not admin:
-            admin = User(
-                email=admin_email,
-                username='찐부부 관리자',
-                is_member=True,
-                is_admin=True
-            )
-            admin.set_password('admin1234')  # 초기 비밀번호 (나중에 변경 필요)
-            db.session.add(admin)
-            db.session.commit()
-            print(f"👑 관리자 계정 생성 완료: {admin_email}")
-            print(f"   초기 비밀번호: admin1234 (로그인 후 변경하세요!)")
-        else:
-            # 기존 계정을 관리자로 승격
-            if not admin.is_admin:
-                admin.is_admin = True
-                db.session.commit()
-                print(f"👑 기존 계정을 관리자로 승격: {admin_email}")
-            else:
-                print(f"✅ 관리자 계정 이미 존재: {admin_email}")
+    """데이터베이스 초기화 - create_db_direct.py로 생성된 DB 사용"""
+    import os
+    if os.path.exists('jjinbubu_market.db'):
+        print("✅ 기존 데이터베이스 사용 (create_db_direct.py로 생성됨)")
+    else:
+        print("⚠️  데이터베이스가 없습니다. 'python create_db_direct.py'를 실행하세요.")
 
 # ==================== 사용자 API ====================
 
@@ -2733,6 +2773,484 @@ def analyze_competitor():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# ==================== 관리자 - 회원별 프롬프트 할당 API ====================
+
+@app.route('/api/admin/users-with-prompts', methods=['GET'])
+@admin_required
+def get_users_with_prompts(current_user):
+    """관리자: 모든 회원 목록 + 할당된 프롬프트 정보"""
+    try:
+        users = User.query.all()
+        
+        result = []
+        for user in users:
+            # 이 회원에게 할당된 프롬프트 ID 목록
+            access_list = UserPromptAccess.query.filter_by(user_id=user.id).all()
+            assigned_prompt_ids = [access.prompt_id for access in access_list]
+            
+            result.append({
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'subscription_status': user.subscription_status,
+                'subscription_start': user.subscription_start.isoformat() if user.subscription_start else None,
+                'subscription_end': user.subscription_end.isoformat() if user.subscription_end else None,
+                'created_at': user.created_at.isoformat() if user.created_at else None,
+                'assigned_prompts': assigned_prompt_ids,
+                'is_admin': user.is_admin
+            })
+        
+        return jsonify({
+            'users': result,
+            'total': len(result)
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/user/<int:user_id>/prompts', methods=['POST'])
+@admin_required
+def assign_prompts_to_user(current_user, user_id):
+    """관리자: 특정 회원에게 프롬프트 할당"""
+    try:
+        data = request.get_json()
+        prompt_ids = data.get('prompt_ids', [])  # [0, 1, 2, 5, 10] 형태
+        
+        # 기존 할당 모두 삭제
+        UserPromptAccess.query.filter_by(user_id=user_id).delete()
+        
+        # 새로운 할당 추가
+        for prompt_id in prompt_ids:
+            new_access = UserPromptAccess(
+                user_id=user_id,
+                prompt_id=prompt_id,
+                granted_by=current_user.id
+            )
+            db.session.add(new_access)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': f'사용자 {user_id}에게 {len(prompt_ids)}개 프롬프트를 할당했습니다.',
+            'assigned_prompts': prompt_ids
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/user/<int:user_id>/subscription', methods=['PUT'])
+@admin_required
+def update_user_subscription(current_user, user_id):
+    """관리자: 회원 구독 상태 변경"""
+    try:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 404
+        
+        data = request.get_json()
+        subscription_status = data.get('subscription_status')  # 'free', 'monthly', 'annual'
+        subscription_end = data.get('subscription_end')  # ISO 형식 날짜
+        
+        user.subscription_status = subscription_status
+        
+        if subscription_status != 'free':
+            user.subscription_start = datetime.utcnow()
+            if subscription_end:
+                user.subscription_end = datetime.fromisoformat(subscription_end.replace('Z', '+00:00'))
+        else:
+            user.subscription_start = None
+            user.subscription_end = None
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': f'{user.username}의 구독 상태를 {subscription_status}로 변경했습니다.',
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'subscription_status': user.subscription_status,
+                'subscription_start': user.subscription_start.isoformat() if user.subscription_start else None,
+                'subscription_end': user.subscription_end.isoformat() if user.subscription_end else None
+            }
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== 모임 관리 API ====================
+
+@app.route('/api/admin/somoims', methods=['GET'])
+@admin_required
+def get_all_somoims(current_user):
+    """관리자: 모든 모임 목록 조회"""
+    try:
+        somoims = Somoim.query.all()
+        result = []
+        for somoim in somoims:
+            member_count = SomoimMember.query.filter_by(
+                somoim_id=somoim.id, 
+                status='active'
+            ).count()
+            
+            result.append({
+                'id': somoim.id,
+                'name': somoim.name,
+                'somoim_id': somoim.somoim_id,
+                'description': somoim.description,
+                'kakao_link': somoim.kakao_link,
+                'membership_type': somoim.membership_type,
+                'monthly_fee': somoim.monthly_fee,
+                'max_members': somoim.max_members,
+                'current_members': member_count,
+                'is_active': somoim.is_active,
+                'created_at': somoim.created_at.isoformat() if somoim.created_at else None
+            })
+        
+        return jsonify({'somoims': result}), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/somoims', methods=['POST'])
+@admin_required
+def create_somoim(current_user):
+    """관리자: 새 모임 생성"""
+    try:
+        data = request.get_json()
+        
+        # 중복 체크
+        existing = Somoim.query.filter_by(somoim_id=data['somoim_id']).first()
+        if existing:
+            return jsonify({'error': '이미 존재하는 모임 ID입니다.'}), 400
+        
+        somoim = Somoim(
+            name=data['name'],
+            somoim_id=data['somoim_id'],
+            description=data.get('description'),
+            kakao_link=data.get('kakao_link'),
+            membership_type=data.get('membership_type', 'free'),
+            monthly_fee=data.get('monthly_fee', 0),
+            max_members=data.get('max_members', 0),
+            is_active=data.get('is_active', True)
+        )
+        
+        db.session.add(somoim)
+        db.session.commit()
+        
+        return jsonify({
+            'message': f'{somoim.name} 모임이 생성되었습니다.',
+            'somoim': {
+                'id': somoim.id,
+                'name': somoim.name,
+                'somoim_id': somoim.somoim_id
+            }
+        }), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/somoims/<int:somoim_id>', methods=['PUT'])
+@admin_required
+def update_somoim(current_user, somoim_id):
+    """관리자: 모임 정보 수정"""
+    try:
+        somoim = Somoim.query.get(somoim_id)
+        if not somoim:
+            return jsonify({'error': '모임을 찾을 수 없습니다.'}), 404
+        
+        data = request.get_json()
+        
+        if 'name' in data:
+            somoim.name = data['name']
+        if 'description' in data:
+            somoim.description = data['description']
+        if 'kakao_link' in data:
+            somoim.kakao_link = data['kakao_link']
+        if 'membership_type' in data:
+            somoim.membership_type = data['membership_type']
+        if 'monthly_fee' in data:
+            somoim.monthly_fee = data['monthly_fee']
+        if 'max_members' in data:
+            somoim.max_members = data['max_members']
+        if 'is_active' in data:
+            somoim.is_active = data['is_active']
+        
+        somoim.updated_at = datetime.utcnow()
+        db.session.commit()
+        
+        return jsonify({
+            'message': f'{somoim.name} 모임 정보가 수정되었습니다.',
+            'somoim': {
+                'id': somoim.id,
+                'name': somoim.name
+            }
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/somoims/<int:somoim_id>/members', methods=['GET'])
+@admin_required
+def get_somoim_members(current_user, somoim_id):
+    """관리자: 모임 회원 목록 조회"""
+    try:
+        somoim = Somoim.query.get(somoim_id)
+        if not somoim:
+            return jsonify({'error': '모임을 찾을 수 없습니다.'}), 404
+        
+        members = SomoimMember.query.filter_by(somoim_id=somoim_id).all()
+        result = []
+        
+        for member in members:
+            user = User.query.get(member.user_id)
+            result.append({
+                'id': member.id,
+                'user_id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'role': member.role,
+                'status': member.status,
+                'joined_at': member.joined_at.isoformat() if member.joined_at else None,
+                'payment_status': member.payment_status,
+                'last_payment_date': member.last_payment_date.isoformat() if member.last_payment_date else None
+            })
+        
+        return jsonify({
+            'somoim': {
+                'id': somoim.id,
+                'name': somoim.name
+            },
+            'members': result
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/somoims/<int:somoim_id>/prompts', methods=['GET'])
+@admin_required
+def get_somoim_prompts(current_user, somoim_id):
+    """관리자: 모임에 할당된 프롬프트 목록"""
+    try:
+        somoim = Somoim.query.get(somoim_id)
+        if not somoim:
+            return jsonify({'error': '모임을 찾을 수 없습니다.'}), 404
+        
+        prompt_access = SomoimPromptAccess.query.filter_by(somoim_id=somoim_id).all()
+        prompt_ids = [access.prompt_id for access in prompt_access]
+        
+        return jsonify({
+            'somoim': {
+                'id': somoim.id,
+                'name': somoim.name
+            },
+            'assigned_prompt_ids': prompt_ids
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/somoims/<int:somoim_id>/prompts', methods=['POST'])
+@admin_required
+def assign_somoim_prompts(current_user, somoim_id):
+    """관리자: 모임에 프롬프트 할당"""
+    try:
+        somoim = Somoim.query.get(somoim_id)
+        if not somoim:
+            return jsonify({'error': '모임을 찾을 수 없습니다.'}), 404
+        
+        data = request.get_json()
+        prompt_ids = data.get('prompt_ids', [])
+        
+        # 기존 할당 삭제
+        SomoimPromptAccess.query.filter_by(somoim_id=somoim_id).delete()
+        
+        # 새로운 할당 추가
+        for prompt_id in prompt_ids:
+            access = SomoimPromptAccess(
+                somoim_id=somoim_id,
+                prompt_id=prompt_id,
+                granted_by_admin_id=current_user.id
+            )
+            db.session.add(access)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': f'{somoim.name} 모임에 {len(prompt_ids)}개의 프롬프트를 할당했습니다.',
+            'assigned_prompt_ids': prompt_ids
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+# ==================== 사용자 모임 API ====================
+
+@app.route('/api/user/my-somoims', methods=['GET'])
+@token_required
+def get_my_somoims(current_user):
+    """사용자: 내가 가입한 모임 목록"""
+    try:
+        memberships = SomoimMember.query.filter_by(
+            user_id=current_user.id,
+            status='active'
+        ).all()
+        
+        result = []
+        for membership in memberships:
+            somoim = Somoim.query.get(membership.somoim_id)
+            if somoim and somoim.is_active:
+                result.append({
+                    'id': somoim.id,
+                    'name': somoim.name,
+                    'description': somoim.description,
+                    'kakao_link': somoim.kakao_link,
+                    'role': membership.role,
+                    'joined_at': membership.joined_at.isoformat() if membership.joined_at else None
+                })
+        
+        return jsonify({'somoims': result}), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/user/somoim-prompts', methods=['GET'])
+@token_required
+def get_my_somoim_prompts(current_user):
+    """사용자: 내 모임을 통해 접근 가능한 프롬프트 목록"""
+    try:
+        # 내가 가입한 모임 찾기
+        memberships = SomoimMember.query.filter_by(
+            user_id=current_user.id,
+            status='active'
+        ).all()
+        
+        somoim_ids = [m.somoim_id for m in memberships]
+        
+        # 모임별 프롬프트 접근 권한
+        prompt_access = SomoimPromptAccess.query.filter(
+            SomoimPromptAccess.somoim_id.in_(somoim_ids)
+        ).all()
+        
+        # 중복 제거
+        prompt_ids = list(set([access.prompt_id for access in prompt_access]))
+        
+        return jsonify({
+            'prompt_ids': prompt_ids,
+            'source': 'somoim'
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== AI 진단 결과 API ====================
+
+@app.route('/api/user/save-diagnosis', methods=['POST'])
+@token_required
+def save_diagnosis_result(current_user):
+    """사용자: AI 진단 결과 저장"""
+    try:
+        data = request.get_json()
+        diagnosis_text = data.get('diagnosis_result')
+        
+        if not diagnosis_text:
+            return jsonify({'error': '진단 결과가 없습니다.'}), 400
+        
+        current_user.diagnosis_result = diagnosis_text
+        current_user.diagnosis_completed_at = datetime.utcnow()
+        db.session.commit()
+        
+        return jsonify({
+            'message': '진단 결과가 저장되었습니다.',
+            'completed_at': current_user.diagnosis_completed_at.isoformat()
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/users-with-diagnosis', methods=['GET'])
+@admin_required
+def get_users_with_diagnosis(current_user):
+    """관리자: 진단 완료한 사용자 목록"""
+    try:
+        users = User.query.filter(
+            User.diagnosis_completed_at.isnot(None)
+        ).order_by(User.diagnosis_completed_at.desc()).all()
+        
+        result = []
+        for user in users:
+            # 할당된 프롬프트 개수
+            prompt_count = UserPromptAccess.query.filter_by(user_id=user.id).count()
+            
+            result.append({
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'diagnosis_result': user.diagnosis_result,
+                'diagnosis_completed_at': user.diagnosis_completed_at.isoformat() if user.diagnosis_completed_at else None,
+                'assigned_prompts_count': prompt_count,
+                'subscription_status': user.subscription_status,
+                'created_at': user.created_at.isoformat() if user.created_at else None
+            })
+        
+        return jsonify({'users': result}), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/user/<int:user_id>/diagnosis', methods=['GET'])
+@admin_required
+def get_user_diagnosis(current_user, user_id):
+    """관리자: 특정 사용자의 진단 결과 상세 보기"""
+    try:
+        user = User.query.get_or_404(user_id)
+        
+        return jsonify({
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'diagnosis_result': user.diagnosis_result,
+            'diagnosis_completed_at': user.diagnosis_completed_at.isoformat() if user.diagnosis_completed_at else None,
+            'subscription_status': user.subscription_status,
+            'subscription_start': user.subscription_start.isoformat() if user.subscription_start else None,
+            'subscription_end': user.subscription_end.isoformat() if user.subscription_end else None
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==================== 사용자 - 할당된 프롬프트 확인 API ====================
+
+@app.route('/api/user/my-prompts', methods=['GET'])
+@token_required
+def get_my_prompts(current_user):
+    """사용자: 내가 접근 가능한 프롬프트 ID 목록"""
+    try:
+        # 내게 할당된 프롬프트 ID 목록
+        access_list = UserPromptAccess.query.filter_by(user_id=current_user.id).all()
+        assigned_prompt_ids = [access.prompt_id for access in access_list]
+        
+        # 무료 프롬프트는 항상 접근 가능 (ID 0)
+        if 0 not in assigned_prompt_ids:
+            assigned_prompt_ids.append(0)
+        
+        return jsonify({
+            'prompt_ids': assigned_prompt_ids,
+            'subscription_status': current_user.subscription_status,
+            'subscription_end': current_user.subscription_end.isoformat() if current_user.subscription_end else None
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     init_db()
     print("=" * 60)
@@ -2749,6 +3267,7 @@ if __name__ == '__main__':
     
     # 배포 환경에서는 PORT 환경 변수 사용
     port = int(os.environ.get('PORT', 8003))
-    debug = os.environ.get('FLASK_ENV', 'development') == 'development'
+    # debug = os.environ.get('FLASK_ENV', 'development') == 'development'
+    debug = False  # SQLAlchemy 메타데이터 캐시 문제 해결을 위해 debug 모드 비활성화
     
     app.run(host='0.0.0.0', port=port, debug=debug)

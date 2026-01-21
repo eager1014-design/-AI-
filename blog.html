@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>블로그 - JINBUBU AI Market</title>
+    <meta name="description" content="30대 무기력 극복, AI 활용 전략, 콘텐츠 제작 노하우를 공유하는 JINBUBU 블로그">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="mobile-ultra.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #ffffff;
+        }
+
+        .blog-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 0;
+        }
+
+        .blog-hero {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 6rem 0 4rem;
+            text-align: center;
+        }
+
+        .blog-hero h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .blog-hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .blog-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .blog-categories {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .article-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .article-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .article-thumbnail {
+            width: 100%;
+            height: 240px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .article-content {
+            padding: 2rem;
+        }
+
+        .article-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .article-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #1e293b;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .article-excerpt {
+            font-size: 1rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        .coming-soon-card {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .coming-soon-card:hover {
+            transform: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .coming-soon-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #ef4444;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .blog-hero h1 {
+                font-size: 2rem;
+            }
+
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="blog-header">
+        <div class="container">
+            <div class="header-content" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="logo" onclick="location.href='/'" style="cursor: pointer;">
+                    <span class="logo-emoji">🤖</span>
+                    <span class="logo-text">JINBUBU AI Market</span>
+                </div>
+                <nav class="nav" style="display: flex; align-items: center; gap: 1rem;">
+                    <a href="/" style="padding: 0.75rem 1.5rem; background: white; color: #667eea; border: 2px solid white; border-radius: 12px; font-weight: 600; text-decoration: none;">홈으로</a>
+                    <a href="/prompts.html" style="padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white; border-radius: 12px; font-weight: 600; text-decoration: none;">프롬프트</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- 히어로 -->
+    <section class="blog-hero">
+        <div class="container">
+            <h1>📚 JINBUBU 블로그</h1>
+            <p>30대 무기력 극복부터 AI 활용 노하우까지, 당신의 성장을 돕는 인사이트를 공유합니다</p>
+        </div>
+    </section>
+
+    <!-- 카테고리 필터 -->
+    <section class="blog-container">
+        <div class="blog-categories">
+            <button class="category-btn active" data-category="all">전체</button>
+            <button class="category-btn" data-category="30s">30대 인사이트</button>
+            <button class="category-btn" data-category="ai">AI 활용</button>
+            <button class="category-btn" data-category="content">콘텐츠 제작</button>
+            <button class="category-btn" data-category="prompt">프롬프트 엔지니어링</button>
+        </div>
+
+        <!-- 블로그 글 목록 -->
+        <div class="articles-grid" id="articlesGrid">
+            <!-- 30대 현실 (실제 글) -->
+            <div class="article-card" data-category="30s" onclick="location.href='/blog/30s-reality.html'">
+                <div class="article-thumbnail">📖</div>
+                <div class="article-content">
+                    <span class="article-badge">30대 인사이트</span>
+                    <h2 class="article-title">아무도 당신에게 말해주지 않는 30대 현실</h2>
+                    <p class="article-excerpt">
+                        30대가 되면 타인의 인정에서 오는 동기 부여가 약해지지만, 내면의 동기를 찾지 못해 무기력해지는 현상이 나타납니다. 자율성, 유능감, 관계성을 AI로 회복하는 방법을 알아보세요.
+                    </p>
+                    <div class="article-meta">
+                        <span>📅 2025년 12월</span>
+                        <span>⏱️ 15분 읽기</span>
+                        <span>👤 JINBUBU</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ChatGPT 프롬프트 5원칙 (준비중) -->
+            <div class="article-card coming-soon-card" data-category="prompt ai">
+                <div class="article-thumbnail">🎯</div>
+                <div class="article-content" style="position: relative;">
+                    <span class="coming-soon-badge">준비중</span>
+                    <span class="article-badge">프롬프트 엔지니어링</span>
+                    <h2 class="article-title">ChatGPT 프롬프트 작성의 5가지 원칙</h2>
+                    <p class="article-excerpt">
+                        초보자도 전문가처럼 프롬프트를 작성할 수 있는 5가지 핵심 원칙을 배워보세요. 명확한 지시, 컨텍스트 제공, 예시 활용, 반복 개선 등의 노하우를 담았습니다.
+                    </p>
+                    <div class="article-meta">
+                        <span>📅 준비중</span>
+                        <span>⏱️ 10분 읽기</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 콘텐츠 제작 시간 단축 (준비중) -->
+            <div class="article-card coming-soon-card" data-category="content ai">
+                <div class="article-thumbnail">⚡</div>
+                <div class="article-content" style="position: relative;">
+                    <span class="coming-soon-badge">준비중</span>
+                    <span class="article-badge">콘텐츠 제작</span>
+                    <h2 class="article-title">콘텐츠 제작 시간을 75% 줄인 비결</h2>
+                    <p class="article-excerpt">
+                        하루 2시간 걸리던 콘텐츠 제작을 30분으로 단축한 실제 사례와 프롬프트 활용법을 공개합니다. 블로그, SNS, 유튜브 등 다양한 플랫폼에 적용 가능합니다.
+                    </p>
+                    <div class="article-meta">
+                        <span>📅 준비중</span>
+                        <span>⏱️ 12분 읽기</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 인스타그램 바이럴 전략 (준비중) -->
+            <div class="article-card coming-soon-card" data-category="content ai">
+                <div class="article-thumbnail">📱</div>
+                <div class="article-content" style="position: relative;">
+                    <span class="coming-soon-badge">준비중</span>
+                    <span class="article-badge">콘텐츠 제작</span>
+                    <h2 class="article-title">AI로 만드는 인스타그램 바이럴 카피라이팅</h2>
+                    <p class="article-excerpt">
+                        400% 참여율을 끌어올린 인스타그램 카피라이팅 프롬프트 활용법. 감정 자극, 호기심 유발, CTA 최적화 등 실전 노하우를 담았습니다.
+                    </p>
+                    <div class="article-meta">
+                        <span>📅 준비중</span>
+                        <span>⏱️ 8분 읽기</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO 최적화 (준비중) -->
+            <div class="article-card coming-soon-card" data-category="content ai">
+                <div class="article-thumbnail">🔍</div>
+                <div class="article-content" style="position: relative;">
+                    <span class="coming-soon-badge">준비중</span>
+                    <span class="article-badge">콘텐츠 제작</span>
+                    <h2 class="article-title">블로그 SEO 최적화, AI가 답이다</h2>
+                    <p class="article-excerpt">
+                        구글 상위 노출을 위한 SEO 최적화 전략과 AI 프롬프트 활용법. 키워드 리서치부터 메타 태그, 내부 링크 구조까지 완벽 가이드입니다.
+                    </p>
+                    <div class="article-meta">
+                        <span>📅 준비중</span>
+                        <span>⏱️ 10분 읽기</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 유튜브 기획 (준비중) -->
+            <div class="article-card coming-soon-card" data-category="content ai">
+                <div class="article-thumbnail">🎬</div>
+                <div class="article-content" style="position: relative;">
+                    <span class="coming-soon-badge">준비중</span>
+                    <span class="article-badge">콘텐츠 제작</span>
+                    <h2 class="article-title">유튜브 썸네일과 제목, AI로 한 번에</h2>
+                    <p class="article-excerpt">
+                        클릭률을 200% 높인 유튜브 썸네일 문구와 제목 생성 프롬프트. 알고리즘에 최적화된 키워드 선정과 호기심 자극 전략을 배워보세요.
+                    </p>
+                    <div class="article-meta">
+                        <span>📅 준비중</span>
+                        <span>⏱️ 9분 읽기</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA 섹션 -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4rem 3rem; border-radius: 24px; text-align: center; margin-top: 4rem;">
+            <h2 style="font-size: 2rem; font-weight: 900; margin-bottom: 1rem;">💡 지금 바로 AI 활용 능력을 진단해보세요</h2>
+            <p style="font-size: 1.125rem; opacity: 0.95; margin-bottom: 2rem;">
+                무료 진단 프롬프트로 당신의 AI 활용 수준을 확인하고,<br>
+                맞춤 프롬프트로 첫 성공 경험을 만들어보세요
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/prompts.html" style="display: inline-block; padding: 1rem 2.5rem; background: white; color: #667eea; border-radius: 12px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.3s;">
+                    무료로 시작하기 →
+                </a>
+                <a href="/" style="display: inline-block; padding: 1rem 2.5rem; background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white; border-radius: 12px; font-weight: 700; text-decoration: none; transition: all 0.3s;">
+                    메인으로 돌아가기
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // 카테고리 필터링
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const articles = document.querySelectorAll('.article-card');
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 버튼 활성화 상태 변경
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // 카테고리 필터링
+                const category = btn.dataset.category;
+                articles.forEach(article => {
+                    if (category === 'all' || article.dataset.category.includes(category)) {
+                        article.style.display = 'block';
+                    } else {
+                        article.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // 준비중 카드 클릭 방지
+        document.querySelectorAll('.coming-soon-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                alert('곧 공개될 예정입니다! 🚀');
+            });
+        });
+    </script>
+
+    <script src="auth.js"></script>
+    <script src="mobile-ultra.js"></script>
+</body>
+</html>

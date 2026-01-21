@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>퍼널 아키텍트 AI - 실패를 데이터로 해독하는 실험실</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 3D Cursor Follower -->
+    <div class="cursor-follower"></div>
+    <div class="cursor-glow"></div>
+    
+    <!-- 고급 파티클 배경 -->
+    <canvas id="particleCanvas"></canvas>
+    
+    <!-- Navigation -->
+    <nav class="luxury-nav">
+        <div class="nav-logo">퍼널 아키텍트 AI</div>
+        <div class="nav-menu">
+            <a href="#hero">홈</a>
+            <a href="#membership">회원제</a>
+            <a href="#experiment">실험 참여</a>
+            <a href="#contact">문의</a>
+        </div>
+    </nav>
+
+    <!-- SECTION 1: HERO VIDEO -->
+    <section id="hero" class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="badge-luxury" data-aos="fade-down">
+                <span class="pulse-ring"></span>
+                ⚡ 퍼널 아키텍트 AI
+            </div>
+            
+            <h1 class="hero-title" data-aos="fade-up" data-aos-delay="200">
+                당신의 실패는<br>
+                <span class="gradient-text-animated">데이터다</span>
+            </h1>
+            
+            <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="400">
+                실패를 데이터로 해독하는 실험실
+            </p>
+            
+            <!-- 영상 섹션 -->
+            <div class="video-showcase" data-aos="zoom-in" data-aos-delay="600">
+                <div class="video-frame">
+                    <video id="heroVideo" controls playsinline>
+                        <source src="0104.mov" type="video/mp4">
+                        <source src="0104.mov" type="video/quicktime">
+                        죄송합니다. 귀하의 브라우저는 비디오 태그를 지원하지 않습니다.
+                    </video>
+                    <div class="video-overlay-play" id="videoPlayBtn">
+                        <div class="play-icon">▶</div>
+                    </div>
+                </div>
+                
+                <div class="video-caption">
+                    <h3>실험의 시작</h3>
+                    <p>이 영상이 당신의 구조를 바꿀 것입니다</p>
+                </div>
+            </div>
+            
+            <!-- 스크롤 인디케이터 -->
+            <div class="scroll-indicator" data-aos="fade-up" data-aos-delay="800">
+                <div class="mouse-icon">
+                    <div class="mouse-wheel"></div>
+                </div>
+                <span>스크롤하여 계속</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: 회원제 프로그램 -->
+    <section id="membership" class="membership-section">
+        <div class="container-luxury">
+            <div class="section-header" data-aos="fade-up">
+                <div class="section-badge">💎 MEMBERSHIP PROGRAM</div>
+                <h2 class="section-title">
+                    회원제 프로그램으로<br>
+                    <span class="gradient-text">구조적 성장을 시작하세요</span>
+                </h2>
+                <p class="section-subtitle">
+                    단순한 강의가 아닙니다. 당신의 삶과 채널의 구조를 바꾸는 실험입니다.
+                </p>
+            </div>
+            
+            <!-- 3단계 프로세스 -->
+            <div class="process-luxury">
+                <div class="process-card" data-aos="fade-right" data-aos-delay="100">
+                    <div class="process-number">01</div>
+                    <div class="process-icon">🎯</div>
+                    <h3>회원가입</h3>
+                    <p>이메일 + 비밀번호로 간단 가입<br>약 1분 소요</p>
+                    <ul class="benefit-list">
+                        <li>즉시 서비스 이용 가능</li>
+                        <li>간편 인증 불필요</li>
+                        <li>무료 진단 프롬프트 제공</li>
+                    </ul>
+                </div>
+                
+                <div class="process-arrow" data-aos="fade-up" data-aos-delay="200">
+                    <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                        <path d="M15 30H45M45 30L30 15M45 30L30 45" stroke="url(#gradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                
+                <div class="process-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="process-number">02</div>
+                    <div class="process-icon">💬</div>
+                    <h3>소모임 오픈카톡 참여</h3>
+                    <p>가입 완료 후 즉시 초대</p>
+                    <ul class="benefit-list">
+                        <li>실시간 AI 프롬프트 공유</li>
+                        <li>전문가 질문/답변/피드백</li>
+                        <li>오프라인 모임 공지</li>
+                    </ul>
+                    <a href="https://open.kakao.com/o/pJGO9L9h" target="_blank" class="kakao-quick-link">
+                        <span>💬</span> 오픈카톡 미리보기
+                    </a>
+                </div>
+                
+                <div class="process-arrow" data-aos="fade-up" data-aos-delay="400">
+                    <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                        <path d="M15 30H45M45 30L30 15M45 30L30 45" stroke="url(#gradient2)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                
+                <div class="process-card" data-aos="fade-left" data-aos-delay="500">
+                    <div class="process-number">03</div>
+                    <div class="process-icon">🧪</div>
+                    <h3>첫 오프라인 모임</h3>
+                    <p>AI 활용 능력 진단 및 맞춤 솔루션</p>
+                    <ul class="benefit-list">
+                        <li>현재 수준 100점 만점 진단</li>
+                        <li>맞춤 학습 로드맵 제공</li>
+                        <li>실전 프롬프트 교육</li>
+                    </ul>
+                    <div class="special-benefit">
+                        <strong>특전:</strong> 1:1 컨설팅 15분 + 프리미엄 프롬프트 3종
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CTA 버튼 -->
+            <div class="cta-container" data-aos="zoom-in" data-aos-delay="600">
+                <a href="/membership-guide.html" class="btn-luxury-primary">
+                    <span class="btn-icon">🚀</span>
+                    <span class="btn-text">회원제 가입하기</span>
+                    <span class="btn-shine"></span>
+                </a>
+                <p class="cta-note">30초면 가입 완료 • 무료 진단 프롬프트 즉시 제공</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: 데이터 증명 -->
+    <section id="proof" class="proof-section">
+        <div class="container-luxury">
+            <div class="proof-grid">
+                <div class="proof-card" data-aos="flip-left" data-aos-delay="100">
+                    <div class="proof-icon">📊</div>
+                    <div class="proof-number" data-count="7429">0</div>
+                    <div class="proof-label">해독된 실패 데이터</div>
+                </div>
+                
+                <div class="proof-card" data-aos="flip-left" data-aos-delay="200">
+                    <div class="proof-icon">📈</div>
+                    <div class="proof-number" data-count="87">0</div>
+                    <div class="proof-suffix">%</div>
+                    <div class="proof-label">구조 변경 후 성장률</div>
+                </div>
+                
+                <div class="proof-card" data-aos="flip-left" data-aos-delay="300">
+                    <div class="proof-icon">⏱️</div>
+                    <div class="proof-number" data-count="30">0</div>
+                    <div class="proof-suffix">일</div>
+                    <div class="proof-label">평균 변화 시작 시점</div>
+                </div>
+                
+                <div class="proof-card" data-aos="flip-left" data-aos-delay="400">
+                    <div class="proof-icon">👥</div>
+                    <div class="proof-number" data-count="1247">0</div>
+                    <div class="proof-suffix">명</div>
+                    <div class="proof-label">현재 실험 참여자</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: 실험 참여 -->
+    <section id="experiment" class="experiment-section">
+        <div class="container-luxury">
+            <div class="section-header" data-aos="fade-up">
+                <div class="section-badge">🧪 EXPERIMENT ACCESS</div>
+                <h2 class="section-title">
+                    실험실 입장<br>
+                    <span class="gradient-text">구조를 바꿀 준비가 되셨나요?</span>
+                </h2>
+            </div>
+            
+            <div class="resonance-grid">
+                <div class="resonance-card-luxury" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-icon-luxury">💭</div>
+                    <h3>"왜 나만 안 될까?"</h3>
+                    <p>같은 콘텐츠를 만들어도 다른 사람은 성장하고 나는 제자리</p>
+                    <div class="card-tag">#구조문제</div>
+                </div>
+                
+                <div class="resonance-card-luxury" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-icon-luxury">📉</div>
+                    <h3>"또 실패했다"</h3>
+                    <p>열심히 했는데 조회수는 여전히 두 자릿수. 무엇이 잘못된 걸까?</p>
+                    <div class="card-tag">#데이터부재</div>
+                </div>
+                
+                <div class="resonance-card-luxury" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card-icon-luxury">🔄</div>
+                    <h3>"바꿔야 하는데..."</h3>
+                    <p>뭔가 바꿔야 한다는 건 알지만 무엇을 어떻게 바꿔야 할지 모르겠다</p>
+                    <div class="card-tag">#방향상실</div>
+                </div>
+            </div>
+            
+            <div class="solution-box" data-aos="zoom-in" data-aos-delay="400">
+                <h3>우리는 <span class="gradient-text">구조</span>를 바꾼다</h3>
+                <p class="solution-text">
+                    실패한 사람들의 공통점은 하나였습니다.<br>
+                    <strong>구조를 바꾸지 않았다는 것.</strong>
+                </p>
+                
+                <div class="comparison-inline">
+                    <div class="comparison-before">
+                        <div class="comparison-label">BEFORE</div>
+                        <ul>
+                            <li>감으로 콘텐츠 제작</li>
+                            <li>무작위 업로드</li>
+                            <li>분석 없는 반복</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-arrow-center">→</div>
+                    
+                    <div class="comparison-after">
+                        <div class="comparison-label">AFTER</div>
+                        <ul>
+                            <li>데이터 기반 콘텐츠</li>
+                            <li>최적 시간대 자동화</li>
+                            <li>A/B 테스트 반복</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: 최종 CTA -->
+    <section id="contact" class="cta-final-section">
+        <div class="container-luxury">
+            <div class="cta-final-box" data-aos="fade-up">
+                <h2>실험 참여 조건</h2>
+                <div class="conditions-luxury">
+                    <div class="condition-item">
+                        <span class="condition-icon">✓</span>
+                        <p>실패를 인정하고 데이터로 받아들일 준비가 된 사람</p>
+                    </div>
+                    <div class="condition-item">
+                        <span class="condition-icon">✓</span>
+                        <p>구조를 바꿀 의지가 있는 사람</p>
+                    </div>
+                    <div class="condition-item">
+                        <span class="condition-icon">✓</span>
+                        <p>회원제 프로그램에 참여할 수 있는 사람</p>
+                    </div>
+                </div>
+                
+                <div class="final-cta-buttons">
+                    <a href="/membership-guide.html" class="btn-luxury-glow">
+                        <span>🚀</span> 지금 회원제 가입하기
+                    </a>
+                    <a href="https://open.kakao.com/o/pJGO9L9h" target="_blank" class="btn-luxury-outline">
+                        <span>💬</span> 오픈카톡 입장하기
+                    </a>
+                </div>
+                
+                <p class="final-note">
+                    회원가입 → 오픈카톡 참여 → 오프라인 모임<br>
+                    3단계로 구조적 성장을 시작하세요
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="luxury-footer">
+        <div class="footer-content">
+            <div class="footer-logo">퍼널 아키텍트 AI</div>
+            <p>실패를 데이터로 해독하는 실험실</p>
+            <div class="footer-links">
+                <a href="/membership-guide.html">회원제 안내</a>
+                <a href="https://open.kakao.com/o/pJGO9L9h" target="_blank">오픈카톡</a>
+                <a href="/">메인 사이트</a>
+            </div>
+            <p class="copyright">© 2026 퍼널 아키텍트 AI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

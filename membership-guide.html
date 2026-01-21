@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4주 수익형 채널 실험실 - 1기 마지막 모집</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lab/style.css">
+    <style>
+        /* 추가 커스텀 스타일 */
+        .hero-membership {
+            background: linear-gradient(135deg, rgba(10, 10, 15, 0.95) 0%, rgba(5, 5, 8, 1) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .countdown-timer {
+            display: inline-flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding: 20px 40px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid #ef4444;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .countdown-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .countdown-value {
+            font-size: 2.5rem;
+            color: #ef4444;
+            line-height: 1;
+        }
+        
+        .countdown-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+        
+        .price-strike {
+            text-decoration: line-through;
+            opacity: 0.5;
+            font-size: 1.5rem;
+        }
+        
+        .price-current {
+            font-size: 4rem;
+            font-weight: 900;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+        
+        .badge-hot {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            animation: pulse-hot 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-hot {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(251, 191, 36, 0.5); }
+            50% { box-shadow: 0 0 50px rgba(251, 191, 36, 0.8); }
+        }
+        
+        .week-card {
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 30px;
+            transition: all 0.5s ease;
+        }
+        
+        .week-card:hover {
+            transform: translateX(10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.3);
+        }
+        
+        .week-number {
+            font-size: 5rem;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+        
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .benefit-item {
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .benefit-item:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+        }
+        
+        .benefit-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .structure-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 15px;
+            margin: 40px 0;
+        }
+        
+        .structure-table tr {
+            background: rgba(102, 126, 234, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .structure-table tr:hover {
+            transform: scale(1.02);
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .structure-table td {
+            padding: 25px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .structure-table td:first-child {
+            border-radius: 15px 0 0 15px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-align: center;
+            width: 150px;
+        }
+        
+        .structure-table td:last-child {
+            border-radius: 0 15px 15px 0;
+        }
+        
+        .warning-banner {
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px solid #f59e0b;
+            border-radius: 25px;
+            padding: 40px;
+            margin: 60px 0;
+        }
+        
+        .warning-banner h3 {
+            color: #f59e0b;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 20px 0;
+            padding-left: 50px;
+            position: relative;
+            font-size: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist li::before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+            font-size: 1.8rem;
+        }
+        
+        .testimonial-card {
+            background: rgba(102, 126, 234, 0.08);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 30px;
+            padding: 50px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .testimonial-quote {
+            font-size: 1.5rem;
+            line-height: 1.8;
+            font-style: italic;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .author-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        
+        .cta-mega {
+            text-align: center;
+            padding: 100px 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(240, 147, 251, 0.1) 100%);
+            border-radius: 40px;
+            margin: 80px 0;
+        }
+        
+        .cta-mega h2 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .cta-mega p {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            margin-bottom: 50px;
+        }
+        
+        .btn-mega {
+            display: inline-block;
+            padding: 30px 80px;
+            background: var(--gradient-2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 2rem;
+            font-weight: 900;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(240, 147, 251, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-mega:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 30px 80px rgba(240, 147, 251, 0.7);
+        }
+        
+        .floating-benefit {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--gradient-1);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.5);
+            z-index: 1000;
+            animation: float-bounce 3s ease-in-out infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-benefit:hover {
+            transform: scale(1.1);
+        }
+        
+        @keyframes float-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        @media (max-width: 768px) {
+            /* Hero 타이틀 */
+            .hero-title {
+                font-size: 1.3rem !important;
+                line-height: 1.3 !important;
+            }
+            
+            /* Hero 텍스트 */
+            .hero-content p {
+                font-size: 0.75rem !important;
+                line-height: 1.4 !important;
+            }
+            
+            /* Hero 가격 카드 그리드 */
+            .hero-content > div[style*="grid-template-columns: repeat(3, 1fr)"] {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+                margin: 20px auto !important;
+            }
+            
+            /* 2기 카드 Scale 제거 */
+            .hero-content > div > div[style*="transform: scale(1.1)"] {
+                transform: scale(1) !important;
+            }
+            
+            /* 가격 카드 패딩 */
+            .hero-content > div > div {
+                padding: 15px !important;
+            }
+            
+            /* 가격 카드 텍스트 */
+            .hero-content div[style*="font-size: 2rem"] {
+                font-size: 1rem !important;
+            }
+            
+            .hero-content div[style*="font-size: 2.5rem"] {
+                font-size: 1.3rem !important;
+            }
+            
+            .hero-content div[style*="font-size: 3.5rem"] {
+                font-size: 1.8rem !important;
+            }
+            
+            .hero-content div[style*="font-size: 1rem"] {
+                font-size: 0.65rem !important;
+            }
+            
+            .hero-content div[style*="font-size: 0.9rem"] {
+                font-size: 0.6rem !important;
+            }
+            
+            .hero-content div[style*="font-size: 0.95rem"] {
+                font-size: 0.65rem !important;
+            }
+            
+            .hero-content div[style*="font-size: 1.1rem"] {
+                font-size: 0.75rem !important;
+            }
+            
+            /* 경고 박스 */
+            .hero-content > div[style*="border: 2px solid #ef4444"] {
+                padding: 15px !important;
+            }
+            
+            .hero-content > div[style*="border: 2px solid #ef4444"] p {
+                font-size: 0.7rem !important;
+                line-height: 1.4 !important;
+            }
+            
+            .hero-content > div[style*="border: 2px solid #ef4444"] strong {
+                font-size: 0.75rem !important;
+            }
+            
+            /* 규칙 박스 */
+            .hero-content > div[style*="background: linear-gradient(135deg, rgba(102, 126, 234"] {
+                padding: 15px !important;
+                margin-top: 20px !important;
+            }
+            
+            .hero-content > div[style*="background: linear-gradient(135deg, rgba(102, 126, 234"] h3 {
+                font-size: 0.9rem !important;
+                margin-bottom: 10px !important;
+            }
+            
+            .hero-content > div[style*="background: linear-gradient(135deg, rgba(102, 126, 234"] div[style*="font-size: 1rem"] {
+                font-size: 0.7rem !important;
+            }
+            
+            .hero-content > div[style*="background: linear-gradient(135deg, rgba(102, 126, 234"] ul {
+                font-size: 0.65rem !important;
+            }
+            
+            .hero-content > div[style*="background: linear-gradient(135deg, rgba(102, 126, 234"] div[style*="font-size: 1.8rem"] {
+                font-size: 1rem !important;
+            }
+            
+            .hero-content > div[style*="background: linear-gradient(135deg, rgba(102, 126, 234"] div[style*="font-size: 1.5rem"] {
+                font-size: 0.9rem !important;
+            }
+            
+            .hero-content > div[style*="background: linear-gradient(135deg, rgba(102, 126, 234"] div[style*="font-size: 0.9rem"] {
+                font-size: 0.65rem !important;
+            }
+            
+            .hero-content > div[style*="background: linear-gradient(135deg, rgba(102, 126, 234"] div[style*="font-size: 0.8rem"] {
+                font-size: 0.6rem !important;
+            }
+            
+            /* 배지 */
+            .badge-hot {
+                font-size: 0.6rem !important;
+                padding: 5px 12px !important;
+            }
+            
+            .hero-content div[style*="padding: 6px 15px"],
+            .hero-content div[style*="padding: 8px 18px"],
+            .hero-content div[style*="padding: 12px 20px"] {
+                padding: 4px 10px !important;
+                font-size: 0.6rem !important;
+            }
+            
+            /* NOW 배지 */
+            .hero-content div[style*="position: absolute; top: -12px"] {
+                font-size: 0.6rem !important;
+                padding: 3px 12px !important;
+                top: -8px !important;
+            }
+            
+            /* Section 타이틀 */
+            .section-title {
+                font-size: 1.3rem !important;
+            }
+            
+            .section-subtitle {
+                font-size: 0.8rem !important;
+            }
+            
+            .section-badge {
+                font-size: 0.6rem !important;
+                padding: 6px 15px !important;
+            }
+            
+            /* Week 카드 */
+            .week-card {
+                padding: 20px !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .week-number {
+                font-size: 2.5rem !important;
+            }
+            
+            .week-card h3 {
+                font-size: 1rem !important;
+            }
+            
+            .week-card p {
+                font-size: 0.75rem !important;
+            }
+            
+            .week-card ul li {
+                font-size: 0.7rem !important;
+            }
+            
+            /* 버튼 */
+            .btn-luxury-primary {
+                padding: 12px 25px !important;
+                font-size: 0.8rem !important;
+            }
+            
+            .btn-mega {
+                padding: 15px 35px !important;
+                font-size: 1rem !important;
+            }
+            
+            /* 기타 요소 */
+            .countdown-timer {
+                flex-wrap: wrap;
+                gap: 8px;
+                padding: 15px;
+                font-size: 0.8rem !important;
+            }
+            
+            .countdown-value {
+                font-size: 1.3rem !important;
+            }
+            
+            .countdown-label {
+                font-size: 0.6rem !important;
+            }
+            
+            .price-current {
+                font-size: 2rem !important;
+            }
+            
+            .cta-mega h2 {
+                font-size: 1.3rem !important;
+            }
+            
+            .cta-mega p {
+                font-size: 0.8rem !important;
+            }
+            
+            .floating-benefit {
+                bottom: 10px;
+                right: 10px;
+                font-size: 0.7rem !important;
+                padding: 10px 15px !important;
+            }
+            
+            /* Benefit 그리드 */
+            .benefit-grid {
+                gap: 15px !important;
+            }
+            
+            .benefit-item {
+                padding: 15px !important;
+            }
+            
+            .benefit-icon {
+                font-size: 2rem !important;
+            }
+            
+            .benefit-item h4 {
+                font-size: 0.85rem !important;
+            }
+            
+            .benefit-item p {
+                font-size: 0.7rem !important;
+            }
+            
+            /* 테이블 */
+            .structure-table td {
+                padding: 15px !important;
+                font-size: 0.75rem !important;
+            }
+            
+            /* Testimonial */
+            .testimonial-card {
+                padding: 25px !important;
+            }
+            
+            .testimonial-quote {
+                font-size: 0.85rem !important;
+            }
+            
+            .testimonial-author {
+                font-size: 0.75rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <header style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 20px 0; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.2);">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <nav style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="/" style="display: flex; align-items: center; gap: 12px; color: white; font-size: 1.3rem; font-weight: 700; text-decoration: none;">
+                    <img src="/ai-busan-logo-round.png" alt="AI BUSAN" style="height: 50px; width: 50px; border-radius: 50%;">
+                    <span>AI BUSAN</span>
+                </a>
+                <div style="display: flex; gap: 20px; align-items: center;">
+                    <a href="/" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 8px; transition: 0.3s; font-weight: 500;">홈</a>
+                    <a href="/prompts.html?from=somoim" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 8px; transition: 0.3s; font-weight: 500;">프롬프트</a>
+                    <a href="/membership-guide.html" style="color: white; text-decoration: none; padding: 8px 16px; border-radius: 8px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); font-weight: 500;">VIP 실험체 신청</a>
+                    <a href="https://open.kakao.com/o/phw90nci" target="_blank" style="padding: 12px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 25px; font-weight: 600;">💬 오픈채팅</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO SECTION WITH PRICING -->
+    <section id="hero" class="hero-section hero-membership">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="badge-hot" style="background: #ef4444; animation: pulse-hot 2s infinite;">
+                ⚠️ 기수마다 가격 상승 중
+            </div>
+            
+            <h1 class="hero-title">
+                💰 지금이<br>
+                <span class="gradient-text-animated">가장 저렴합니다</span>
+            </h1>
+            
+            <p style="font-size: 1.5rem; color: rgba(255,255,255,0.95); font-weight: 700; margin: 30px 0; line-height: 1.8;">
+                기수가 올라갈수록 할인율이 10%씩 감소<br>
+                <span style="font-size: 1.8rem; color: #fbbf24;">매 기수 ₩15,000씩 상승!</span>
+            </p>
+            
+            <!-- 가격 비교 3개 -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin: 50px auto; max-width: 900px;">
+                <!-- 1기 -->
+                <div style="background: rgba(20, 20, 30, 0.8); border: 2px solid rgba(100, 100, 120, 0.4); border-radius: 20px; padding: 30px; text-align: center; opacity: 0.7;">
+                    <div style="font-size: 2rem; font-weight: 900; margin-bottom: 10px; color: #ffffff;">1기</div>
+                    <div style="background: rgba(239, 68, 68, 0.3); color: #ff6b6b; padding: 6px 15px; border-radius: 20px; display: inline-block; font-weight: 700; font-size: 0.85rem; margin-bottom: 15px; border: 1px solid #ff6b6b;">
+                        🔥 61% 할인
+                    </div>
+                    <div style="font-size: 2.5rem; font-weight: 900; color: #fbbf24; margin: 10px 0; text-shadow: 0 2px 10px rgba(251, 191, 36, 0.5);">₩59,000</div>
+                    <div style="font-size: 0.9rem; text-decoration: line-through; opacity: 0.6; margin-bottom: 10px; color: #cccccc;">₩150,000</div>
+                    <div style="background: rgba(100, 100, 120, 0.3); color: #aaaaaa; padding: 8px 15px; border-radius: 15px; font-weight: 600; font-size: 0.95rem;">
+                        ❌ 마감
+                    </div>
+                </div>
+                
+                <!-- 2기 (현재) -->
+                <div style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.25) 0%, rgba(245, 158, 11, 0.15) 100%); border: 4px solid #fbbf24; border-radius: 20px; padding: 30px; text-align: center; position: relative; transform: scale(1.1); box-shadow: 0 20px 60px rgba(251, 191, 36, 0.6), 0 0 40px rgba(251, 191, 36, 0.3);">
+                    <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 6px 24px; border-radius: 20px; font-size: 0.85rem; font-weight: 900; animation: pulse-hot 2s infinite; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.6);">
+                        NOW
+                    </div>
+                    <div style="font-size: 2rem; font-weight: 900; margin-bottom: 10px; color: #ffffff; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);">2기</div>
+                    <div style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: #000000; padding: 8px 18px; border-radius: 20px; display: inline-block; font-weight: 900; font-size: 0.9rem; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);">
+                        ⚡ 51% 할인
+                    </div>
+                    <div style="font-size: 3.5rem; font-weight: 900; color: #fbbf24; margin: 10px 0; text-shadow: 0 4px 20px rgba(251, 191, 36, 0.8), 0 0 40px rgba(251, 191, 36, 0.5);">₩74,000</div>
+                    <div style="font-size: 1rem; text-decoration: line-through; opacity: 0.7; margin-bottom: 10px; color: #e0e0e0;">₩150,000</div>
+                    <div style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: #000000; padding: 12px 20px; border-radius: 15px; font-weight: 900; font-size: 1.1rem; box-shadow: 0 6px 20px rgba(251, 191, 36, 0.5);">
+                        ✅ 모집 중
+                    </div>
+                </div>
+                
+                <!-- 3기 -->
+                <div style="background: rgba(20, 20, 40, 0.6); border: 2px solid rgba(102, 126, 234, 0.4); border-radius: 20px; padding: 30px; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 900; margin-bottom: 10px; color: #ffffff;">3기</div>
+                    <div style="background: rgba(102, 126, 234, 0.3); color: #9ab4ff; padding: 6px 15px; border-radius: 20px; display: inline-block; font-weight: 700; font-size: 0.85rem; margin-bottom: 15px; border: 1px solid #667eea;">
+                        41% 할인
+                    </div>
+                    <div style="font-size: 2.5rem; font-weight: 900; color: #9ab4ff; margin: 10px 0; text-shadow: 0 2px 10px rgba(154, 180, 255, 0.5);">₩89,000</div>
+                    <div style="font-size: 0.9rem; text-decoration: line-through; opacity: 0.6; margin-bottom: 10px; color: #cccccc;">₩150,000</div>
+                    <div style="background: rgba(102, 126, 234, 0.3); color: #9ab4ff; padding: 8px 15px; border-radius: 15px; font-weight: 600; font-size: 0.95rem; border: 1px solid #667eea;">
+                        ⏰ 예정
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 가격 상승 경고 -->
+            <div style="background: rgba(239, 68, 68, 0.1); border: 2px solid #ef4444; border-radius: 20px; padding: 30px; margin: 40px auto; max-width: 700px;">
+                <p style="font-size: 1.3rem; line-height: 1.8; margin: 0; color: white;">
+                    💸 <strong style="color: #fbbf24;">1기 참여자는 ₩15,000 더 저렴하게!</strong><br>
+                    ⚠️ 다음 기수는 <strong style="color: #ef4444;">₩89,000 (41% 할인)</strong><br>
+                    🚀 매 기수 <strong style="color: #fbbf24;">₩15,000씩 상승</strong><br>
+                    📈 7기부터는 정가 <strong>₩150,000</strong>
+                </p>
+            </div>
+            
+            <!-- 실험실 규칙 안내 -->
+            <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%); border: 2px solid rgba(102, 126, 234, 0.3); border-radius: 20px; padding: 30px; margin: 40px auto; max-width: 700px; text-align: left;">
+                <h3 style="font-size: 1.5rem; font-weight: 900; color: white; margin-bottom: 20px; text-align: center;">
+                    ⚖️ 실험실 운영 규칙
+                </h3>
+                <div style="background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 20px; margin-bottom: 20px;">
+                    <div style="font-size: 1rem; color: rgba(255,255,255,0.95); margin-bottom: 8px;">
+                        <strong style="color: #fbbf24;">🎯 결과만 남는 구조</strong>
+                    </div>
+                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.95rem; color: rgba(255,255,255,0.85); line-height: 2;">
+                        <li>✓ 정모 4회 전부 필수 참여</li>
+                        <li>✓ 2회 이상 무단 불참 → 자동 탈락</li>
+                        <li>✓ 중도 이탈 / 미션 미제출 → 환불 불가</li>
+                        <li>✓ 끝까지 함께하면 당신만의 최고의 AI 직원 완성</li>
+                    </ul>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: rgba(251, 191, 36, 0.2); border: 2px solid rgba(251, 191, 36, 0.4); border-radius: 12px; padding: 15px; text-align: center;">
+                        <div style="font-size: 1.8rem; margin-bottom: 5px;">🏆</div>
+                        <div style="font-weight: 700; font-size: 0.9rem; color: white; margin-bottom: 5px;">AI 직원 업그레이드</div>
+                        <div style="font-size: 1.5rem; font-weight: 900; color: #fbbf24;">55% 할인</div>
+                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.8); margin-top: 5px;">더 강력한 AI 파트너로</div>
+                    </div>
+                    <div style="background: rgba(239, 68, 68, 0.2); border: 2px solid rgba(239, 68, 68, 0.4); border-radius: 12px; padding: 15px; text-align: center;">
+                        <div style="font-size: 1.8rem; margin-bottom: 5px;">🔄</div>
+                        <div style="font-weight: 700; font-size: 0.9rem; color: white; margin-bottom: 5px;">재도전</div>
+                        <div style="font-size: 1.5rem; font-weight: 900; color: #ef4444;">50% 할인</div>
+                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.8); margin-top: 5px;">다시 시작할 때</div>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="#pricing" class="btn-luxury-primary" style="margin-top: 30px;">
+                <span class="btn-icon">🌟</span>
+                <span class="btn-text">2기 최저가로 신청하기</span>
+                <span class="btn-shine"></span>
+            </a>
+            
+            <div class="scroll-indicator">
+                <div class="mouse-icon">
+                    <div class="mouse-wheel"></div>
+                </div>
+                <span>스크롤하여 자세히 보기</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- INTRO SECTION WITH VIDEO -->
+    <section class="membership-section">
+        <div class="container-luxury">
+            <div class="section-header" >
+                <div class="section-badge">💡 REAL TRANSFORMATION</div>
+                <h2 class="section-title">
+                    단순한 강의가 아닙니다<br>
+                    <span class="gradient-text">4주 실전 실험 모임입니다</span>
+                </h2>
+                <p class="section-subtitle">
+                    단순히 지식을 전달받는 강의가 아닙니다.<br>
+                    4주 동안 내 채널과 가게의 구조를 실제로 뜯어고치고,<br>
+                    수익이 나오는 시스템을 구축하는 실전 실험 모임입니다.
+                </p>
+            </div>
+            
+            <!-- 프로그램 소개 영상 -->
+            <div class="video-showcase" style="max-width: 1200px; margin: 60px auto;"  >
+                <div class="video-frame">
+                    <video id="membershipVideo" controls playsinline>
+                        <source src="membership-video.mov" type="video/mp4">
+                        <source src="membership-video.mov" type="video/quicktime">
+                        죄송합니다. 귀하의 브라우저는 비디오 태그를 지원하지 않습니다.
+                    </video>
+                    <div class="video-overlay-play" id="membershipVideoPlayBtn">
+                        <div class="play-icon">▶</div>
+                    </div>
+                </div>
+                
+                <div class="video-caption">
+                    <h3>프로그램 소개 영상</h3>
+                    <p>4주 실험의 시작을 영상으로 확인하세요</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HARDCORE DIAGNOSIS SECTION -->
+    <section class="diagnosis-hardcore-section" style="background: linear-gradient(135deg, rgba(10, 10, 15, 0.95) 0%, rgba(5, 5, 8, 1) 100%); padding: 100px 0; margin: 80px 0; border-radius: 40px;">
+        <div class="container-luxury">
+            <div class="section-header" >
+                <div class="section-badge" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); animation: pulse 2s infinite;">
+                    ⚠️ 잔인한 진단 주의
+                </div>
+                <h2 class="section-title" style="color: white;">
+                    당신의 AI 활용은<br>
+                    <span class="gradient-text" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">수익인가, 비용인가?</span>
+                </h2>
+                <p style="font-size: 1.4rem; color: rgba(255,255,255,0.8); margin-top: 30px; line-height: 1.8;">
+                    "AI로 글쓰기", "그림 그리기"는 생산성 0점입니다.<br>
+                    당신이 잠자는 동안에도 돌아가는 구조가 있습니까?
+                </p>
+            </div>
+            
+            <!-- 킬러 퀘스천 -->
+            <div style="margin: 80px 0;">
+                <h3 class="section-subtitle" style="text-align: center; font-size: 2.5rem; margin-bottom: 50px; color: white;">
+                    🔥 킬러 퀘스천
+                </h3>
+                
+                <div class="question-card" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%); border: 2px solid rgba(239, 68, 68, 0.3); border-left: 6px solid #ef4444; border-radius: 20px; padding: 40px; margin-bottom: 30px; transition: all 0.4s ease;" >
+                    <div style="display: inline-block; width: 50px; height: 50px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.5rem; margin-bottom: 20px;">1</div>
+                    <div style="font-size: 1.4rem; font-weight: 700; line-height: 1.8; color: #ffffff;">
+                        당신이 오늘 하루 종일 단 한 번도 PC/폰을 켜지 않아도,<br>
+                        <strong style="color: #ef4444;">내일 아침 통장에 1원이라도 들어오는 구조가 있습니까?</strong>
+                    </div>
+                </div>
+                
+                <div class="question-card" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%); border: 2px solid rgba(239, 68, 68, 0.3); border-left: 6px solid #ef4444; border-radius: 20px; padding: 40px; margin-bottom: 30px; transition: all 0.4s ease;" >
+                    <div style="display: inline-block; width: 50px; height: 50px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.5rem; margin-bottom: 20px;">2</div>
+                    <div style="font-size: 1.4rem; font-weight: 700; line-height: 1.8; color: #ffffff;">
+                        현재 AI 프로세스에서 당신의 '판단'이 들어가는 비중은 몇 %입니까?<br>
+                        <strong style="color: #ef4444;">(10%만 넘어도 시스템 실패입니다)</strong>
+                    </div>
+                </div>
+                
+                <div class="question-card" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%); border: 2px solid rgba(239, 68, 68, 0.3); border-left: 6px solid #ef4444; border-radius: 20px; padding: 40px; margin-bottom: 30px; transition: all 0.4s ease;" >
+                    <div style="display: inline-block; width: 50px; height: 50px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.5rem; margin-bottom: 20px;">3</div>
+                    <div style="font-size: 1.4rem; font-weight: 700; line-height: 1.8; color: #ffffff;">
+                        이 구조를 복제해서 100개로 늘릴 수 있습니까?<br>
+                        <strong style="color: #ef4444;">없다면 그 이유는 무엇입니까?</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 프롬프트 미리보기 -->
+            <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border: 2px solid rgba(102, 126, 234, 0.3); border-radius: 20px; padding: 50px; position: relative; overflow: hidden;" >
+                <div style="position: relative; z-index: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
+                        <h3 style="font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 0;">
+                            🔥 The Profit Architect - Hard Core
+                        </h3>
+                        <div style="padding: 12px 30px; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 50px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                            🔓 회원 가입 시 무료 공개
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(0, 0, 0, 0.3); border-radius: 15px; padding: 40px; font-family: 'Courier New', monospace; font-size: 1rem; line-height: 2; color: rgba(255, 255, 255, 0.9); margin-bottom: 30px; border-left: 4px solid #667eea; max-height: 500px; overflow-y: auto;">
+<strong>[Prompt: The Profit Architect - Hard Core]</strong>
+
+<strong>1. 핵심 원칙:</strong>
+사용자의 대답에서 '수동 개입'이 발견될 때마다 <span style="color: #ef4444; font-weight: 700;">"그것은 수익이 아니라 비용입니다"</span>라고 지적할 것.
+"AI로 글쓰기", "그림 그리기" 같은 단순 활용은 <span style="color: #ef4444; font-weight: 700;">'생산성 0점'</span>으로 처리함.
+
+<strong>2. 킬러 퀘스천 (사용자에게 던질 것):</strong>
+• "당신이 오늘 하루 종일 단 한 번도 PC/폰을 켜지 않아도, 내일 아침 통장에 1원이라도 들어오는 구조가 있습니까?"
+• "현재 AI 프로세스에서 당신의 '판단'이 들어가는 비중은 몇 %입니까? <span style="color: #ef4444; font-weight: 700;">(10%만 넘어도 시스템 실패입니다)</span>"
+• "이 구조를 복제해서 100개로 늘릴 수 있습니까? 없다면 그 이유는 무엇입니까?"
+
+<strong>3. 진단 결과 출력 (Brutally Honest):</strong>
+
+① 현 등급: [AI 노예 / AI 취미가 / AI 설계자 / AI 마스터] 중 택 1
+
+② 수익 치명타: 
+<span style="color: #ef4444; font-weight: 700;">"당신의 현재 방식은 확장이 불가능합니다. 당신의 시간이 투입되는 순간 그것은 비즈니스가 아니라 '알바'입니다."</span>
+
+③ 기회비용 계산: 
+(사용자의 시급 × 수동 작업 시간 × 30일) = <span style="color: #ef4444; font-weight: 700;">"당신이 매달 버리고 있는 돈은 [000]만 원입니다."</span>
+
+④ Paid Lab 즉시 처방: 
+<span style="color: #ef4444; font-weight: 700;">"당신에게 필요한 것은 '프롬프트'가 아니라 '워크플로우'입니다. 000님이 사용 중인 [Paid Lab 전용 자동화 시퀀스]를 복제하십시오."</span>
+                    </div>
+                    
+                    <div style="text-align: center; padding: 30px; background: rgba(239, 68, 68, 0.1); border-radius: 15px; border: 2px solid rgba(239, 68, 68, 0.3);">
+                        <p style="font-size: 1.3rem; font-weight: 700; color: #ef4444; margin-bottom: 20px;">
+                            💀 이 프롬프트는 당신의 현실을 직시하게 만듭니다
+                        </p>
+                        <p style="font-size: 1.1rem; color: rgba(255, 255, 255, 0.8); line-height: 1.8; margin: 0;">
+                            회원 가입 후 전체 프롬프트를 받아 ChatGPT에게 당신의 AI 활용 방식을 진단받으세요.<br>
+                            <strong style="color: #fbbf24;">모든 프롬프트 100% 무료!</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WARNING SECTION -->
+    <section class="proof-section">
+        <div class="container-luxury">
+            <div class="warning-banner" >
+                <h3>⚠️ 참여 전 꼭 확인해주세요!</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 30px; line-height: 1.8;">
+                    우리는 '진짜 결과'를 만듭니다.<br>
+                    그래서 아래 조건에 해당하시는 분들께만 참여를 권장합니다.
+                </p>
+                <ul class="checklist">
+                    <li>주말 중 하루, 최소 4시간 이상 집중 투자가 가능하신 분</li>
+                    <li>눈으로만 보는 공부가 아닌, 내 손으로 직접 성과를 내고 싶으신 분</li>
+                    <li>4주 뒤, 완전히 달라진 내 채널의 구조를 경험하고 싶으신 분</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- CURRICULUM SECTION -->
+    <section id="curriculum" class="experiment-section">
+        <div class="container-luxury">
+            <div class="section-header" >
+                <div class="section-badge">🚀 ROADMAP</div>
+                <h2 class="section-title">
+                    성장을 위한<br>
+                    <span class="gradient-text">기수별 로드맵</span>
+                </h2>
+            </div>
+            
+            <!-- 1주차 -->
+            <div class="week-card"  >
+                <div class="week-number">1주차</div>
+                <h3 style="font-size: 2rem; margin-bottom: 15px; color: var(--primary);">
+                    나의 희망능력과 평가<br>
+                    기본기 마스터
+                </h3>
+                <p style="font-size: 1.3rem; color: var(--accent); margin-bottom: 30px; font-weight: 700;">
+                    "AI 직원의 기초를 다집니다."
+                </p>
+                <ul class="benefit-list" style="text-align: left;">
+                    <li><strong>자기 진단:</strong> 나의 강점과 약점 파악</li>
+                    <li><strong>AI 기본 개념:</strong> AI 직원의 핵심 원리 이해</li>
+                    <li><strong>기초 실습:</strong> 첫 AI 파트너 만나기</li>
+                </ul>
+            </div>
+            
+            <!-- 2주차 -->
+            <div class="week-card"  >
+                <div class="week-number">2주차</div>
+                <h3 style="font-size: 2rem; margin-bottom: 15px; color: var(--primary);">
+                    본인에 개인 탐정<br>
+                    만들기, 자동화 시스템 구축<br>
+                    및 실전 마케팅 도입
+                </h3>
+                <p style="font-size: 1.3rem; color: var(--accent); margin-bottom: 30px; font-weight: 700;">
+                    "당신만의 AI 직원을 본격적으로 제작합니다."
+                </p>
+                <ul class="benefit-list" style="text-align: left;">
+                    <li><strong>개인 AI 탐정 제작:</strong> 나만의 전문 AI 직원 구축</li>
+                    <li><strong>자동화 시스템:</strong> 반복 작업을 AI에게 맡기기</li>
+                    <li><strong>실전 마케팅:</strong> AI 직원과 함께 시장에 진입</li>
+                </ul>
+            </div>
+            
+            <!-- 3주차 -->
+            <div class="week-card"  >
+                <div class="week-number">3주차</div>
+                <h3 style="font-size: 2rem; margin-bottom: 15px; color: var(--primary);">
+                    직원의 역량 강화<br>
+                    브랜딩 강화<br>
+                    개인 프롬프트 제공
+                </h3>
+                <p style="font-size: 1.3rem; color: var(--accent); margin-bottom: 30px; font-weight: 700;">
+                    "AI 직원을 한 단계 업그레이드합니다."
+                </p>
+                <ul class="benefit-list" style="text-align: left;">
+                    <li><strong>AI 역량 강화:</strong> 더 똑똑하고 효율적인 AI 직원으로</li>
+                    <li><strong>브랜딩 강화:</strong> 나만의 전문성을 AI와 함께 구축</li>
+                    <li><strong>맞춤 프롬프트:</strong> 당신만을 위한 전용 명령어 세트</li>
+                </ul>
+            </div>
+            
+            <!-- 4주차 -->
+            <div class="week-card"  >
+                <div class="week-number">4주차</div>
+                <h3 style="font-size: 2rem; margin-bottom: 15px; color: var(--primary);">
+                    다른 사람에게도, 직원을 만들어<br>
+                    줄수있는 사람,<br>
+                    최고의 든든한 똑똁한 AI 과장 창조
+                </h3>
+                <p style="font-size: 1.3rem; color: var(--accent); margin-bottom: 30px; font-weight: 700;">
+                    "이제 당신이 AI 직원 제작 전문가입니다."
+                </p>
+                <ul class="benefit-list" style="text-align: left;">
+                    <li><strong>타인을 위한 AI 제작:</strong> 다른 사람들에게 AI 직원 만들어주기</li>
+                    <li><strong>AI 과장급 파트너:</strong> 최고 수준의 똁똁한 AI 직원 완성</li>
+                    <li><strong>전문가 인증:</strong> AI 직원 제작 마스터로 졸업</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING SECTION -->
+    <section id="pricing" class="membership-section">
+        <div class="container-luxury">
+            <div class="section-header" >
+                <div class="section-badge">💰 SPECIAL OFFER</div>
+                <h2 class="section-title">
+                    기수별 가격<br>
+                    <span class="gradient-text">할인율 감소 전략</span>
+                </h2>
+                <p class="section-subtitle">
+                    AI 직원 개척자부터 전문가까지 성장 로드맵<br>
+                    기수가 올라갈수록 할인율이 10%씩 감소합니다
+                </p>
+            </div>
+            
+            <!-- 기수별 가격 비교 -->
+            <div class="solution-box" style="margin-bottom: 40px;">
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <div class="price-strike">정가: 150,000원</div>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 10px;">
+                        기수마다 할인율 10%씩 감소 | 7기부터는 정가
+                    </p>
+                </div>
+                
+                <!-- 3개 기수 비교 그리드 -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 40px;">
+                    <!-- 1기 (마감) -->
+                    <div style="background: rgba(102, 126, 234, 0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; text-align: center; opacity: 0.6;">
+                        <div style="font-size: 2rem; font-weight: 900; margin-bottom: 15px;">1기</div>
+                        <div style="background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 8px 20px; border-radius: 50px; display: inline-block; font-weight: 700; font-size: 0.9rem; margin-bottom: 15px;">
+                            🔥 61% 할인
+                        </div>
+                        <div style="font-size: 2.5rem; font-weight: 900; color: #fbbf24; margin: 15px 0;">₩59,000</div>
+                        <div style="font-size: 0.95rem; text-decoration: line-through; opacity: 0.5; margin-bottom: 15px;">₩150,000</div>
+                        <div style="background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 10px 20px; border-radius: 15px; font-weight: 600;">
+                            마감
+                        </div>
+                    </div>
+                    
+                    <!-- 2기 (모집 중) -->
+                    <div style="background: rgba(251, 191, 36, 0.1); border: 3px solid #fbbf24; border-radius: 20px; padding: 30px; text-align: center; position: relative; animation: pulse-glow 2s infinite;">
+                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: #ef4444; color: white; padding: 5px 20px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;">
+                            NOW
+                        </div>
+                        <div style="font-size: 2rem; font-weight: 900; margin-bottom: 15px;">2기</div>
+                        <div style="background: rgba(251, 191, 36, 0.3); color: #fbbf24; padding: 8px 20px; border-radius: 50px; display: inline-block; font-weight: 700; font-size: 0.9rem; margin-bottom: 15px;">
+                            ⚡ 51% 할인
+                        </div>
+                        <div style="font-size: 3rem; font-weight: 900; color: #fbbf24; margin: 15px 0;">₩74,000</div>
+                        <div style="font-size: 0.95rem; text-decoration: line-through; opacity: 0.5; margin-bottom: 15px;">₩150,000</div>
+                        <div style="background: #fbbf24; color: #000; padding: 12px 20px; border-radius: 15px; font-weight: 700; font-size: 1.1rem;">
+                            모집 중
+                        </div>
+                    </div>
+                    
+                    <!-- 3기 (예정) -->
+                    <div style="background: rgba(102, 126, 234, 0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 30px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 900; margin-bottom: 15px;">3기</div>
+                        <div style="background: rgba(102, 126, 234, 0.2); color: #667eea; padding: 8px 20px; border-radius: 50px; display: inline-block; font-weight: 700; font-size: 0.9rem; margin-bottom: 15px;">
+                            41% 할인
+                        </div>
+                        <div style="font-size: 2.5rem; font-weight: 900; color: #667eea; margin: 15px 0;">₩89,000</div>
+                        <div style="font-size: 0.95rem; text-decoration: line-through; opacity: 0.5; margin-bottom: 15px;">₩150,000</div>
+                        <div style="background: rgba(102, 126, 234, 0.2); color: #667eea; padding: 10px 20px; border-radius: 15px; font-weight: 600;">
+                            예정
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 긴급성 메시지 -->
+                <div style="background: rgba(239, 68, 68, 0.1); border: 2px solid #ef4444; border-radius: 20px; padding: 30px; text-align: center;">
+                    <h3 style="color: #ef4444; font-size: 1.8rem; margin-bottom: 15px;">
+                        ⚠️ 기수별 가격 상승 안내
+                    </h3>
+                    <p style="font-size: 1.2rem; line-height: 1.8;">
+                        1기: ₩59,000 (61% 할인) ❌ 마감<br>
+                        2기: ₩74,000 (51% 할인) ✅ 모집 중 ← 지금!<br>
+                        3기: ₩89,000 (41% 할인) ⏰ 예정<br>
+                        <strong style="color: #fbbf24;">매 기수 ₩15,000씩 상승 | 7기부터는 정가 ₩150,000</strong>
+                    </p>
+                </div>
+                
+                <!-- 계좌번호 안내 -->
+                <div style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%); border: 2px solid #fbbf24; border-radius: 20px; padding: 30px; margin-top: 30px; text-align: center;">
+                    <h3 style="color: #fbbf24; font-size: 1.8rem; margin-bottom: 20px;">
+                        💳 참가비 입금 계좌
+                    </h3>
+                    <div style="background: rgba(0, 0, 0, 0.3); border-radius: 15px; padding: 25px; margin-bottom: 20px;">
+                        <p style="font-size: 1.5rem; font-weight: 900; color: #fbbf24; margin-bottom: 10px;">
+                            농협 302-2116-3964-11
+                        </p>
+                        <p style="font-size: 1.2rem; color: rgba(255,255,255,0.9);">
+                            예금주: 천성준
+                        </p>
+                    </div>
+                    <p style="font-size: 1.1rem; color: rgba(255,255,255,0.8); line-height: 1.8;">
+                        입금 후 오픈카톡으로 <strong style="color: #fbbf24;">성함 + 입금자명</strong>을 보내주세요!<br>
+                        확인 후 2기 실험생 등록해드립니다.
+                    </p>
+                </div>
+                
+                <div class="benefit-grid">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">📍</div>
+                        <h4 style="margin-bottom: 10px;">정기 모임 4회</h4>
+                        <p style="color: var(--text-muted); font-size: 0.95rem;">오프라인/온라인</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">🎯</div>
+                        <h4 style="margin-bottom: 10px;">1:1 맞춤 설계</h4>
+                        <p style="color: var(--text-muted); font-size: 0.95rem;">개인 채널 구조</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">🤖</div>
+                        <h4 style="margin-bottom: 10px;">치트키 프롬프트</h4>
+                        <p style="color: var(--text-muted); font-size: 0.95rem;">즉시 활용 가능</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">💬</div>
+                        <h4 style="margin-bottom: 10px;">실시간 피드백</h4>
+                        <p style="color: var(--text-muted); font-size: 0.95rem;">모임장 코칭</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STRUCTURE SECTION -->
+    <section class="proof-section">
+        <div class="container-luxury">
+            <div class="section-header" >
+                <div class="section-badge">🏗️ STRUCTURE</div>
+                <h2 class="section-title">
+                    실험실 운영<br>
+                    <span class="gradient-text">구조</span>
+                </h2>
+            </div>
+            
+            <div  >
+                <h3 style="font-size: 2rem; margin-bottom: 30px;">0️⃣ 이 실험실의 정체성</h3>
+                <p style="font-size: 1.3rem; line-height: 1.8; margin-bottom: 40px;">
+                    이 실험실은 <strong style="color: var(--accent);">강의장이 아닙니다.</strong><br>
+                    이곳은 <strong style="color: var(--primary);">실험실</strong>입니다.<br><br>
+                    → 직접 만들고<br>
+                    → 직접 올리고<br>
+                    → 직접 반응과 매출을 만들어내는<br>
+                    <strong style="color: var(--accent);">'결과 생산 구역'</strong>입니다.
+                </p>
+                
+                <h3 style="font-size: 2rem; margin: 60px 0 30px;">1️⃣ 참여 구조</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 30px;">이 실험실은 3단 구조로 운영됩니다.</p>
+                
+                <table class="structure-table">
+                    <tr  >
+                        <td>🟢 대기자</td>
+                        <td style="font-size: 1.1rem;">무료 오픈존 / 관찰 / 관계 형성</td>
+                    </tr>
+                    <tr  >
+                        <td>🔵 실험생</td>
+                        <td style="font-size: 1.1rem;">30일 실전 실험 참여자 (유료)</td>
+                    </tr>
+                    <tr  >
+                        <td>🟡 졸업생</td>
+                        <td style="font-size: 1.1rem;">결과를 증명한 인증 완료자</td>
+                    </tr>
+                </table>
+                
+                <h3 style="font-size: 2rem; margin: 60px 0 30px;">👍 커뮤니티 & 관계 구조</h3>
+                <ul class="benefit-list" style="text-align: left; font-size: 1.1rem;">
+                    <li>대기자 / 실험생 / 졸업생 전원이 함께하는 자유 네트워킹 모임 정기 운영</li>
+                    <li>와인 모임, 식사 모임, 교류 모임을 통해 업종과 정보 자연스럽게 공유</li>
+                    <li>실험실은 결과를 만들지만, 사람은 관계 속에서 오래 갑니다.</li>
+                </ul>
+                
+                <h3 style="font-size: 2rem; margin: 60px 0 30px;">3️⃣ 운영 방식</h3>
+                <ul class="benefit-list" style="text-align: left; font-size: 1.1rem;">
+                    <li>정모 월 4회 (전부 필수)</li>
+                    <li>모든 정모는 실습 + 상호 피드백 구조</li>
+                    <li>매주 개인 산출물 제출 필수</li>
+                    <li>운영자는 개인별 최적화 프롬프트 4종 세트 제공</li>
+                </ul>
+                
+                <h3 style="font-size: 2rem; margin: 60px 0 30px;">4️⃣ 실험생 구조 (핵심)</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 30px;">
+                    실험생은 <strong style="color: var(--accent);">결과를 만들겠다고 계약한 참여자</strong>입니다.
+                </p>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 20px;">30일 동안:</p>
+                <ul class="benefit-list" style="text-align: left; font-size: 1.1rem;">
+                    <li>개인 채널 & 가게 구조 설계</li>
+                    <li>AI 자동 콘텐츠 공장 구축</li>
+                    <li>실전 업로드 & 반응 실험</li>
+                    <li>문의 또는 첫 매출 구조 완성</li>
+                </ul>
+                <p style="font-size: 1.3rem; color: var(--accent); font-weight: 700; margin-top: 30px;">
+                    → 최소 하나의 실제 결과 구조를 만듭니다.
+                </p>
+                
+                <h3 style="font-size: 2rem; margin: 60px 0 30px;">5️⃣ 규칙 & 환불 규정</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 30px;">
+                    이 실험실은 <strong style="color: var(--accent);">결과 계약 구조</strong>입니다.
+                </p>
+                <ul class="benefit-list" style="text-align: left; font-size: 1.1rem;">
+                    <li>정모 4회 전부 필수 참여</li>
+                    <li>2회 이상 무단 불참 → 자동 탈락</li>
+                    <li>중도 이탈 / 미션 미제출 → 환불 불가</li>
+                    <li>자동 탈락 시 실험생 자격 종료</li>
+                </ul>
+                
+                <!-- 재도전 & 지속 참여 혜택 -->
+                <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border: 2px solid rgba(102, 126, 234, 0.3); border-radius: 20px; padding: 40px; margin-top: 40px;">
+                    <h4 style="font-size: 1.8rem; margin-bottom: 30px; color: var(--primary);">🎁 특별 혜택</h4>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px;">
+                        <!-- 재도전 할인 -->
+                        <div style="background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.3); border-radius: 15px; padding: 30px; text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 15px;">🔄</div>
+                            <h5 style="font-size: 1.3rem; margin-bottom: 15px; color: #ef4444; font-weight: 700;">재도전 할인</h5>
+                            <p style="font-size: 1.1rem; line-height: 1.6; color: var(--text-light);">
+                                졸업 실패자는<br>
+                                <strong style="font-size: 1.8rem; color: #ef4444; display: block; margin: 10px 0;">50% 할인</strong>
+                                다음 기수에 재도전 가능
+                            </p>
+                        </div>
+                        
+                        <!-- 지속 참여 할인 -->
+                        <div style="background: rgba(251, 191, 36, 0.1); border: 2px solid rgba(251, 191, 36, 0.3); border-radius: 15px; padding: 30px; text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 15px;">🚀</div>
+                            <h5 style="font-size: 1.3rem; margin-bottom: 15px; color: #fbbf24; font-weight: 700;">AI 직원 업그레이드</h5>
+                            <p style="font-size: 1.1rem; line-height: 1.6; color: var(--text-light);">
+                                더 강력한 AI 직원을<br>
+                                만들고 싶은 졸업생은<br>
+                                <strong style="font-size: 1.8rem; color: #fbbf24; display: block; margin: 10px 0;">55% 할인</strong>
+                                다음 기수 지속 참여 가능
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIAL SECTION -->
+    <section class="experiment-section">
+        <div class="container-luxury">
+            <div class="section-header" >
+                <div class="section-badge">💬 LEADER'S MESSAGE</div>
+                <h2 class="section-title">
+                    모임장의<br>
+                    <span class="gradient-text">한 마디</span>
+                </h2>
+            </div>
+            
+            <div class="testimonial-card"  >
+                <div class="testimonial-quote">
+                    "많은 분들이 '방법'을 몰라서가 아니라 '실행'하지 않아서 제자리걸음을 합니다.<br><br>
+                    이번 4주는 제가 여러분의 실행 파트너가 되어드리겠습니다.<br><br>
+                    딱 4주만 투자하세요.<br>
+                    여러분의 채널은 <strong style="color: var(--accent);">돈을 벌어다 주는 기계</strong>가 될 것입니다."
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">👨‍💼</div>
+                    <div>
+                        <div style="font-size: 1.3rem; font-weight: 700;">모임장</div>
+                        <div style="color: var(--text-muted);">4주 수익형 채널 실험실</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section id="apply" class="cta-final-section">
+        <div class="container-luxury">
+            <div class="cta-mega" >
+                <h2>2기 오픈 알림 신청</h2>
+                <p>1기는 마감되었습니다. 2기 오픈 시 가장 먼저 알림받으세요!</p>
+                
+                <!-- 계좌번호 하이라이트 -->
+                <div style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.15) 100%); border: 3px solid #fbbf24; border-radius: 20px; padding: 30px; margin: 30px 0;">
+                    <h3 style="color: #fbbf24; font-size: 1.8rem; margin-bottom: 15px;">
+                        💳 참가비 입금 계좌
+                    </h3>
+                    <div style="background: rgba(0, 0, 0, 0.4); border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                        <p style="font-size: 1.8rem; font-weight: 900; color: #fbbf24; margin-bottom: 8px;">
+                            농협 302-2116-3964-11
+                        </p>
+                        <p style="font-size: 1.3rem; color: rgba(255,255,255,0.95);">
+                            예금주: 천성준
+                        </p>
+                    </div>
+                    <p style="font-size: 1.1rem; color: rgba(255,255,255,0.9); line-height: 1.8;">
+                        ₩74,000 입금 후 아래 오픈카톡으로<br>
+                        <strong style="color: #fbbf24;">"성함 + 입금자명"</strong>을 보내주세요!
+                    </p>
+                </div>
+                
+                <a href="https://open.kakao.com/o/pJGO9L9h" target="_blank" class="btn-mega">
+                    💬 2기 대기자 명단 등록하기
+                </a>
+                <p style="margin-top: 40px; font-size: 1.2rem; color: var(--text-muted);">
+                    문의: 오픈카톡으로 바로 연결됩니다
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating CTA -->
+    <div class="floating-benefit" onclick="window.location.href='https://open.kakao.com/o/pJGO9L9h'">
+        ✅ 1기 마감 | 2기 대기
+    </div>
+
+    <!-- Footer -->
+    <footer class="luxury-footer">
+        <div class="footer-content">
+            <div class="footer-logo">4주 수익형 채널 실험실</div>
+            <p>결과를 만드는 실전 실험 모임</p>
+            <div class="footer-links">
+                <a href="https://open.kakao.com/o/pJGO9L9h" target="_blank">오픈카톡</a>
+                <a href="/lab/">랩 페이지</a>
+                <a href="/">메인 사이트</a>
+            </div>
+            <p class="copyright">© 2026 퍼널 아키텍트 AI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 영상 재생 컨트롤
+        const membershipVideo = document.getElementById('membershipVideo');
+        const membershipVideoPlayBtn = document.getElementById('membershipVideoPlayBtn');
+        
+        if (membershipVideoPlayBtn && membershipVideo) {
+            membershipVideoPlayBtn.addEventListener('click', () => {
+                membershipVideo.play();
+                membershipVideoPlayBtn.style.opacity = '0';
+                membershipVideoPlayBtn.style.pointerEvents = 'none';
+            });
+            
+            membershipVideo.addEventListener('play', () => {
+                membershipVideoPlayBtn.style.opacity = '0';
+                membershipVideoPlayBtn.style.pointerEvents = 'none';
+            });
+            
+            membershipVideo.addEventListener('pause', () => {
+                membershipVideoPlayBtn.style.opacity = '1';
+                membershipVideoPlayBtn.style.pointerEvents = 'auto';
+            });
+            
+            membershipVideo.addEventListener('ended', () => {
+                membershipVideoPlayBtn.style.opacity = '1';
+                membershipVideoPlayBtn.style.pointerEvents = 'auto';
+            });
+        }
+        
+        // 카운트다운 타이머
+        const targetDate = new Date('2026-01-31T23:59:59').getTime();
+        
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').textContent = String(days).padStart(2, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            
+            if (distance < 0) {
+                document.querySelector('.countdown-timer').innerHTML = '<div style="font-size: 2rem; color: #ef4444;">모집 마감!</div>';
+            }
+        }
+        
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>

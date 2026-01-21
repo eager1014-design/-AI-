@@ -37,14 +37,37 @@ async function loadPosts() {
     const postsContainer = document.getElementById('communityPosts');
     
     try {
-        const response = await fetch('/api/community/posts');
+        // 로컬스토리지에서 게시글 불러오기
+        const storedPosts = localStorage.getItem('community_posts');
         
-        if (!response.ok) {
-            throw new Error('게시글을 불러올 수 없습니다.');
+        if (storedPosts) {
+            allPosts = JSON.parse(storedPosts);
+        } else {
+            // 초기 더미 데이터
+            allPosts = [
+                {
+                    id: 1,
+                    category: 'notice',
+                    title: '📢 찐부부 AI 마켓 오픈!',
+                    content: '찐부부 AI 프롬프트 마켓이 오픈했습니다. 다양한 프롬프트를 만나보세요!',
+                    author: '관리자',
+                    createdAt: new Date().toISOString(),
+                    views: 128,
+                    likes: 45
+                },
+                {
+                    id: 2,
+                    category: 'tip',
+                    title: '💡 ChatGPT 활용 꿀팁',
+                    content: 'ChatGPT를 더 효과적으로 사용하는 방법을 공유합니다.',
+                    author: '프롬프트마스터',
+                    createdAt: new Date(Date.now() - 86400000).toISOString(),
+                    views: 89,
+                    likes: 23
+                }
+            ];
+            localStorage.setItem('community_posts', JSON.stringify(allPosts));
         }
-        
-        const data = await response.json();
-        allPosts = data.posts || [];
         
         filterPosts();
         
