@@ -303,6 +303,37 @@
         }
         
         @media (max-width: 768px) {
+            /* 헤더 */
+            header {
+                padding: 10px 0;
+            }
+            
+            header nav {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            header nav a[href="/"] {
+                font-size: 0.9rem;
+            }
+            
+            header nav a[href="/"] img {
+                height: 35px;
+                width: 35px;
+            }
+            
+            header nav > div {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                font-size: 0.7rem;
+            }
+            
+            header nav > div a {
+                padding: 6px 10px !important;
+                font-size: 0.7rem !important;
+            }
+            
             /* Hero 타이틀 */
             .hero-title {
                 font-size: 1.3rem !important;
