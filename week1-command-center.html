@@ -1404,12 +1404,23 @@ ${goals ? `주요 업무: ${goals}` : ''}
 업그레이드된 프롬프트를 작성해주세요. 실제로 ChatGPT에 바로 복사-붙여넣기할 수 있도록 완성된 형태로 제공해주세요.`;
             
             try {
+                console.log('🔄 프롬프트 업그레이드 시작...');
                 const result = await callGeminiAPI(prompt);
-                document.getElementById('beforePrompt').textContent = badPrompt;
-                document.getElementById('afterPrompt').textContent = result;
-                document.getElementById('upgradeOutput').style.display = 'block';
+                console.log('✅ AI 응답 수신:', result);
+                
+                const beforeBox = document.getElementById('beforePrompt');
+                const afterBox = document.getElementById('afterPrompt');
+                const outputContainer = document.getElementById('upgradeOutput');
+                
+                console.log('📝 결과 박스 업데이트 시작...');
+                beforeBox.textContent = badPrompt;
+                afterBox.textContent = result;
+                outputContainer.style.display = 'block';
+                
+                console.log('✨ 업그레이드 완료!');
                 showAlert('upgradeAlert', '✅ 프롬프트가 업그레이드되었습니다!', 'success');
             } catch (error) {
+                console.error('❌ 업그레이드 오류:', error);
                 showAlert('upgradeAlert', `오류: ${error.message}`, 'error');
             } finally {
                 button.disabled = false;
