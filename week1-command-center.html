@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1주차 커맨드 센터 - 상위 1% AI 직원 만들기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --bg-glass: rgba(15, 23, 42, 0.7);
+            --primary: #3b82f6;
+            --accent: #06b6d4;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: rgba(59, 130, 246, 0.2);
+            --glow: rgba(59, 130, 246, 0.4);
+        }
+        
+        body {
+            font-family: 'Urbanist', 'Noto Sans KR', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+        }
+        
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        /* API Key Section */
+        .api-key-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--bg-glass);
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        
+        .api-key-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            width: 300px;
+            transition: all 0.3s;
+        }
+        
+        .api-key-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--glow);
+        }
+        
+        .api-key-input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .btn-save-key {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-save-key:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px var(--glow);
+        }
+        
+        .api-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .status-dot.active {
+            background: #10b981;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .progress-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+        }
+        
+        .progress-percentage {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 50px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 20px var(--glow);
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        
+        .progress-step {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .progress-step.active {
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        /* Slide Navigation */
+        .slide-nav {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+        
+        .slide-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.2);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .slide-btn.active {
+            background: var(--primary);
+            width: 40px;
+            border-radius: 50px;
+            box-shadow: 0 0 20px var(--glow);
+        }
+        
+        /* Slide Container */
+        .slides-container {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Glass Card */
+        .glass-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s;
+        }
+        
+        .glass-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+        
+        .card-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+        }
+        
+        .card-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+        
+        .card-content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Interactive Tool */
+        .interactive-tool {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+        }
+        
+        .tool-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .tool-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tool-description {
+            color: var(--text-secondary);
+        }
+        
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .input-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--glow);
+        }
+        
+        textarea.input-field {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn-generate {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+        
+        .btn-generate:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px var(--glow);
+        }
+        
+        .btn-generate:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-generate .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .output-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .output-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .output-box::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        
+        .output-box::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        
+        .btn-copy {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+        
+        .btn-copy:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+        }
+        
+        .btn-nav {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-nav:hover:not(:disabled) {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+        
+        .btn-nav:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .btn-nav.prev:hover:not(:disabled) {
+            transform: translateX(-5px);
+        }
+        
+        /* Checklist */
+        .checklist {
+            list-style: none;
+        }
+        
+        .checklist li {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.5rem;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .checklist li:hover {
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .checklist li::before {
+            content: '✓';
+            color: var(--primary);
+            font-weight: 900;
+            margin-right: 0.75rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .api-key-bar {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .api-key-input {
+                width: 100%;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .glass-card {
+                padding: 1.5rem;
+            }
+            
+            .interactive-tool {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* Alert Messages */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid;
+            display: none;
+        }
+        
+        .alert.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+        
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: #10b981;
+            color: #6ee7b7;
+        }
+        
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--primary);
+            color: #93c5fd;
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">🚀</div>
+                <div>
+                    <div>AI 직원 만들기</div>
+                    <div style="font-size: 0.75rem; font-weight: 500; color: var(--text-secondary);">1주차 커맨드 센터</div>
+                </div>
+            </a>
+            
+            <div class="api-key-bar">
+                <input 
+                    type="password" 
+                    class="api-key-input" 
+                    id="apiKeyInput" 
+                    placeholder="Gemini API 키를 입력하세요"
+                >
+                <button class="btn-save-key" onclick="saveApiKey()">저장</button>
+                <div class="api-status">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="statusText">API 미연결</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="hero-badge">Week 1 Command Center</div>
+            <h1 class="hero-title">상위 1% AI 직원 만들기</h1>
+            <p class="hero-subtitle">전문가급 AI 활용 능력을 7단계 인터랙티브 학습으로 마스터하세요</p>
+        </div>
+        
+        <!-- Progress Container -->
+        <div class="progress-container">
+            <div class="progress-header">
+                <div class="progress-title">학습 진행도</div>
+                <div class="progress-percentage" id="progressPercentage">0%</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 14%"></div>
+            </div>
+            <div class="progress-steps">
+                <span class="progress-step active">시작</span>
+                <span class="progress-step">ROI</span>
+                <span class="progress-step">6대 요소</span>
+                <span class="progress-step">인격 빌더</span>
+                <span class="progress-step">업그레이드</span>
+                <span class="progress-step">실전</span>
+                <span class="progress-step">완료</span>
+            </div>
+        </div>
+        
+        <!-- Slide Navigation -->
+        <div class="slide-nav">
+            <button class="slide-btn active" onclick="goToSlide(0)"></button>
+            <button class="slide-btn" onclick="goToSlide(1)"></button>
+            <button class="slide-btn" onclick="goToSlide(2)"></button>
+            <button class="slide-btn" onclick="goToSlide(3)"></button>
+            <button class="slide-btn" onclick="goToSlide(4)"></button>
+            <button class="slide-btn" onclick="goToSlide(5)"></button>
+            <button class="slide-btn" onclick="goToSlide(6)"></button>
+        </div>
+        
+        <!-- Slides Container -->
+        <div class="slides-container">
+            <!-- Slide 1: Welcome -->
+            <div class="slide active" id="slide-0">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">👋</div>
+                        <div>
+                            <div class="card-title">환영합니다!</div>
+                            <div class="card-subtitle">AI를 직원처럼 활용하는 여정의 시작</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p style="font-size: 1.125rem; margin-bottom: 1.5rem;">
+                            이 커맨드 센터는 단순한 강의가 아닙니다. 실시간 AI 도구를 직접 사용하며 
+                            <strong style="color: var(--primary);">상위 1% 프롬프트 엔지니어</strong>가 되는 인터랙티브 학습 플랫폼입니다.
+                        </p>
+                        
+                        <h3 style="font-size: 1.5rem; font-weight: 700; margin: 2rem 0 1rem; color: var(--text-primary);">
+                            🎯 1주차에서 배울 내용
+                        </h3>
+                        
+                        <ul class="checklist">
+                            <li>AI 활용 ROI 극대화 전략</li>
+                            <li>상위 1% 프롬프트 6대 핵심 요소</li>
+                            <li>AI 직원 인격 설계 (Custom Instructions)</li>
+                            <li>프롬프트 실시간 업그레이드 실습</li>
+                            <li>ChatGPT 숨겨진 고급 기능 마스터</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">300%</div>
+                        <div class="stat-label">평균 생산성 증가율</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">15시간</div>
+                        <div class="stat-label">주당 절약 시간</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">85%</div>
+                        <div class="stat-label">업무 자동화율</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 2: ROI Calculator -->
+            <div class="slide" id="slide-1">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">💰</div>
+                        <div>
+                            <div class="card-title">AI 활용 ROI 분석</div>
+                            <div class="card-subtitle">당신의 시간은 얼마나 가치있나요?</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p style="margin-bottom: 2rem;">
+                            AI를 제대로 활용하면 연간 <strong style="color: var(--primary);">수천만 원</strong>의 가치를 창출할 수 있습니다.
+                        </p>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">₩500만</div>
+                                <div class="stat-label">월 평균 업무 가치</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">70%</div>
+                                <div class="stat-label">AI 자동화 가능 비율</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">₩350만</div>
+                                <div class="stat-label">월 절감 가치</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">₩4,200만</div>
+                                <div class="stat-label">연간 총 절감액</div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--primary); padding: 1.5rem; border-radius: 12px; margin-top: 2rem;">
+                            <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.5rem;">💡 핵심 인사이트</h4>
+                            <p>AI 직원 1명 = 실제 직원 0.7명분의 업무 처리 능력</p>
+                            <p>월 ChatGPT Plus 비용 $20 vs 절감 가치 ₩350만 = <strong style="color: var(--accent);">175배 ROI</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 3: 6 Core Elements -->
+            <div class="slide" id="slide-2">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">🎯</div>
+                        <div>
+                            <div class="card-title">상위 1% 프롬프트 6대 요소</div>
+                            <div class="card-subtitle">전문가급 결과물을 만드는 비밀</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div style="display: grid; gap: 1.5rem;">
+                            <div style="background: rgba(59, 130, 246, 0.05); border-left: 4px solid var(--primary); padding: 1.5rem; border-radius: 12px;">
+                                <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--primary);">
+                                    1️⃣ 역할 부여 (Role Assignment)
+                                </h4>
+                                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                    AI에게 전문가 정체성을 부여하여 응답 수준을 극대화합니다.
+                                </p>
+                                <div style="background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem;">
+                                    "당신은 15년 경력의 마케팅 전략 컨설턴트입니다."
+                                </div>
+                            </div>
+                            
+                            <div style="background: rgba(6, 182, 212, 0.05); border-left: 4px solid var(--accent); padding: 1.5rem; border-radius: 12px;">
+                                <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--accent);">
+                                    2️⃣ 맥락 제공 (Context)
+                                </h4>
+                                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                    상황, 목표, 제약사항을 명확히 전달합니다.
+                                </p>
+                                <div style="background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem;">
+                                    "B2B SaaS 스타트업의 시리즈A 투자 유치를 위한..."
+                                </div>
+                            </div>
+                            
+                            <div style="background: rgba(59, 130, 246, 0.05); border-left: 4px solid var(--primary); padding: 1.5rem; border-radius: 12px;">
+                                <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--primary);">
+                                    3️⃣ 구체적 지시 (Specific Instructions)
+                                </h4>
+                                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                    원하는 결과물의 형태, 길이, 스타일을 상세히 정의합니다.
+                                </p>
+                                <div style="background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem;">
+                                    "3단 구조로, 각 섹션 500자 이내, 불릿 포인트 활용"
+                                </div>
+                            </div>
+                            
+                            <div style="background: rgba(6, 182, 212, 0.05); border-left: 4px solid var(--accent); padding: 1.5rem; border-radius: 12px;">
+                                <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--accent);">
+                                    4️⃣ 예시 제공 (Examples)
+                                </h4>
+                                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                    원하는 톤, 스타일의 샘플을 제시합니다.
+                                </p>
+                                <div style="background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem;">
+                                    "다음과 같은 스타일로: [샘플 텍스트]"
+                                </div>
+                            </div>
+                            
+                            <div style="background: rgba(59, 130, 246, 0.05); border-left: 4px solid var(--primary); padding: 1.5rem; border-radius: 12px;">
+                                <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--primary);">
+                                    5️⃣ 제약사항 (Constraints)
+                                </h4>
+                                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                    피해야 할 요소, 금지 사항을 명시합니다.
+                                </p>
+                                <div style="background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem;">
+                                    "전문 용어 사용 금지, 초등학생도 이해 가능한 수준으로"
+                                </div>
+                            </div>
+                            
+                            <div style="background: rgba(6, 182, 212, 0.05); border-left: 4px solid var(--accent); padding: 1.5rem; border-radius: 12px;">
+                                <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--accent);">
+                                    6️⃣ 출력 형식 (Output Format)
+                                </h4>
+                                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                    결과물의 구조와 포맷을 지정합니다.
+                                </p>
+                                <div style="background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem;">
+                                    "표 형식으로, 열: 항목/설명/우선순위"
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 4: AI Persona Builder -->
+            <div class="slide" id="slide-3">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">🤖</div>
+                        <div>
+                            <div class="card-title">AI 직원 인격 빌더</div>
+                            <div class="card-subtitle">Custom Instructions 자동 생성</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="apiAlert" class="alert alert-error"></div>
+                
+                <div class="interactive-tool">
+                    <div class="tool-header">
+                        <div class="tool-title">🎭 당신만의 AI 직원 설계하기</div>
+                        <p class="tool-description">직무를 입력하면 전문가급 Custom Instructions를 자동 생성합니다</p>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">직무 또는 업무 분야</label>
+                        <input 
+                            type="text" 
+                            class="input-field" 
+                            id="jobInput" 
+                            placeholder="예: 디지털 마케터, 콘텐츠 크리에이터, 데이터 분석가"
+                        >
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">주요 업무 및 목표 (선택사항)</label>
+                        <textarea 
+                            class="input-field" 
+                            id="goalsInput" 
+                            placeholder="예: SNS 콘텐츠 기획 및 제작, 데이터 기반 전략 수립"
+                        ></textarea>
+                    </div>
+                    
+                    <button class="btn-generate" id="btnGeneratePersona" onclick="generatePersona()">
+                        <span id="personaButtonText">🚀 AI 직원 인격 생성하기</span>
+                    </button>
+                    
+                    <div id="personaOutput" style="display: none;">
+                        <div class="output-box" id="personaResult"></div>
+                        <button class="btn-copy" onclick="copyToClipboard('personaResult')">📋 복사하기</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 5: Prompt Upgrade Lab -->
+            <div class="slide" id="slide-4">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">⚡</div>
+                        <div>
+                            <div class="card-title">프롬프트 업그레이드 랩</div>
+                            <div class="card-subtitle">평범한 질문을 전문가급으로 변환</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="upgradeAlert" class="alert alert-error"></div>
+                
+                <div class="interactive-tool">
+                    <div class="tool-header">
+                        <div class="tool-title">✨ 프롬프트 자동 업그레이드</div>
+                        <p class="tool-description">6대 요소가 적용된 상위 1% 프롬프트로 즉시 변환합니다</p>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">현재 프롬프트 (Before)</label>
+                        <textarea 
+                            class="input-field" 
+                            id="badPromptInput" 
+                            placeholder="예: 마케팅 전략 좀 짜줘"
+                            style="min-height: 100px;"
+                        ></textarea>
+                    </div>
+                    
+                    <button class="btn-generate" id="btnUpgradePrompt" onclick="upgradePrompt()">
+                        <span id="upgradeButtonText">🔥 프롬프트 업그레이드</span>
+                    </button>
+                    
+                    <div id="upgradeOutput" style="display: none;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                            <div>
+                                <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.75rem; color: #ef4444;">
+                                    ❌ Before (평범한 질문)
+                                </h4>
+                                <div class="output-box" style="background: rgba(239, 68, 68, 0.05);" id="beforePrompt"></div>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.75rem; color: #10b981;">
+                                    ✅ After (전문가급)
+                                </h4>
+                                <div class="output-box" style="background: rgba(16, 185, 129, 0.05);" id="afterPrompt"></div>
+                                <button class="btn-copy" onclick="copyToClipboard('afterPrompt')">📋 복사하기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 6: Advanced Features -->
+            <div class="slide" id="slide-5">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">🔥</div>
+                        <div>
+                            <div class="card-title">ChatGPT 고급 기능</div>
+                            <div class="card-subtitle">숨겨진 생산성 무기 마스터</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div style="display: grid; gap: 1.5rem;">
+                            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem;">
+                                <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary);">
+                                    1. Memory (기억 기능)
+                                </h4>
+                                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                    ChatGPT가 당신의 선호도, 업무 스타일, 과거 대화를 기억하도록 설정하세요.
+                                </p>
+                                <ul class="checklist">
+                                    <li>Settings → Personalization → Memory 활성화</li>
+                                    <li>"앞으로 내 글쓰기 스타일은 간결하고 전문적으로 작성해줘" 입력</li>
+                                    <li>업무 맥락을 매번 설명할 필요 없이 즉시 업무 시작</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem;">
+                                <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--accent);">
+                                    2. Canvas (캔버스 모드)
+                                </h4>
+                                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                    문서 작성과 코딩을 위한 전용 작업 공간으로 실시간 협업이 가능합니다.
+                                </p>
+                                <ul class="checklist">
+                                    <li>긴 문서 작성 시 자동으로 캔버스 모드 제안</li>
+                                    <li>특정 문단만 선택하여 수정 요청 가능</li>
+                                    <li>버전 관리 및 되돌리기 기능 제공</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem;">
+                                <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary);">
+                                    3. Projects (프로젝트)
+                                </h4>
+                                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                    관련된 대화와 파일을 하나의 프로젝트로 묶어 관리합니다.
+                                </p>
+                                <ul class="checklist">
+                                    <li>프로젝트별 Custom Instructions 설정 가능</li>
+                                    <li>파일 업로드 및 자동 컨텍스트 유지</li>
+                                    <li>팀원과 프로젝트 공유 가능</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem;">
+                                <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--accent);">
+                                    4. Advanced Data Analysis
+                                </h4>
+                                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                    데이터 파일을 업로드하여 자동 분석, 시각화, 인사이트 도출이 가능합니다.
+                                </p>
+                                <ul class="checklist">
+                                    <li>Excel, CSV 파일 업로드 즉시 분석</li>
+                                    <li>Python 코드 실행으로 고급 분석 수행</li>
+                                    <li>차트 및 그래프 자동 생성</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 7: Next Steps -->
+            <div class="slide" id="slide-6">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">🎉</div>
+                        <div>
+                            <div class="card-title">축하합니다!</div>
+                            <div class="card-subtitle">1주차 커리큘럼 완료</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p style="font-size: 1.25rem; margin-bottom: 2rem; text-align: center;">
+                            당신은 이제 <strong style="color: var(--primary);">상위 1% AI 활용자</strong>의 기초를 완성했습니다.
+                        </p>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">✅</div>
+                                <div class="stat-label">AI ROI 분석 완료</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">✅</div>
+                                <div class="stat-label">6대 요소 마스터</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">✅</div>
+                                <div class="stat-label">AI 직원 인격 생성</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">✅</div>
+                                <div class="stat-label">프롬프트 업그레이드</div>
+                            </div>
+                        </div>
+                        
+                        <h3 style="font-size: 1.75rem; font-weight: 800; margin: 3rem 0 1.5rem; text-align: center;">
+                            🚀 다음 단계
+                        </h3>
+                        
+                        <ul class="checklist">
+                            <li>생성한 Custom Instructions를 ChatGPT에 실제 적용하기</li>
+                            <li>업무에 6대 요소를 적용한 프롬프트 3개 이상 작성</li>
+                            <li>Memory 기능 활성화 및 선호도 학습시키기</li>
+                            <li>2주차 실전 프로젝트 시작 준비</li>
+                        </ul>
+                        
+                        <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1)); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-top: 2rem; text-align: center;">
+                            <h4 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">
+                                💬 2주차에서 만나요!
+                            </h4>
+                            <p style="color: var(--text-secondary);">
+                                실전 프로젝트를 통해 AI 직원과 함께 실제 결과물을 만들어냅니다.
+                            </p>
+                            <a href="/" style="display: inline-block; margin-top: 1.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; text-decoration: none; border-radius: 12px; font-weight: 700;">
+                                메인으로 돌아가기
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Buttons -->
+        <div class="nav-buttons">
+            <button class="btn-nav prev" id="btnPrev" onclick="prevSlide()" disabled>
+                ← 이전
+            </button>
+            <button class="btn-nav next" id="btnNext" onclick="nextSlide()">
+                다음 →
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Global State
+        let currentSlide = 0;
+        const totalSlides = 7;
+        let apiKey = '';
+        
+        // Load saved API key
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('gemini_api_key');
+            if (saved) {
+                apiKey = saved;
+                document.getElementById('apiKeyInput').value = saved;
+                updateApiStatus(true);
+            }
+        });
+        
+        // Save API Key
+        function saveApiKey() {
+            const input = document.getElementById('apiKeyInput');
+            apiKey = input.value.trim();
+            
+            if (!apiKey) {
+                showAlert('apiAlert', 'API 키를 입력해주세요.', 'error');
+                return;
+            }
+            
+            localStorage.setItem('gemini_api_key', apiKey);
+            updateApiStatus(true);
+            showAlert('apiAlert', 'API 키가 저장되었습니다!', 'success');
+        }
+        
+        // Update API Status
+        function updateApiStatus(isActive) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            if (isActive) {
+                dot.classList.add('active');
+                text.textContent = 'API 연결됨';
+            } else {
+                dot.classList.remove('active');
+                text.textContent = 'API 미연결';
+            }
+        }
+        
+        // Navigation Functions
+        function goToSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+            
+            // Hide current slide
+            document.getElementById(`slide-${currentSlide}`).classList.remove('active');
+            document.querySelectorAll('.slide-btn')[currentSlide].classList.remove('active');
+            
+            // Show new slide
+            currentSlide = index;
+            document.getElementById(`slide-${currentSlide}`).classList.add('active');
+            document.querySelectorAll('.slide-btn')[currentSlide].classList.add('active');
+            
+            // Update progress
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressPercentage').textContent = `${Math.round(progress)}%`;
+            
+            // Update progress steps
+            document.querySelectorAll('.progress-step').forEach((step, i) => {
+                if (i <= currentSlide) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+            
+            // Update buttons
+            document.getElementById('btnPrev').disabled = currentSlide === 0;
+            document.getElementById('btnNext').disabled = currentSlide === totalSlides - 1;
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+        
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+        
+        // Generate AI Persona
+        async function generatePersona() {
+            if (!apiKey) {
+                showAlert('apiAlert', 'Gemini API 키를 먼저 입력해주세요.', 'error');
+                return;
+            }
+            
+            const job = document.getElementById('jobInput').value.trim();
+            const goals = document.getElementById('goalsInput').value.trim();
+            
+            if (!job) {
+                showAlert('apiAlert', '직무를 입력해주세요.', 'error');
+                return;
+            }
+            
+            const button = document.getElementById('btnGeneratePersona');
+            const buttonText = document.getElementById('personaButtonText');
+            
+            // Show loading
+            button.disabled = true;
+            buttonText.innerHTML = '<div class="spinner"></div> 생성 중...';
+            
+            const prompt = `당신은 전문 AI 컨설턴트입니다. 다음 직무에 최적화된 ChatGPT Custom Instructions를 생성해주세요:
+
+직무: ${job}
+${goals ? `주요 업무: ${goals}` : ''}
+
+다음 형식으로 작성해주세요:
+
+【 역할 정의 】
+- 전문가 정체성과 핵심 역량 명시
+
+【 업무 스타일 】
+- 응답 톤, 구조, 상세도 수준
+
+【 핵심 역량 】
+- 이 직무에 필수적인 AI 활용 역량 3가지
+
+【 제약사항 】
+- 피해야 할 응답 스타일이나 내용
+
+【 출력 형식 】
+- 기본 응답 구조와 포맷
+
+실제로 ChatGPT Custom Instructions에 바로 복사-붙여넣기 가능하도록 작성해주세요.`;
+            
+            try {
+                const result = await callGeminiAPI(prompt);
+                document.getElementById('personaResult').textContent = result;
+                document.getElementById('personaOutput').style.display = 'block';
+                showAlert('apiAlert', '✅ AI 직원 인격이 생성되었습니다!', 'success');
+            } catch (error) {
+                showAlert('apiAlert', `오류: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+                buttonText.textContent = '🚀 AI 직원 인격 생성하기';
+            }
+        }
+        
+        // Upgrade Prompt
+        async function upgradePrompt() {
+            if (!apiKey) {
+                showAlert('upgradeAlert', 'Gemini API 키를 먼저 입력해주세요.', 'error');
+                return;
+            }
+            
+            const badPrompt = document.getElementById('badPromptInput').value.trim();
+            
+            if (!badPrompt) {
+                showAlert('upgradeAlert', '업그레이드할 프롬프트를 입력해주세요.', 'error');
+                return;
+            }
+            
+            const button = document.getElementById('btnUpgradePrompt');
+            const buttonText = document.getElementById('upgradeButtonText');
+            
+            // Show loading
+            button.disabled = true;
+            buttonText.innerHTML = '<div class="spinner"></div> 업그레이드 중...';
+            
+            const prompt = `당신은 프롬프트 엔지니어링 전문가입니다. 다음 평범한 질문을 상위 1% 프롬프트로 업그레이드해주세요.
+
+반드시 다음 6대 요소를 모두 포함해야 합니다:
+1. 역할 부여 (Role)
+2. 맥락 제공 (Context)
+3. 구체적 지시 (Instructions)
+4. 예시 (Examples)
+5. 제약사항 (Constraints)
+6. 출력 형식 (Format)
+
+원본 질문:
+"${badPrompt}"
+
+업그레이드된 프롬프트를 작성해주세요. 실제로 ChatGPT에 바로 복사-붙여넣기할 수 있도록 완성된 형태로 제공해주세요.`;
+            
+            try {
+                const result = await callGeminiAPI(prompt);
+                document.getElementById('beforePrompt').textContent = badPrompt;
+                document.getElementById('afterPrompt').textContent = result;
+                document.getElementById('upgradeOutput').style.display = 'block';
+                showAlert('upgradeAlert', '✅ 프롬프트가 업그레이드되었습니다!', 'success');
+            } catch (error) {
+                showAlert('upgradeAlert', `오류: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+                buttonText.textContent = '🔥 프롬프트 업그레이드';
+            }
+        }
+        
+        // Call Gemini API
+        async function callGeminiAPI(prompt) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }]
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('API 호출 실패. API 키를 확인해주세요.');
+            }
+            
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text;
+        }
+        
+        // Show Alert
+        function showAlert(elementId, message, type) {
+            const alert = document.getElementById(elementId);
+            alert.className = `alert alert-${type} show`;
+            alert.textContent = message;
+            
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        }
+        
+        // Copy to Clipboard
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ 클립보드에 복사되었습니다!');
+            });
+        }
+    </script>
+</body>
+</html>
