@@ -53,7 +53,7 @@ app.post('/api/generate', async (req, res) => {
         }
       ],
       temperature: 0.7,
-      max_tokens: 2000
+      max_tokens: 3000  // 더 긴 응답을 위해 증가
     });
 
     const result = completion.choices[0].message.content;
