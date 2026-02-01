@@ -1229,23 +1229,16 @@
             }
         });
         
-        // Save API Key
+        // Save API Key (활성화 토글)
         async function saveApiKey() {
+            // API 키는 서버에서 자동 관리 - 클릭만으로 활성화
             const input = document.getElementById('apiKeyInput');
-            const tempKey = input.value.trim();
-            
-            if (!tempKey) {
-                showAlert('apiAlert', 'API 키를 입력해주세요.', 'error');
-                return;
-            }
-            
-            // NOTE: API 키는 이제 서버 측에서 관리되므로 클라이언트 검증 불필요
-            // 간단한 활성화 토글만 수행
             
             apiKey = 'SERVER_MANAGED'; // 더미 값
             localStorage.setItem('ai_command_center_active', 'true');
+            input.value = 'AI 기능 활성화됨';
             updateApiStatus(true);
-            showAlert('apiAlert', '✅ AI 기능이 활성화되었습니다!', 'success');
+            showAlert('apiAlert', '✅ AI 기능이 활성화되었습니다! GPT-5 모델 사용 준비 완료.', 'success');
         }
         
         // Update API Status
