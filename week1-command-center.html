@@ -1246,7 +1246,7 @@
             
             // API 키 테스트
             try {
-                const testUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${tempKey}`;
+                const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${tempKey}`;
                 const testResponse = await fetch(testUrl, {
                     method: 'POST',
                     headers: {
@@ -1463,7 +1463,7 @@ ${goals ? `주요 업무: ${goals}` : ''}
         
         // Call Gemini API
         async function callGeminiAPI(prompt) {
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
             
             try {
                 const response = await fetch(url, {
