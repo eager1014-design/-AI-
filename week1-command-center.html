@@ -704,10 +704,11 @@
             
             <div class="api-key-bar">
                 <input 
-                    type="password" 
+                    type="text" 
                     class="api-key-input" 
                     id="apiKeyInput" 
-                    placeholder="Gemini API 키를 입력하세요"
+                    placeholder="AI 기능 활성화를 위해 '저장' 버튼을 클릭하세요"
+                    readonly
                 >
                 <button class="btn-save-key" onclick="saveApiKey()">저장</button>
                 <div class="api-status">
@@ -732,22 +733,22 @@
                     <div style="font-size: 2rem;">ℹ️</div>
                     <div style="flex: 1;">
                         <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--primary);">
-                            Gemini API 키가 필요합니다
+                            🤖 AI 기능 사용 안내
                         </h3>
                         <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
-                            AI 직원 인격 빌더와 프롬프트 업그레이드 기능을 사용하려면 무료 Gemini API 키가 필요합니다.
+                            AI 직원 인격 빌더와 프롬프트 업그레이드 기능은 GenSpark의 최신 GPT-5 모델을 사용합니다.
                         </p>
                         <div style="background: rgba(0, 0, 0, 0.3); border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
-                            <p style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">📝 API 키 발급 방법:</p>
+                            <p style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">✅ 사용 방법:</p>
                             <ol style="font-size: 0.875rem; color: var(--text-secondary); padding-left: 1.5rem; line-height: 1.8;">
-                                <li><a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--accent); text-decoration: underline;">Google AI Studio</a> 접속</li>
-                                <li>"Get API key" 또는 "Create API key" 버튼 클릭</li>
-                                <li>생성된 API 키 복사 (AIza로 시작)</li>
-                                <li>상단 헤더의 입력창에 붙여넣고 "저장" 클릭</li>
+                                <li>상단 헤더의 <strong style="color: var(--accent);">"저장"</strong> 버튼을 클릭하여 AI 기능 활성화</li>
+                                <li>Slide 4에서 <strong>AI 직원 인격 빌더</strong> 사용</li>
+                                <li>Slide 5에서 <strong>프롬프트 업그레이드</strong> 실습</li>
+                                <li>실시간으로 최신 GPT-5 모델의 응답 확인</li>
                             </ol>
                         </div>
                         <p style="font-size: 0.75rem; color: var(--text-secondary); font-style: italic;">
-                            💡 API 키는 브라우저에만 저장되며 서버로 전송되지 않습니다.
+                            💡 별도의 API 키 입력 없이 바로 사용 가능합니다.
                         </p>
                     </div>
                 </div>
@@ -1218,12 +1219,12 @@
         const totalSlides = 7;
         let apiKey = '';
         
-        // Load saved API key
+        // Load saved status
         window.addEventListener('DOMContentLoaded', () => {
-            const saved = localStorage.getItem('gemini_api_key');
-            if (saved) {
-                apiKey = saved;
-                document.getElementById('apiKeyInput').value = saved;
+            const isActive = localStorage.getItem('ai_command_center_active');
+            if (isActive === 'true') {
+                apiKey = 'SERVER_MANAGED';
+                document.getElementById('apiKeyInput').value = 'AI 기능 활성화됨';
                 updateApiStatus(true);
             }
         });
@@ -1238,51 +1239,13 @@
                 return;
             }
             
-            // API 키 형식 검증
-            if (!tempKey.startsWith('AIza')) {
-                showAlert('apiAlert', '올바른 Gemini API 키 형식이 아닙니다. (AIza로 시작해야 합니다)', 'error');
-                return;
-            }
+            // NOTE: API 키는 이제 서버 측에서 관리되므로 클라이언트 검증 불필요
+            // 간단한 활성화 토글만 수행
             
-            // API 키 테스트
-            try {
-                const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${tempKey}`;
-                const testResponse = await fetch(testUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: '안녕하세요'
-                            }]
-                        }]
-                    })
-                });
-                
-                if (!testResponse.ok) {
-                    const errorData = await testResponse.json();
-                    if (testResponse.status === 400) {
-                        showAlert('apiAlert', '❌ API 키가 유효하지 않습니다. Google AI Studio에서 새로 발급받아주세요.', 'error');
-                    } else if (testResponse.status === 403) {
-                        showAlert('apiAlert', '❌ API 키 권한이 없습니다. Generative Language API가 활성화되어 있는지 확인해주세요.', 'error');
-                    } else {
-                        showAlert('apiAlert', `❌ API 오류 (${testResponse.status}): ${errorData.error?.message || '알 수 없는 오류'}`, 'error');
-                    }
-                    return;
-                }
-                
-                // 성공 - API 키 저장
-                apiKey = tempKey;
-                localStorage.setItem('gemini_api_key', apiKey);
-                updateApiStatus(true);
-                showAlert('apiAlert', '✅ API 키가 성공적으로 저장되었습니다!', 'success');
-                
-            } catch (error) {
-                console.error('API Key Test Error:', error);
-                showAlert('apiAlert', `❌ API 키 검증 실패: ${error.message}`, 'error');
-            }
+            apiKey = 'SERVER_MANAGED'; // 더미 값
+            localStorage.setItem('ai_command_center_active', 'true');
+            updateApiStatus(true);
+            showAlert('apiAlert', '✅ AI 기능이 활성화되었습니다!', 'success');
         }
         
         // Update API Status
@@ -1355,7 +1318,7 @@
         // Generate AI Persona
         async function generatePersona() {
             if (!apiKey) {
-                showAlert('apiAlert', 'Gemini API 키를 먼저 입력해주세요.', 'error');
+                showAlert('apiAlert', 'AI 기능을 먼저 활성화해주세요. (상단 "저장" 버튼 클릭)', 'error');
                 return;
             }
             
@@ -1414,7 +1377,7 @@ ${goals ? `주요 업무: ${goals}` : ''}
         // Upgrade Prompt
         async function upgradePrompt() {
             if (!apiKey) {
-                showAlert('upgradeAlert', 'Gemini API 키를 먼저 입력해주세요.', 'error');
+                showAlert('upgradeAlert', 'AI 기능을 먼저 활성화해주세요. (상단 "저장" 버튼 클릭)', 'error');
                 return;
             }
             
@@ -1461,22 +1424,20 @@ ${goals ? `주요 업무: ${goals}` : ''}
             }
         }
         
-        // Call Gemini API
-        async function callGeminiAPI(prompt) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+        // Call AI API (via Backend Server)
+        async function callGeminiAPI(prompt, systemPrompt = 'You are a helpful AI assistant specialized in creating professional AI employees and upgrading prompts.') {
+            // 백엔드 API 서버 사용
+            const url = 'https://8004-ieqskqqgv5heqsrwn2d81-18e660f9.sandbox.novita.ai/api/generate';
             
             try {
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: prompt
-                            }]
-                        }]
+                        prompt: prompt,
+                        systemPrompt: systemPrompt
                     })
                 });
                 
@@ -1485,9 +1446,9 @@ ${goals ? `주요 업무: ${goals}` : ''}
                     console.error('API Error:', errorData);
                     
                     if (response.status === 400) {
-                        throw new Error('잘못된 API 요청입니다. API 키를 확인해주세요.');
-                    } else if (response.status === 403) {
-                        throw new Error('API 키 권한이 없습니다. Google AI Studio에서 API 키를 새로 발급받아주세요.');
+                        throw new Error('잘못된 요청입니다.');
+                    } else if (response.status === 500) {
+                        throw new Error(`서버 오류: ${errorData.message || '알 수 없는 오류'}`);
                     } else if (response.status === 429) {
                         throw new Error('API 호출 한도를 초과했습니다. 잠시 후 다시 시도해주세요.');
                     } else {
@@ -1497,11 +1458,11 @@ ${goals ? `주요 업무: ${goals}` : ''}
                 
                 const data = await response.json();
                 
-                if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+                if (!data.success || !data.result) {
                     throw new Error('API 응답 형식이 올바르지 않습니다.');
                 }
                 
-                return data.candidates[0].content.parts[0].text;
+                return data.result;
             } catch (error) {
                 if (error.message.includes('Failed to fetch')) {
                     throw new Error('네트워크 오류: 인터넷 연결을 확인해주세요.');
