@@ -408,10 +408,50 @@
         
         /* Responsive */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .cohort-info { grid-template-columns: 1fr; }
-            .countdown { flex-direction: column; align-items: center; }
-            .stats-grid { grid-template-columns: 1fr; }
+            /* 📱 모바일 초압축 스타일 - 2~3 스크롤 내 전체 확인 */
+            body { font-size: 0.7rem; }
+            .container { padding: 0 10px; }
+            
+            /* Header 축소 */
+            header { padding: 8px 0; }
+            .logo { font-size: 1rem; }
+            nav a { padding: 6px 12px !important; font-size: 0.7rem !important; }
+            .nav-cta { padding: 8px 16px !important; }
+            
+            /* Hero 축소 */
+            .hero { padding: 40px 15px; min-height: auto; }
+            .badge-urgent { padding: 6px 15px; font-size: 0.65rem; }
+            .hero h1 { font-size: 1.5rem; line-height: 1.3; margin-bottom: 12px; }
+            .hero-subtitle { font-size: 0.7rem; line-height: 1.4; }
+            
+            /* Cohort Info 축소 */
+            .cohort-info { grid-template-columns: 1fr; gap: 10px; }
+            .price-card { padding: 15px; }
+            .price-card h3 { font-size: 1rem; }
+            .price { font-size: 1.5rem; }
+            .price-original { font-size: 0.75rem; }
+            .discount-badge { font-size: 0.6rem; padding: 3px 8px; }
+            
+            /* Countdown 축소 */
+            .countdown { flex-direction: column; gap: 8px; }
+            .countdown-item { font-size: 0.7rem; }
+            .countdown-value { font-size: 1.2rem; }
+            
+            /* Stats 축소 */
+            .stats-grid { grid-template-columns: 1fr; gap: 10px; }
+            .stat-item h3 { font-size: 1.5rem; }
+            .stat-item p { font-size: 0.7rem; }
+            
+            /* Benefits 축소 */
+            .benefit-card { padding: 15px; }
+            .benefit-card h3 { font-size: 1rem; }
+            .benefit-card p { font-size: 0.65rem; line-height: 1.3; }
+            
+            /* Pricing 축소 */
+            .pricing-note { font-size: 0.65rem; }
+            
+            /* CTA 축소 */
+            .cta-button { padding: 12px 25px; font-size: 0.85rem; }
         }
     </style>
 </head>
@@ -435,7 +475,7 @@
     <section class="hero">
         <div class="container">
             <div class="badge-urgent">
-                🔥 2기 모집 중 | 조기 마감 임박
+                🔥 3기 모집 중 | 조기 마감 임박
             </div>
             
             <h1>
