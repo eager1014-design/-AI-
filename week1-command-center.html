@@ -609,38 +609,261 @@
         
         /* Responsive */
         @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
+            /* 전역 압축 */
+            body {
+                font-size: 11px;
             }
             
+            .main-container {
+                padding: 15px 10px;
+            }
+            
+            /* 헤더 */
+            .header-content {
+                flex-direction: column;
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+            
+            .logo {
+                font-size: 0.9rem;
+            }
+            
+            .logo-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 1.2rem;
+            }
+            
+            /* API 키 바 */
             .api-key-bar {
                 flex-direction: column;
                 width: 100%;
+                padding: 0.5rem 0.75rem;
             }
             
             .api-key-input {
                 width: 100%;
+                font-size: 0.7rem;
+                padding: 0.4rem 0.75rem;
+            }
+            
+            .btn-save-key {
+                padding: 0.4rem 0.75rem;
+                font-size: 0.7rem;
+            }
+            
+            .api-status {
+                font-size: 0.7rem;
+            }
+            
+            /* Hero 섹션 */
+            .hero-section {
+                padding: 30px 15px;
+            }
+            
+            .hero-badge {
+                font-size: 0.65rem;
+                padding: 5px 12px;
+                margin-bottom: 10px;
             }
             
             .hero-title {
-                font-size: 2rem;
+                font-size: 1.3rem !important;
+                margin-bottom: 10px;
             }
             
             .hero-subtitle {
+                font-size: 0.75rem !important;
+                margin-bottom: 15px;
+            }
+            
+            /* Progress */
+            .progress-container {
+                padding: 12px;
+                margin-bottom: 20px;
+            }
+            
+            .progress-title {
+                font-size: 0.75rem;
+            }
+            
+            .progress-percentage {
+                font-size: 0.75rem;
+            }
+            
+            .progress-bar {
+                height: 6px;
+            }
+            
+            .progress-steps {
+                font-size: 0.65rem;
+                gap: 6px;
+            }
+            
+            /* 슬라이드 네비게이션 */
+            .slide-nav {
+                gap: 6px;
+                margin-top: 15px;
+            }
+            
+            .slide-btn {
+                width: 10px;
+                height: 10px;
+            }
+            
+            .slide-btn.active {
+                width: 30px;
+            }
+            
+            /* Stats Grid */
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .stat-card {
+                padding: 12px;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem !important;
+            }
+            
+            .stat-label {
+                font-size: 0.7rem !important;
+            }
+            
+            /* Glass Card */
+            .glass-card {
+                padding: 1rem;
+                margin-bottom: 15px;
+            }
+            
+            .card-header {
+                flex-direction: row;
+                gap: 0.75rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .card-icon {
+                font-size: 2rem !important;
+            }
+            
+            .card-title {
+                font-size: 1rem !important;
+            }
+            
+            .card-subtitle {
+                font-size: 0.7rem !important;
+            }
+            
+            .card-content {
+                font-size: 0.7rem !important;
+            }
+            
+            .card-content p {
+                font-size: 0.7rem !important;
+                line-height: 1.4 !important;
+                margin-bottom: 0.75rem !important;
+            }
+            
+            .card-content h3 {
+                font-size: 0.9rem !important;
+                margin: 1rem 0 0.5rem !important;
+            }
+            
+            .card-content h4 {
+                font-size: 0.8rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            
+            /* Checklist */
+            .checklist li {
+                font-size: 0.7rem !important;
+                padding-left: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .checklist li:before {
+                font-size: 0.8rem;
+            }
+            
+            /* Interactive Tool */
+            .interactive-tool {
+                padding: 1rem;
+            }
+            
+            .tool-input,
+            .tool-textarea {
+                padding: 0.6rem;
+                font-size: 0.75rem;
+            }
+            
+            .tool-label {
+                font-size: 0.75rem !important;
+                margin-bottom: 0.4rem;
+            }
+            
+            /* Buttons */
+            .btn-generate {
+                padding: 0.7rem 1rem;
+                font-size: 0.8rem;
+            }
+            
+            .btn-copy {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.7rem;
+                margin-top: 0.5rem;
+            }
+            
+            /* Output Box */
+            .output-box {
+                padding: 0.75rem;
+                font-size: 0.7rem !important;
+                line-height: 1.5 !important;
+                min-height: 120px;
+            }
+            
+            /* Navigation Buttons */
+            .nav-buttons {
+                gap: 10px;
+                margin-top: 20px;
+            }
+            
+            .btn-nav {
+                padding: 10px 20px;
+                font-size: 0.8rem;
+            }
+            
+            /* Password Modal Mobile */
+            .password-container {
+                padding: 2rem 1.5rem;
+                width: 95%;
+            }
+            
+            .password-icon {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+            }
+            
+            .password-title {
+                font-size: 1.3rem;
+            }
+            
+            .password-subtitle {
+                font-size: 0.85rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .password-input {
+                padding: 0.8rem 1rem;
                 font-size: 1rem;
             }
             
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .glass-card {
-                padding: 1.5rem;
-            }
-            
-            .interactive-tool {
-                padding: 1.5rem;
+            .password-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
             }
         }
         
@@ -686,9 +909,146 @@
             border-color: var(--primary);
             color: #93c5fd;
         }
+        
+        /* Password Protection */
+        #passwordModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .password-container {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);
+        }
+        
+        .password-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .password-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .password-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            text-align: center;
+            letter-spacing: 0.3em;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--glow);
+        }
+        
+        .password-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .password-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--glow);
+        }
+        
+        .password-error {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        .password-error.show {
+            display: block;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        #mainContent {
+            display: none;
+        }
+        
+        #mainContent.unlocked {
+            display: block;
+        }
     </style>
 </head>
 <body>
+    <!-- Password Modal -->
+    <div id="passwordModal">
+        <div class="password-container">
+            <div class="password-icon">🔐</div>
+            <h1 class="password-title">1주차 커맨드 센터</h1>
+            <p class="password-subtitle">접근하려면 비밀번호를 입력하세요</p>
+            <input 
+                type="password" 
+                id="passwordInput" 
+                class="password-input" 
+                placeholder="비밀번호"
+                maxlength="4"
+            >
+            <button onclick="checkPassword()" class="password-btn">입장하기</button>
+            <div id="passwordError" class="password-error">❌ 비밀번호가 올바르지 않습니다</div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div id="mainContent">
     <div class="animated-bg"></div>
     
     <!-- Header -->
@@ -1493,6 +1853,56 @@ ${goals ? `주요 업무: ${goals}` : ''}
                 alert('✅ 클립보드에 복사되었습니다!');
             });
         }
+        
+        // Password Protection
+        const CORRECT_PASSWORD = '1127';
+        
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            const error = document.getElementById('passwordError');
+            const modal = document.getElementById('passwordModal');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (input.value === CORRECT_PASSWORD) {
+                // Correct password
+                modal.style.display = 'none';
+                mainContent.classList.add('unlocked');
+                sessionStorage.setItem('week1_authenticated', 'true');
+                error.classList.remove('show');
+            } else {
+                // Wrong password
+                error.classList.add('show');
+                input.value = '';
+                input.focus();
+                
+                // Shake animation
+                setTimeout(() => {
+                    error.classList.remove('show');
+                }, 3000);
+            }
+        }
+        
+        // Check if already authenticated
+        window.addEventListener('DOMContentLoaded', () => {
+            const passwordInput = document.getElementById('passwordInput');
+            
+            // Enter key support
+            passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+            
+            // Auto focus
+            passwordInput.focus();
+            
+            // Check session
+            if (sessionStorage.getItem('week1_authenticated') === 'true') {
+                document.getElementById('passwordModal').style.display = 'none';
+                document.getElementById('mainContent').classList.add('unlocked');
+            }
+        });
     </script>
+    </div> <!-- End of mainContent -->
 </body>
 </html>
