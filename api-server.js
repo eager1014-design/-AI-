@@ -53,17 +53,25 @@ app.post('/api/generate', async (req, res) => {
         }
       ],
       temperature: 0.7,
-      max_tokens: 3000  // 더 긴 응답을 위해 증가
+      max_tokens: 4096  // 프롬프트 끊김 방지: 최대 토큰 증가
     });
 
     const result = completion.choices[0].message.content;
+    const finishReason = completion.choices[0].finish_reason;
+    
+    // 응답 끊김 감지
+    if (finishReason === 'length') {
+      console.warn('⚠️ 응답이 max_tokens에 도달하여 끊겼습니다!');
+    }
     
     console.log('✅ AI 응답 생성 완료:', result.substring(0, 100) + '...');
+    console.log('📊 완료 사유:', finishReason);
 
     res.json({ 
       success: true,
       result: result,
-      model: 'gpt-5'
+      model: 'gpt-5',
+      finishReason: finishReason  // 클라이언트에서 확인 가능
     });
 
   } catch (error) {
